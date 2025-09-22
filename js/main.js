@@ -110,5 +110,44 @@ class Router {
     }
 }
 
-// Router'ı global olarak kullanılabilir yap
+/**
+ * Sayfa değişikliklerini takip etmek için olay sistemi
+ */
+class EventEmitter {
+    constructor() {
+        this.events = {};
+    }
+    
+    on(eventName, callback) {
+        if (!this.events[eventName]) {
+            this.events[eventName] = [];
+        }
+        this.events[eventName].push(callback);
+    }
+    
+    emit(eventName, data) {
+        if (this.events[eventName]) {
+            this.events[eventName].forEach(callback => {
+                callback(data);
+            });
+        }
+    }
+}
+
+// Router'ı global olarak kullanılabilir yap ve olay sistemini ekle
 window.appRouter = new Router();
+
+// Event emitter ekle
+window.appRouter.events = new EventEmitter();
+
+// Dinleyici ekleme yöntemi
+window.appRouter.addListener = function(eventName, callback) {
+    this.events.on(eventName, callback);
+};
+
+// Rota değişikliği olduğunda olay yayını
+const originalNavigate = window.appRouter.navigate;
+window.appRouter.navigate = function(path, pushState = true) {
+    originalNavigate.call(this, path, pushState);
+    this.events.emit('pageChanged', path);
+};

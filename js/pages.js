@@ -30,24 +30,39 @@ function homePage() {
     `;
 }
 
-// Portfolyo geçiş sayfası içeriği
+// Portfolyo ana sayfası içeriği
 function portfolioPage() {
     return `
-    <div class="container">
-        <h1>Portfolyo Yükleniyor</h1>
-        <h2>Veri bilimi uygulaması hazırlanıyor</h2>
+    <div class="container portfolio-container">
+        <div class="portfolio-header">
+            <h1>Veri Bilimi Portfolyosu</h1>
+            <h2>Interaktif Veri Analizleri ve Görselleştirmeler</h2>
+        </div>
         
-        <div class="status-card">
-            <p>Streamlit uygulaması yeni pencerede açılacak. Lütfen tarayıcınızın açılır pencere izinlerini kontrol edin.</p>
-            <div class="progress-container">
-                <div class="progress-bar" id="progress-bar"></div>
+        <div class="tabs">
+            <button class="tab-button active" data-tab="hr">HR Analitiği</button>
+            <button class="tab-button" data-tab="ml">Makine Öğrenmesi</button>
+            <button class="tab-button" data-tab="economy">Ekonomik Veriler</button>
+        </div>
+        
+        <div class="tab-content">
+            <div class="tab-pane active" id="hr-dashboard">
+                <!-- HR Analitiği içeriği JavaScript ile eklenecek -->
+            </div>
+            
+            <div class="tab-pane" id="ml-dashboard" style="display: none;">
+                <!-- Makine Öğrenmesi içeriği JavaScript ile eklenecek -->
+            </div>
+            
+            <div class="tab-pane" id="economy-dashboard" style="display: none;">
+                <div class="coming-soon">
+                    <h3>Yakında Eklenecek</h3>
+                    <p>Ekonomik veri analizleri ve grafikleri yakında burada olacak.</p>
+                </div>
             </div>
         </div>
         
-        <p>Tarayıcı ayarlarınıza bağlı olarak, pencere açılmazsa aşağıdaki butonu kullanabilirsiniz.</p>
-        
         <div class="button-container">
-            <a href="https://tolunayozcan.streamlit.app/" class="button primary-button" id="portfolyo-btn" target="_blank">Uygulamayı Aç</a>
             <a href="#" class="button secondary-button" onclick="window.appRouter.navigate('/'); return false;">Ana Sayfaya Dön</a>
         </div>
     </div>

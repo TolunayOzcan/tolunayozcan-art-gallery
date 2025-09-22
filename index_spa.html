@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="js/portfolio.css">
     <style>
         :root {
             --primary: #2563EB;
@@ -235,6 +236,60 @@
                 window.appRouter.navigate('/404', false);
             }
         });
+    </script>
+    
+    <!-- Chart.js kütüphanesi -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Veri görselleştirme script -->
+    <script src="js/dataVisualizer.js"></script>
+    
+    <script>
+        // Portfolyo sayfası için tab yönetimi
+        document.addEventListener('DOMContentLoaded', () => {
+            window.appRouter.addListener('pageChanged', (pagePath) => {
+                if (pagePath === '/portfolio') {
+                    setupPortfolioTabs();
+                    
+                    // İlk sekmenin içeriğini yükle
+                    createHRDashboard('hr-dashboard');
+                }
+            });
+        });
+        
+        // Portfolyo sekmelerini ayarla
+        function setupPortfolioTabs() {
+            setTimeout(() => {
+                const tabButtons = document.querySelectorAll('.tab-button');
+                const tabPanes = document.querySelectorAll('.tab-pane');
+                
+                if (!tabButtons.length) return;
+                
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        // Aktif tab'ı değiştir
+                        tabButtons.forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+                        
+                        // İçeriği göster/gizle
+                        const tabId = button.dataset.tab;
+                        tabPanes.forEach(pane => {
+                            pane.style.display = 'none';
+                        });
+                        
+                        const activePane = document.getElementById(`${tabId}-dashboard`);
+                        if (activePane) {
+                            activePane.style.display = 'block';
+                            
+                            // İlk kez içerik yükleniyorsa grafikleri oluştur
+                            if (tabId === 'ml' && !activePane.querySelector('.dashboard')) {
+                                createMLDashboard('ml-dashboard');
+                            }
+                        }
+                    });
+                });
+            }, 100);
+        }
     </script>
 </body>
 </html>
