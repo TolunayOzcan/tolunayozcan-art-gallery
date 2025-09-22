@@ -21,6 +21,7 @@ class HeartbeatManager:
         self.stop_event = threading.Event()
         self.thread = None
         self.app_url = os.environ.get("APP_URL", "http://localhost:8501")
+        self.enabled = os.getenv("ENABLE_HEARTBEAT", "0").lower() in ("1", "true", "yes")
         
     def _get_app_url(self):
         """
@@ -50,6 +51,9 @@ class HeartbeatManager:
     
     def start(self):
         """Heartbeat işlemini başlatır."""
+        if not self.enabled:
+            print("[HeartbeatManager] Heartbeat devre dışı (ENABLE_HEARTBEAT=0).")
+            return
         if self.thread is None or not self.thread.is_alive():
             self.stop_event.clear()
             self.thread = threading.Thread(target=self._heartbeat_worker, daemon=True)
@@ -64,4 +68,4 @@ class HeartbeatManager:
             print("[HeartbeatManager] Heartbeat durduruldu.")
 
 # Singleton örneği
-heartbeat_manager = HeartbeatManager(interval=120)  # 2 dakikada bir kontrol et
+heartbeat_manager = HeartbeatManager(interval=int(os.getenv("HEARTBEAT_INTERVAL", "120")))  # 2 dakikada bir kontrol et

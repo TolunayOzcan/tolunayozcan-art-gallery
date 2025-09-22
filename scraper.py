@@ -1,6 +1,9 @@
 """
 Web kazıma işlemleri için fonksiyonlar içeren modül.
 Bu modül, çeşitli web sitelerinden veri kazıma ve analiz için kullanılır.
+
+Not: Varsayılan olarak canlı ağ çağrıları kapalıdır. Demo veriler döner.
+Canlı kazıma için ortam değişkeni `ENABLE_LIVE_SCRAPE=1` ayarlanmalıdır.
 """
 
 import requests
@@ -9,6 +12,10 @@ import pandas as pd
 import time
 import random
 from typing import List, Dict, Any, Tuple
+import os
+
+LIVE_SCRAPE = os.getenv("ENABLE_LIVE_SCRAPE", "0").lower() in ("1", "true", "yes")
+REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "5"))
 
 def get_headers() -> Dict[str, str]:
     """
@@ -43,9 +50,12 @@ def fetch_page(url: str) -> str:
     Returns:
         str: HTML içeriği
     """
+    # Canlı kazıma devre dışı ise direkt boş döndür
+    if not LIVE_SCRAPE:
+        return ""
     try:
         headers = get_headers()
-        response = requests.get(url, headers=headers, timeout=30)
+        response = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
         response.raise_for_status()
         return response.text
     except requests.RequestException as e:
@@ -59,36 +69,26 @@ def scrape_ekonomi_verileri() -> pd.DataFrame:
     Returns:
         pd.DataFrame: Ekonomik göstergeler veri seti
     """
-    url = "https://www.investing.com/economic-calendar/"
-    html = fetch_page(url)
-    
-    if not html:
-        return pd.DataFrame(columns=['Zaman', 'Ülke', 'Gösterge', 'Önem', 'Gerçek', 'Beklenti'])
-    
-    soup = BeautifulSoup(html, 'html.parser')
-    
-    # Veri kazıma işlemi (gerçek siteler için düzenlenmelidir)
-    ekonomi_verileri = []
-    
-    try:
-        # Örnek veri oluşturuluyor (gerçek kazıma kodu yerine)
-        # Gerçek bir uygulama için bu kısım hedef sitenin yapısına göre özelleştirilmelidir
-        veriler = [
-            {"zaman": "08:00", "ulke": "Türkiye", "gosterge": "TÜFE", "onem": "Yüksek", "gercek": "9.8%", "beklenti": "10.1%"},
-            {"zaman": "10:00", "ulke": "Almanya", "gosterge": "İşsizlik Oranı", "onem": "Orta", "gercek": "5.2%", "beklenti": "5.3%"},
-            {"zaman": "15:30", "ulke": "ABD", "gosterge": "GSYİH", "onem": "Yüksek", "gercek": "2.1%", "beklenti": "1.9%"},
-            {"zaman": "17:00", "ulke": "Avrupa", "gosterge": "Faiz Kararı", "onem": "Yüksek", "gercek": "4.25%", "beklenti": "4.25%"},
-            {"zaman": "09:30", "ulke": "İngiltere", "gosterge": "PMI", "onem": "Orta", "gercek": "51.2", "beklenti": "50.8"}
-        ]
-        
-        ekonomi_verileri = veriler
-        
-    except Exception as e:
-        print(f"Veri ayrıştırma hatası: {e}")
-    
-    # DataFrame oluştur
-    df = pd.DataFrame(ekonomi_verileri)
-    return df
+    # Varsayılan: demo veri
+    veriler = [
+        {"zaman": "08:00", "ulke": "Türkiye", "gosterge": "TÜFE", "onem": "Yüksek", "gercek": "9.8%", "beklenti": "10.1%"},
+        {"zaman": "10:00", "ulke": "Almanya", "gosterge": "İşsizlik Oranı", "onem": "Orta", "gercek": "5.2%", "beklenti": "5.3%"},
+        {"zaman": "15:30", "ulke": "ABD", "gosterge": "GSYİH", "onem": "Yüksek", "gercek": "2.1%", "beklenti": "1.9%"},
+        {"zaman": "17:00", "ulke": "Avrupa", "gosterge": "Faiz Kararı", "onem": "Yüksek", "gercek": "4.25%", "beklenti": "4.25%"},
+        {"zaman": "09:30", "ulke": "İngiltere", "gosterge": "PMI", "onem": "Orta", "gercek": "51.2", "beklenti": "50.8"}
+    ]
+
+    if LIVE_SCRAPE:
+        url = "https://www.investing.com/economic-calendar/"
+        html = fetch_page(url)
+        if html:
+            try:
+                soup = BeautifulSoup(html, 'html.parser')
+                # TODO: Gerçek kazıma mantığı burada uygulanabilir
+            except Exception as e:
+                print(f"Veri ayrıştırma hatası: {e}")
+
+    return pd.DataFrame(veriler)
 
 def scrape_borsa_verileri() -> pd.DataFrame:
     """
@@ -97,14 +97,6 @@ def scrape_borsa_verileri() -> pd.DataFrame:
     Returns:
         pd.DataFrame: Borsa verileri veri seti
     """
-    url = "https://www.investing.com/indices/major-indices"
-    html = fetch_page(url)
-    
-    if not html:
-        return pd.DataFrame(columns=['Endeks', 'Son', 'Yüksek', 'Düşük', 'Değişim', 'Değişim%', 'Zaman'])
-    
-    soup = BeautifulSoup(html, 'html.parser')
-    
     # Örnek veri oluşturuluyor (gerçek kazıma kodu yerine)
     borsa_verileri = [
         {"endeks": "BIST 100", "son": "9,452.87", "yuksek": "9,523.45", "dusuk": "9,380.21", "degisim": "+124.56", "degisim_yuzde": "+1.32%", "zaman": "17:45:00"},
@@ -114,9 +106,17 @@ def scrape_borsa_verileri() -> pd.DataFrame:
         {"endeks": "FTSE 100", "son": "8,234.12", "yuksek": "8,256.78", "dusuk": "8,201.34", "degisim": "+45.87", "degisim_yuzde": "+0.56%", "zaman": "16:45:00"}
     ]
     
-    # DataFrame oluştur
-    df = pd.DataFrame(borsa_verileri)
-    return df
+    if LIVE_SCRAPE:
+        url = "https://www.investing.com/indices/major-indices"
+        html = fetch_page(url)
+        if html:
+            try:
+                soup = BeautifulSoup(html, 'html.parser')
+                # TODO: Gerçek kazıma mantığı burada uygulanabilir
+            except Exception as e:
+                print(f"Veri ayrıştırma hatası: {e}")
+
+    return pd.DataFrame(borsa_verileri)
 
 def scrape_kripto_verileri() -> pd.DataFrame:
     """
@@ -125,14 +125,6 @@ def scrape_kripto_verileri() -> pd.DataFrame:
     Returns:
         pd.DataFrame: Kripto para veri seti
     """
-    url = "https://coinmarketcap.com/"
-    html = fetch_page(url)
-    
-    if not html:
-        return pd.DataFrame(columns=['Kripto', 'Fiyat', 'Değişim24h', 'Hacim24h', 'Piyasa Değeri'])
-    
-    soup = BeautifulSoup(html, 'html.parser')
-    
     # Örnek veri oluşturuluyor (gerçek kazıma kodu yerine)
     kripto_verileri = [
         {"kripto": "Bitcoin", "fiyat": "85,423.45", "degisim24h": "+2.3%", "hacim24h": "24.5B", "piyasa_degeri": "1.68T"},
@@ -142,6 +134,14 @@ def scrape_kripto_verileri() -> pd.DataFrame:
         {"kripto": "XRP", "fiyat": "1.23", "degisim24h": "-1.2%", "hacim24h": "980M", "piyasa_degeri": "67.4B"}
     ]
     
-    # DataFrame oluştur
-    df = pd.DataFrame(kripto_verileri)
-    return df
+    if LIVE_SCRAPE:
+        url = "https://coinmarketcap.com/"
+        html = fetch_page(url)
+        if html:
+            try:
+                soup = BeautifulSoup(html, 'html.parser')
+                # TODO: Gerçek kazıma mantığı burada uygulanabilir
+            except Exception as e:
+                print(f"Veri ayrıştırma hatası: {e}")
+
+    return pd.DataFrame(kripto_verileri)

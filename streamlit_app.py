@@ -41,12 +41,16 @@ signal.signal(signal.SIGTERM, handle_exit)
 
 # Streamlit Cloud'da uygulamanın başlangıç noktası
 if __name__ == "__main__":
-    # Watchdog thread'ini başlat
-    watchdog = WatchdogThread(interval=120)
-    watchdog.start()
+    # Watchdog thread'ini başlat (ENV ile kontrol edilir)
+    if os.getenv("ENABLE_WATCHDOG", "0").lower() in ("1", "true", "yes"):
+        watchdog = WatchdogThread(interval=int(os.getenv("WATCHDOG_INTERVAL", "120")))
+        watchdog.start()
+        print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Watchdog aktif.")
+    else:
+        print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Watchdog devre dışı (ENABLE_WATCHDOG=0).")
     
     # Uygulamanın ana sayfası zaten yüklenmiş durumda
-    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Streamlit uygulaması başlatıldı. Watchdog aktif.")
+    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Streamlit uygulaması başlatıldı.")
     
     # Streamlit Cloud bu dosyayı otomatik olarak bulacak ve çalıştıracaktır
     # Bu dosya yüklendiğinde portfolio.py içindeki tüm kodlar otomatik olarak çalışır

@@ -328,36 +328,32 @@ with menu[2]:
     st.info("Not: Bu veriler örnek amaçlıdır ve gerçek zamanlı veri çekimi yerine demo veriler gösterilmektedir.")
     st.markdown("""</div>""", unsafe_allow_html=True)
     
-    # Ekonomi Göstergeleri
+    # Ekonomi Göstergeleri (lazy-load)
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
     st.markdown("<h3>Ekonomi Göstergeleri</h3>", unsafe_allow_html=True)
-    ekonomi_df = scrape_ekonomi_verileri()
-    
-    if not ekonomi_df.empty:
-        # Veri tablosu stil iyileştirmesiyle
-        st.markdown("<p><strong>Güncel Ekonomik Veriler</strong></p>", unsafe_allow_html=True)
-        st.dataframe(ekonomi_df, use_container_width=True)
-        
-        # Önem derecesine göre gösterge sayısı - geliştirilmiş grafik
-        if 'onem' in ekonomi_df.columns:
-            onem_counts = ekonomi_df['onem'].value_counts().reset_index()
-            onem_counts.columns = ['Önem Derecesi', 'Sayı']
-            
-            fig = px.pie(onem_counts, values='Sayı', names='Önem Derecesi', 
-                        title='Ekonomik Göstergelerin Önem Derecesine Göre Dağılımı',
-                        color_discrete_sequence=px.colors.sequential.Blues_r,
-                        hole=0.4)
-            
-            fig.update_layout(
-                legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5),
-                margin=dict(t=50, b=50, l=20, r=20),
-                plot_bgcolor='rgba(0,0,0,0)'
-            )
-            
-            fig.update_traces(textinfo='percent+label', pull=[0.05, 0, 0], 
-                             marker=dict(line=dict(color='#FFFFFF', width=2)))
-            
-            st.plotly_chart(fig, use_container_width=True)
+    if st.button("Ekonomi Verilerini Yükle"):
+        with st.spinner("Ekonomi verileri yükleniyor..."):
+            ekonomi_df = scrape_ekonomi_verileri()
+        if not ekonomi_df.empty:
+            st.markdown("<p><strong>Güncel Ekonomik Veriler</strong></p>", unsafe_allow_html=True)
+            st.dataframe(ekonomi_df, use_container_width=True)
+            if 'onem' in ekonomi_df.columns:
+                onem_counts = ekonomi_df['onem'].value_counts().reset_index()
+                onem_counts.columns = ['Önem Derecesi', 'Sayı']
+                fig = px.pie(onem_counts, values='Sayı', names='Önem Derecesi', 
+                            title='Ekonomik Göstergelerin Önem Derecesine Göre Dağılımı',
+                            color_discrete_sequence=px.colors.sequential.Blues_r,
+                            hole=0.4)
+                fig.update_layout(
+                    legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5),
+                    margin=dict(t=50, b=50, l=20, r=20),
+                    plot_bgcolor='rgba(0,0,0,0)'
+                )
+                fig.update_traces(textinfo='percent+label', pull=[0.05, 0, 0], 
+                                marker=dict(line=dict(color='#FFFFFF', width=2)))
+                st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.warning("Veri yüklenemedi.")
     st.markdown("""</div>""", unsafe_allow_html=True)
     
     # Borsa ve Kripto Verileri Yan Yana
@@ -366,75 +362,62 @@ with menu[2]:
     with col1:
         st.markdown("""<div class="card">""", unsafe_allow_html=True)
         st.markdown("<h3>Borsa Verileri</h3>", unsafe_allow_html=True)
-        borsa_df = scrape_borsa_verileri()
-        
-        if not borsa_df.empty:
-            # Stilize edilmiş tablo
-            st.markdown("<p><strong>Güncel Borsa Endeksleri</strong></p>", unsafe_allow_html=True)
-            st.dataframe(borsa_df, use_container_width=True)
-            
-            # Borsa değişim yüzdesi grafiği - geliştirilmiş
-            if 'endeks' in borsa_df.columns and 'degisim_yuzde' in borsa_df.columns:
-                # Yüzde işaretini kaldırıp sayısal değere dönüştür
-                borsa_df['degisim_yuzde_numeric'] = borsa_df['degisim_yuzde'].str.rstrip('%').astype('float')
-                
-                # Değerlere göre renklendirme için koşullar
-                colors = ['#F44336' if x < 0 else '#4CAF50' for x in borsa_df['degisim_yuzde_numeric']]
-                
-                fig = px.bar(borsa_df, x='endeks', y='degisim_yuzde_numeric',
-                            title='Günlük Değişim (%)',
-                            text='degisim_yuzde')
-                
-                fig.update_layout(
-                    xaxis_title="",
-                    yaxis_title="Değişim (%)",
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    xaxis=dict(showgrid=False),
-                    yaxis=dict(showgrid=True, gridcolor='rgba(230,230,230,0.8)'),
-                    margin=dict(t=50, b=20, l=20, r=20)
-                )
-                
-                fig.update_traces(marker_color=colors, textposition='outside')
-                st.plotly_chart(fig, use_container_width=True)
+        if st.button("Borsa Verilerini Yükle"):
+            with st.spinner("Borsa verileri yükleniyor..."):
+                borsa_df = scrape_borsa_verileri()
+            if not borsa_df.empty:
+                st.markdown("<p><strong>Güncel Borsa Endeksleri</strong></p>", unsafe_allow_html=True)
+                st.dataframe(borsa_df, use_container_width=True)
+                if 'endeks' in borsa_df.columns and 'degisim_yuzde' in borsa_df.columns:
+                    borsa_df['degisim_yuzde_numeric'] = borsa_df['degisim_yuzde'].str.rstrip('%').astype('float')
+                    colors = ['#F44336' if x < 0 else '#4CAF50' for x in borsa_df['degisim_yuzde_numeric']]
+                    fig = px.bar(borsa_df, x='endeks', y='degisim_yuzde_numeric',
+                                title='Günlük Değişim (%)', text='degisim_yuzde')
+                    fig.update_layout(
+                        xaxis_title="",
+                        yaxis_title="Değişim (%)",
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        xaxis=dict(showgrid=False),
+                        yaxis=dict(showgrid=True, gridcolor='rgba(230,230,230,0.8)'),
+                        margin=dict(t=50, b=20, l=20, r=20)
+                    )
+                    fig.update_traces(marker_color=colors, textposition='outside')
+                    st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.warning("Veri yüklenemedi.")
         st.markdown("""</div>""", unsafe_allow_html=True)
     
     with col2:
         st.markdown("""<div class="card">""", unsafe_allow_html=True)
         st.markdown("<h3>Kripto Para Verileri</h3>", unsafe_allow_html=True)
-        kripto_df = scrape_kripto_verileri()
-        
-        if not kripto_df.empty:
-            st.markdown("<p><strong>Güncel Kripto Piyasası</strong></p>", unsafe_allow_html=True)
-            st.dataframe(kripto_df, use_container_width=True)
-            
-            # Kripto para değişim grafiği - geliştirilmiş
-            if 'kripto' in kripto_df.columns and 'degisim24h' in kripto_df.columns:
-                # Yüzde işaretini kaldırıp sayısal değere dönüştür
-                kripto_df['degisim_numeric'] = kripto_df['degisim24h'].str.rstrip('%').astype('float')
-                
-                # Değerlere göre renklendirme için koşullar
-                colors = ['#F44336' if x < 0 else '#4CAF50' for x in kripto_df['degisim_numeric']]
-                
-                fig = px.bar(kripto_df, x='kripto', y='degisim_numeric',
-                            title='24 Saatlik Değişim (%)',
-                            text='degisim24h')
-                
-                fig.update_layout(
-                    xaxis_title="",
-                    yaxis_title="Değişim (%)",
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    xaxis=dict(showgrid=False),
-                    yaxis=dict(showgrid=True, gridcolor='rgba(230,230,230,0.8)'),
-                    margin=dict(t=50, b=20, l=20, r=20)
-                )
-                
-                fig.update_traces(marker_color=colors, textposition='outside')
-                st.plotly_chart(fig, use_container_width=True)
+        if st.button("Kripto Verilerini Yükle"):
+            with st.spinner("Kripto verileri yükleniyor..."):
+                kripto_df = scrape_kripto_verileri()
+            if not kripto_df.empty:
+                st.markdown("<p><strong>Güncel Kripto Piyasası</strong></p>", unsafe_allow_html=True)
+                st.dataframe(kripto_df, use_container_width=True)
+                if 'kripto' in kripto_df.columns and 'degisim24h' in kripto_df.columns:
+                    kripto_df['degisim_numeric'] = kripto_df['degisim24h'].str.rstrip('%').astype('float')
+                    colors = ['#F44336' if x < 0 else '#4CAF50' for x in kripto_df['degisim_numeric']]
+                    fig = px.bar(kripto_df, x='kripto', y='degisim_numeric',
+                                title='24 Saatlik Değişim (%)', text='degisim24h')
+                    fig.update_layout(
+                        xaxis_title="",
+                        yaxis_title="Değişim (%)",
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        xaxis=dict(showgrid=False),
+                        yaxis=dict(showgrid=True, gridcolor='rgba(230,230,230,0.8)'),
+                        margin=dict(t=50, b=20, l=20, r=20)
+                    )
+                    fig.update_traces(marker_color=colors, textposition='outside')
+                    st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.warning("Veri yüklenemedi.")
         st.markdown("""</div>""", unsafe_allow_html=True)
     
     # Son Güncellenme Bilgisi
-    st.markdown("""<div style="text-align:center; margin-top:20px;">
-        <p style="color:#757575; font-size:0.9rem;">Son güncellenme: 22 Eylül 2025, 14:30</p>
+    st.markdown(f"""<div style="text-align:center; margin-top:20px;">
+        <p style="color:#757575; font-size:0.9rem;">Son güncellenme: {datetime.now().strftime('%d %B %Y, %H:%M')}</p>
     </div>""", unsafe_allow_html=True)
 
 with menu[3]:
