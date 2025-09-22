@@ -185,17 +185,17 @@ with menu[0]:
     # Metrikler ekle
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.markdown("""<div class="card" style="text-align:center">""", unsafe_allow_html=True)
+        st.markdown("""<div class="card metric-card-1" style="text-align:center; background-color: #E1BEE7;">""", unsafe_allow_html=True)
         st.metric(label="Tamamlanan Proje", value="24+", delta="3 son ayda")
         st.markdown("""</div>""", unsafe_allow_html=True)
     
     with col2:
-        st.markdown("""<div class="card" style="text-align:center">""", unsafe_allow_html=True)
+        st.markdown("""<div class="card metric-card-2" style="text-align:center; background-color: #C5CAE9;">""", unsafe_allow_html=True)
         st.metric(label="Veri Kaynakları", value="15", delta="5 yeni eklendi")
         st.markdown("""</div>""", unsafe_allow_html=True)
         
     with col3:
-        st.markdown("""<div class="card" style="text-align:center">""", unsafe_allow_html=True)
+        st.markdown("""<div class="card metric-card-3" style="text-align:center; background-color: #BBDEFB;">""", unsafe_allow_html=True)
         st.metric(label="Memnuniyet Oranı", value="97%", delta="2% geçen yıla göre")
         st.markdown("""</div>""", unsafe_allow_html=True)
 

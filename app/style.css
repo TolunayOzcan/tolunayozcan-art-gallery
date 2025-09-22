@@ -1,19 +1,26 @@
 /* Ana stil değişkenleri */
 :root {
-  --primary-color: #7986CB;  /* Önceki: #1E88E5 - Daha soft mavi */
-  --background-color: #F5F7FA;  /* Önceki: #F8F9FA - Biraz daha sıcak bir arka plan */
-  --text-color: #3A3A3A;  /* Önceki: #212121 - Daha yumuşak siyah */
-  --secondary-color: #9E9E9E;  /* Önceki: #757575 - Daha açık gri */
-  --accent-color: #9FA8DA;  /* Önceki: #2979FF - Pastel mor tonunda */
-  --success-color: #81C784;  /* Önceki: #4CAF50 - Pastel yeşil */
-  --warning-color: #FFD54F;  /* Önceki: #FFC107 - Pastel sarı */
-  --error-color: #E57373;  /* Önceki: #F44336 - Pastel kırmızı */
-  --card-bg-color: #F0F4F8;  /* Önceki: #FFFFFF - Çok açık mavi-gri tonu */
-  --sidebar-bg-color: #EDF2F7;  /* Sidebar için açık mavi-gri tonu */
-  --border-radius: 12px;  /* Önceki: 6px - Daha yuvarlak köşeler */
-  --box-shadow: 0 4px 12px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.03);  /* Daha soft gölgeler */
-  --padding: 1.8rem;  /* Önceki: 1.5rem - Biraz daha fazla boşluk */
-  --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);  /* Daha yumuşak geçişler */
+  --primary-color: #9C64A6;  /* Önceki: #7986CB - Pembe-mor tonu */
+  --background-color: #F5F7FA;  /* Arka plan rengi korundu */
+  --text-color: #3A3A3A;  /* Metin rengi korundu */
+  --secondary-color: #9E9E9E;  /* İkincil renk korundu */
+  --accent-color: #B39DDB;  /* Önceki: #9FA8DA - Açık mor aksan */
+  --success-color: #81C784;  /* Başarı rengi korundu */
+  --warning-color: #FFD54F;  /* Uyarı rengi korundu */
+  --error-color: #E57373;  /* Hata rengi korundu */
+  
+  /* Kart renkleri - farklı canlı tonlar */
+  --card-bg-color-1: #E1BEE7;  /* Açık pembe tonu */
+  --card-bg-color-2: #C5CAE9;  /* Açık mor-mavi tonu */
+  --card-bg-color-3: #BBDEFB;  /* Açık mavi tonu */
+  --card-bg-color-4: #D1C4E9;  /* Açık mor tonu */
+  --card-bg-color-5: #B2EBF2;  /* Açık turkuaz tonu */
+  
+  --sidebar-bg-color: #E8EAF6;  /* Önceki: #EDF2F7 - Açık mor-mavi sidebar */
+  --border-radius: 12px;  /* Köşe yuvarlaklığı korundu */
+  --box-shadow: 0 4px 12px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.03);  /* Gölgeler korundu */
+  --padding: 1.8rem;  /* Padding korundu */
+  --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);  /* Geçiş animasyonu korundu */
 }
 
 /* Ana stil */
@@ -42,12 +49,32 @@ p, li, div {
 /* Card stili */
 .card {
   border-radius: var(--border-radius);
-  background-color: var(--card-bg-color);
   box-shadow: var(--box-shadow);
   padding: var(--padding);
   margin-bottom: 1.8rem;  /* Önceki: 1.5rem - Kartlar arası daha fazla boşluk */
   transition: var(--transition);
   border: 1px solid rgba(0,0,0,0.03);  /* İnce bir kenarlık eklendi */
+}
+
+/* Farklı kart renkleri için stil sınıfları */
+.card:nth-child(5n+1) {
+  background-color: var(--card-bg-color-1);
+}
+
+.card:nth-child(5n+2) {
+  background-color: var(--card-bg-color-2);
+}
+
+.card:nth-child(5n+3) {
+  background-color: var(--card-bg-color-3);
+}
+
+.card:nth-child(5n+4) {
+  background-color: var(--card-bg-color-4);
+}
+
+.card:nth-child(5n+5) {
+  background-color: var(--card-bg-color-5);
 }
 
 .card:hover {
@@ -63,10 +90,30 @@ p, li, div {
 
 /* Metrik widget'ı stili */
 .stMetric {
-  background-color: var(--card-bg-color);
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   padding: var(--padding);
+}
+
+/* Metrik kartları için özel stiller */
+.metric-card-1 {
+  background-color: var(--card-bg-color-1) !important;
+}
+
+.metric-card-2 {
+  background-color: var(--card-bg-color-2) !important;
+}
+
+.metric-card-3 {
+  background-color: var(--card-bg-color-3) !important;
+}
+
+.metric-card-4 {
+  background-color: var(--card-bg-color-4) !important;
+}
+
+.metric-card-5 {
+  background-color: var(--card-bg-color-5) !important;
 }
 
 /* Tab stilleri - Yukarıda konumlandırma ve büyük butonlar */
@@ -100,7 +147,7 @@ button[role="tab"]:hover {
 }
 
 button[role="tab"][aria-selected="true"] {
-  background-color: var(--card-bg-color);
+  background-color: var(--card-bg-color-1);  /* Pembe ton */
   color: var(--primary-color);
   border-bottom: 3px solid var(--primary-color);  /* Önceki: 2px - Daha kalın çizgi */
   box-shadow: 0 4px 10px rgba(0,0,0,0.06);
@@ -113,7 +160,7 @@ button[role="tab"][aria-selected="true"] {
   border: none;
   border-radius: var(--border-radius);
   overflow: hidden;
-  background-color: var(--card-bg-color);  /* Kart rengiyle uyumlu arka plan */
+  background-color: var(--card-bg-color-3);  /* Mavi tonlarında arka plan */
 }
 
 .dataframe th {
@@ -134,13 +181,33 @@ button[role="tab"][aria-selected="true"] {
   background-color: rgba(121, 134, 203, 0.08);  /* Biraz daha belirgin hover efekti */
 }
 
-/* Grafik konteynerı */
+/* Grafik konteynerı - Rastgele renkler atanacak */
 .plotly-chart {
-  background-color: var(--card-bg-color);
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   padding: 1rem;  /* Önceki: 0.5rem - Daha fazla iç boşluk */
   border: 1px solid rgba(121, 134, 203, 0.1);  /* Önceki: rgba(0,0,0,0.03) - Daha belirgin kenarlık */
+}
+
+/* Farklı grafik konteynerleri için stil sınıfları */
+.plotly-chart:nth-child(5n+1) {
+  background-color: var(--card-bg-color-1);
+}
+
+.plotly-chart:nth-child(5n+2) {
+  background-color: var(--card-bg-color-2);
+}
+
+.plotly-chart:nth-child(5n+3) {
+  background-color: var(--card-bg-color-3);
+}
+
+.plotly-chart:nth-child(5n+4) {
+  background-color: var(--card-bg-color-4);
+}
+
+.plotly-chart:nth-child(5n+5) {
+  background-color: var(--card-bg-color-5);
 }
 
 /* Buton stilleri - Daha gerçekçi ve minimalist */
