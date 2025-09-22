@@ -11,39 +11,62 @@ import numpy as np
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from scraper import scrape_ekonomi_verileri, scrape_borsa_verileri, scrape_kripto_verileri
 
-# datascience modülünü ve gerekli fonksiyonları import etme
+# datascience fonksiyonlarını import etme - sklearn olmayan sürümü kullan
 try:
-    # İlk önce doğrudan import etmeyi dene
-    from datascience import (generate_classification_data, generate_regression_data,
-                            generate_ab_test_data, generate_customer_segmentation_data,
-                            create_random_forest_plot, create_ab_test_plot, 
-                            create_segmentation_plot, create_regression_plot)
-except ImportError:
-    try:
-        # Eğer başarısız olursa, app içinden import etmeyi dene
-        from app.datascience import (generate_classification_data, generate_regression_data,
-                                generate_ab_test_data, generate_customer_segmentation_data,
-                                create_random_forest_plot, create_ab_test_plot, 
-                                create_segmentation_plot, create_regression_plot)
-    except ImportError:
-        # Hala başarısız olursa, yerel bir modül olarak import et
-        import datascience
-        generate_classification_data = datascience.generate_classification_data
-        generate_regression_data = datascience.generate_regression_data
-        generate_ab_test_data = datascience.generate_ab_test_data
-        generate_customer_segmentation_data = datascience.generate_customer_segmentation_data
-        create_random_forest_plot = datascience.create_random_forest_plot
-        create_ab_test_plot = datascience.create_ab_test_plot
-        create_segmentation_plot = datascience.create_segmentation_plot
-        create_regression_plot = datascience.create_regression_plot
-
-# Gerekli sklearn fonksiyonunu import etme
-try:
-    from sklearn.metrics import accuracy_score
-except ImportError:
-    st.error("sklearn kütüphanesi yüklenemedi. Lütfen 'pip install scikit-learn' komutunu çalıştırın.")
+    from app.datascience_no_sklearn import (generate_classification_data, generate_regression_data,
+                                    generate_ab_test_data, generate_customer_segmentation_data,
+                                    create_random_forest_plot, create_ab_test_plot, 
+                                    create_segmentation_plot, create_regression_plot,
+                                    accuracy_score)
+except ImportError as e:
+    st.error(f"Modül import hatası: {e}")
+    
+    # Acil durum için temel fonksiyonları tanımlayalım
+    def generate_classification_data():
+        df = pd.DataFrame({
+            'yaş': np.random.normal(40, 10, 100),
+            'gelir': np.random.normal(5000, 1000, 100)
+        })
+        return df, np.random.randint(0, 2, 100)
+        
+    def create_random_forest_plot(X, y):
+        fig = px.bar(x=['yaş', 'gelir'], y=[0.6, 0.4], title="Özellik Önemleri")
+        return None, fig
+        
+    def generate_ab_test_data():
+        return pd.DataFrame({'grup': ['A', 'B'], 'donusum': [0.1, 0.15], 'harcama': [100, 120]})
+        
+    def create_ab_test_plot(data):
+        fig1 = px.bar(data, x='grup', y='donusum', title="Dönüşüm Oranları")
+        fig2 = px.bar(data, x='grup', y='harcama', title="Harcama Miktarları") 
+        return fig1, fig2
+        
+    def generate_customer_segmentation_data():
+        return pd.DataFrame({
+            'musteri_id': [f"ID{i}" for i in range(100)],
+            'yillik_harcama': np.random.normal(1000, 500, 100),
+            'alisveris_sikligi': np.random.normal(10, 5, 100),
+            'musteri_suresi': np.random.normal(3, 1, 100),
+            'segment': np.random.choice(['Yüksek Değer', 'Orta Değer', 'Düşük Değer', 'Yeni Müşteri'], 100)
+        })
+        
+    def create_segmentation_plot(data):
+        return px.scatter_3d(data, x='yillik_harcama', y='alisveris_sikligi', z='musteri_suresi', color='segment')
+        
+    def generate_regression_data():
+        df = pd.DataFrame({
+            'reklam_harcaması': np.random.normal(1000, 300, 100),
+            'müşteri_memnuniyeti': np.random.normal(8, 1, 100)
+        })
+        return df, np.random.normal(5000, 1000, 100)
+        
+    def create_regression_plot(X, y):
+        y_pred = y + np.random.normal(0, 500, len(y))
+        fig = px.scatter(x=y, y=y_pred, title="Gerçek vs Tahmin")
+        return None, fig
+        
     def accuracy_score(y_true, y_pred):
-        return sum(y_true == y_pred) / len(y_true)
+        return sum(np.array(y_true) == np.array(y_pred)) / len(y_true)
 
 import plotly.express as px
 

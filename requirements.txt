@@ -5,4 +5,4 @@ plotly==5.14.1
 Pillow==9.5.0
 requests==2.30.0
 beautifulsoup4==4.12.2
-scikit-learn==1.2.2
+# scikit-learn opsiyonel, eğer yüklenemezse uygulama mock veri kullanacak
