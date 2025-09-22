@@ -10,13 +10,41 @@ import numpy as np
 # Import için yolu düzenleme
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from scraper import scrape_ekonomi_verileri, scrape_borsa_verileri, scrape_kripto_verileri
-# Doğrudan app/ içindeki datascience modülünü import etme
-from app.datascience import (generate_classification_data, generate_regression_data,
-                        generate_ab_test_data, generate_customer_segmentation_data,
-                        create_random_forest_plot, create_ab_test_plot, 
-                        create_segmentation_plot, create_regression_plot)
+
+# datascience modülünü ve gerekli fonksiyonları import etme
+try:
+    # İlk önce doğrudan import etmeyi dene
+    from datascience import (generate_classification_data, generate_regression_data,
+                            generate_ab_test_data, generate_customer_segmentation_data,
+                            create_random_forest_plot, create_ab_test_plot, 
+                            create_segmentation_plot, create_regression_plot)
+except ImportError:
+    try:
+        # Eğer başarısız olursa, app içinden import etmeyi dene
+        from app.datascience import (generate_classification_data, generate_regression_data,
+                                generate_ab_test_data, generate_customer_segmentation_data,
+                                create_random_forest_plot, create_ab_test_plot, 
+                                create_segmentation_plot, create_regression_plot)
+    except ImportError:
+        # Hala başarısız olursa, yerel bir modül olarak import et
+        import datascience
+        generate_classification_data = datascience.generate_classification_data
+        generate_regression_data = datascience.generate_regression_data
+        generate_ab_test_data = datascience.generate_ab_test_data
+        generate_customer_segmentation_data = datascience.generate_customer_segmentation_data
+        create_random_forest_plot = datascience.create_random_forest_plot
+        create_ab_test_plot = datascience.create_ab_test_plot
+        create_segmentation_plot = datascience.create_segmentation_plot
+        create_regression_plot = datascience.create_regression_plot
+
 # Gerekli sklearn fonksiyonunu import etme
-from sklearn.metrics import accuracy_score
+try:
+    from sklearn.metrics import accuracy_score
+except ImportError:
+    st.error("sklearn kütüphanesi yüklenemedi. Lütfen 'pip install scikit-learn' komutunu çalıştırın.")
+    def accuracy_score(y_true, y_pred):
+        return sum(y_true == y_pred) / len(y_true)
+
 import plotly.express as px
 
 st.set_page_config(
