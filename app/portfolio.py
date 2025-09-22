@@ -3,7 +3,11 @@ from PIL import Image
 import os
 import pandas as pd
 import plotly.graph_objects as go
-from app.scraper import scrape_ekonomi_verileri, scrape_borsa_verileri, scrape_kripto_verileri
+import sys
+
+# Import için yolu düzenleme
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from scraper import scrape_ekonomi_verileri, scrape_borsa_verileri, scrape_kripto_verileri
 import plotly.express as px
 
 st.set_page_config(page_title="Veri Sanatı Portföyü", layout="wide")
