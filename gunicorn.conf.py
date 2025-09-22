@@ -1,0 +1,11 @@
+worker_class = "uvicorn.workers.UvicornWorker"
+workers = 1
+threads = 2
+timeout = 300
+keepalive = 120
+max_requests = 1000
+max_requests_jitter = 50
+preload_app = True
+worker_connections = 1000
+daemon = False
+reload = True

@@ -1,3 +1,4 @@
 # Streamlit Uygulaması için Procfile
 # Bu dosya Streamlit Cloud'un uygulamanın nasıl çalıştırılacağını bilmesini sağlar
-web: streamlit run streamlit_app.py --server.port=$PORT --server.headless=true --server.enableCORS=false --server.enableXsrfProtection=false --server.maxUploadSize=5 --server.runOnSave=true --server.fileWatcherType=auto
+# Gunicorn ile dayanıklı web sunucusu kullanıyoruz
+web: gunicorn -c gunicorn.conf.py --worker-class=uvicorn.workers.UvicornWorker --workers=1 --threads=2 --timeout=120 --keep-alive=60 --log-file=- --log-level=info app.wsgi:app
