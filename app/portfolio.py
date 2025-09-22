@@ -10,10 +10,13 @@ import numpy as np
 # Import için yolu düzenleme
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from scraper import scrape_ekonomi_verileri, scrape_borsa_verileri, scrape_kripto_verileri
-from datascience import (generate_classification_data, generate_regression_data,
+# Doğrudan app/ içindeki datascience modülünü import etme
+from app.datascience import (generate_classification_data, generate_regression_data,
                         generate_ab_test_data, generate_customer_segmentation_data,
                         create_random_forest_plot, create_ab_test_plot, 
                         create_segmentation_plot, create_regression_plot)
+# Gerekli sklearn fonksiyonunu import etme
+from sklearn.metrics import accuracy_score
 import plotly.express as px
 
 st.set_page_config(
