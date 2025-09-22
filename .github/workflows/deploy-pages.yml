@@ -30,7 +30,7 @@ jobs:
       - name: Dosyaları kopyala
         run: |
           mkdir -p build
-          cp index_spa.html build/index.html
+          cp index.html build/index.html
           mkdir -p build/js
           cp -r js/* build/js/
           echo "tolunayozcan.art" > build/CNAME
