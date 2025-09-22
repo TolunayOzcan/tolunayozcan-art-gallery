@@ -152,7 +152,17 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Menü sekmeleri
+# Menü sekmeleri - Daha büyük ve görünür butonlar
+st.markdown("""
+<style>
+    div[data-testid="stHorizontalBlock"] {
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Daha büyük sekme butonları
 menu = st.tabs(["📊 Anasayfa", "📈 Analizler", "🔄 Canlı Veriler", "🧪 Veri Bilimi", "👥 İK Analitiği"])
 
 with menu[0]:
