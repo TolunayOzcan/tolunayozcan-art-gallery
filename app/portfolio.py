@@ -5,10 +5,15 @@ import pandas as pd
 import plotly.graph_objects as go
 import sys
 import base64
+import numpy as np
 
 # Import için yolu düzenleme
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from scraper import scrape_ekonomi_verileri, scrape_borsa_verileri, scrape_kripto_verileri
+from datascience import (generate_classification_data, generate_regression_data,
+                        generate_ab_test_data, generate_customer_segmentation_data,
+                        create_random_forest_plot, create_ab_test_plot, 
+                        create_segmentation_plot, create_regression_plot)
 import plotly.express as px
 
 st.set_page_config(
@@ -85,7 +90,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Menü sekmeleri
-menu = st.tabs(["📊 Anasayfa", "📈 Analizler", "🔄 Canlı Veriler"])
+menu = st.tabs(["📊 Anasayfa", "📈 Analizler", "🔄 Canlı Veriler", "🧪 Veri Bilimi"])
 
 with menu[0]:
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
@@ -347,3 +352,169 @@ with menu[2]:
     st.markdown("""<div style="text-align:center; margin-top:20px;">
         <p style="color:#757575; font-size:0.9rem;">Son güncellenme: 22 Eylül 2025, 14:30</p>
     </div>""", unsafe_allow_html=True)
+
+with menu[3]:
+    st.markdown("""<div class="card">""", unsafe_allow_html=True)
+    st.markdown("<h2>Veri Bilimi Örnekleri</h2>", unsafe_allow_html=True)
+    st.markdown("""
+    <p>Bu bölümde veri bilimi ve makine öğrenimi projelerinden örnekler bulabilirsiniz.
+    Her bir örnek, farklı veri bilimi tekniklerini ve algoritmaları göstermektedir.</p>
+    """, unsafe_allow_html=True)
+    st.markdown("""</div>""", unsafe_allow_html=True)
+    
+    # Random Forest Sınıflandırma
+    st.markdown("""<div class="card">""", unsafe_allow_html=True)
+    st.markdown("<h3>Random Forest Sınıflandırma Modeli</h3>", unsafe_allow_html=True)
+    st.markdown("""
+    <p>Random Forest, çok sayıda karar ağacının birleşiminden oluşan güçlü bir sınıflandırma ve regresyon algoritmasıdır.
+    Bu örnek, ikili sınıflandırma problemi için Random Forest modelinin özellik önemlerini göstermektedir.</p>
+    """, unsafe_allow_html=True)
+    
+    # Random Forest modeli ve görselleştirme
+    with st.spinner("Random Forest modeli hazırlanıyor..."):
+        X, y = generate_classification_data()
+        rf_model, rf_fig = create_random_forest_plot(X, y)
+        st.plotly_chart(rf_fig, use_container_width=True)
+    
+    # Model açıklaması ve ek bilgi
+    with st.expander("Model Detayları"):
+        st.write("**Random Forest Modeli Parametreleri:**")
+        st.code("""
+        RandomForestClassifier(
+            n_estimators=100,  # Ağaç sayısı
+            random_state=42,   # Sonuçların tekrarlanabilirliği için
+        )
+        """)
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric(label="Model Doğruluğu", value=f"{accuracy_score(y, rf_model.predict(X)):.2%}")
+        with col2:
+            st.metric(label="Özellik Sayısı", value=f"{X.shape[1]}")
+    st.markdown("""</div>""", unsafe_allow_html=True)
+    
+    # A/B Test Analizi
+    st.markdown("""<div class="card">""", unsafe_allow_html=True)
+    st.markdown("<h3>A/B Test Analizi</h3>", unsafe_allow_html=True)
+    st.markdown("""
+    <p>A/B testleri, iki farklı versiyon arasındaki performans farkını ölçmek için kullanılır.
+    Bu örnek, bir web sitesi değişikliğinin dönüşüm oranları ve ortalama harcamalar üzerindeki etkisini göstermektedir.</p>
+    """, unsafe_allow_html=True)
+    
+    # A/B test verileri ve görselleştirmeler
+    with st.spinner("A/B test analizi hazırlanıyor..."):
+        ab_data = generate_ab_test_data()
+        conversion_fig, spending_fig = create_ab_test_plot(ab_data)
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.plotly_chart(conversion_fig, use_container_width=True)
+        with col2:
+            st.plotly_chart(spending_fig, use_container_width=True)
+    
+    # Test sonuçları ve anlamı
+    with st.expander("Test Sonuçları"):
+        st.write("""
+        **Test Sonuçlarının Yorumu:**
+        
+        B grubu hem dönüşüm oranında hem de ortalama harcamada daha iyi performans göstermiştir. 
+        Bu sonuçlara göre, B varyasyonunun kullanılması önerilir.
+        
+        **İstatistiksel Anlamlılık:**
+        
+        * Dönüşüm oranı farkı: % 25 anlamlılık
+        * Ortalama harcama farkı: % 6.7 anlamlılık
+        """)
+        
+        # Özet tablo
+        ab_summary = pd.DataFrame({
+            'Grup': ['A', 'B'],
+            'Kullanıcı Sayısı': [ab_data[ab_data['grup'] == 'A'].shape[0], ab_data[ab_data['grup'] == 'B'].shape[0]],
+            'Dönüşüm Sayısı': [ab_data[ab_data['grup'] == 'A']['donusum'].sum(), ab_data[ab_data['grup'] == 'B']['donusum'].sum()],
+            'Dönüşüm Oranı (%)': [ab_data[ab_data['grup'] == 'A']['donusum'].mean() * 100, ab_data[ab_data['grup'] == 'B']['donusum'].mean() * 100],
+            'Ortalama Harcama (TL)': [ab_data[(ab_data['grup'] == 'A') & (ab_data['donusum'] == 1)]['harcama'].mean(), 
+                                    ab_data[(ab_data['grup'] == 'B') & (ab_data['donusum'] == 1)]['harcama'].mean()]
+        })
+        st.dataframe(ab_summary.round(2), use_container_width=True)
+    st.markdown("""</div>""", unsafe_allow_html=True)
+    
+    # Müşteri Segmentasyonu
+    st.markdown("""<div class="card">""", unsafe_allow_html=True)
+    st.markdown("<h3>Müşteri Segmentasyonu</h3>", unsafe_allow_html=True)
+    st.markdown("""
+    <p>Müşteri segmentasyonu, müşterileri benzer özelliklere sahip gruplara ayırma işlemidir.
+    Bu örnek, müşterileri harcama, alışveriş sıklığı ve müşteri süresi değişkenlerine göre segmentlere ayırmaktadır.</p>
+    """, unsafe_allow_html=True)
+    
+    # Segmentasyon verileri ve 3D görselleştirme
+    with st.spinner("Müşteri segmentasyonu hazırlanıyor..."):
+        segment_data = generate_customer_segmentation_data()
+        segment_fig = create_segmentation_plot(segment_data)
+        st.plotly_chart(segment_fig, use_container_width=True)
+    
+    # Segment özeti ve açıklama
+    with st.expander("Segment Detayları"):
+        st.write("""
+        **Müşteri Segmentleri:**
+        
+        * **Yüksek Değer:** Yüksek harcama, yüksek alışveriş sıklığı ve uzun müşteri süresi
+        * **Orta Değer:** Orta seviye harcama, orta sıklık ve orta müşteri süresi
+        * **Düşük Değer:** Düşük harcama, düşük sıklık ve kısa müşteri süresi
+        * **Yeni Müşteri:** Düşük harcama, düşük sıklık ve çok kısa müşteri süresi
+        """)
+        
+        # Segment özeti tablosu
+        segment_summary = segment_data.groupby('segment').agg({
+            'musteri_id': 'count',
+            'yillik_harcama': 'mean',
+            'alisveris_sikligi': 'mean',
+            'musteri_suresi': 'mean'
+        }).reset_index()
+        
+        segment_summary.columns = ['Segment', 'Müşteri Sayısı', 'Ort. Yıllık Harcama (TL)', 
+                                'Ort. Alışveriş Sıklığı (yıllık)', 'Ort. Müşteri Süresi (yıl)']
+        
+        st.dataframe(segment_summary.round(2), use_container_width=True)
+    st.markdown("""</div>""", unsafe_allow_html=True)
+    
+    # Regresyon Modeli
+    st.markdown("""<div class="card">""", unsafe_allow_html=True)
+    st.markdown("<h3>Regresyon Analizi</h3>", unsafe_allow_html=True)
+    st.markdown("""
+    <p>Regresyon analizi, değişkenler arasındaki ilişkileri modelleyerek tahmin yapma yöntemidir.
+    Bu örnek, Random Forest regresyon modelinin gerçek ve tahmin edilen değerler arasındaki ilişkiyi göstermektedir.</p>
+    """, unsafe_allow_html=True)
+    
+    # Regresyon modeli ve görselleştirme
+    with st.spinner("Regresyon modeli hazırlanıyor..."):
+        X_reg, y_reg = generate_regression_data()
+        reg_model, reg_fig = create_regression_plot(X_reg, y_reg)
+        st.plotly_chart(reg_fig, use_container_width=True)
+    
+    # Model performans detayları
+    with st.expander("Model Performansı"):
+        st.write("""
+        **Performans Metrikleri:**
+        
+        * **R²:** Modelin açıklayıcılık gücünü gösterir (1.0 ideal)
+        * **RMSE:** Tahmin hatalarının karekök ortalaması (düşük değer daha iyi)
+        
+        **Model Parametreleri:**
+        """)
+        
+        st.code("""
+        RandomForestRegressor(
+            n_estimators=100,  # Ağaç sayısı
+            random_state=42    # Sonuçların tekrarlanabilirliği için
+        )
+        """)
+        
+        # En önemli özellikler
+        feature_importance = pd.DataFrame({
+            'Özellik': X_reg.columns,
+            'Önem': reg_model.feature_importances_
+        }).sort_values('Önem', ascending=False)
+        
+        st.write("**En Önemli Özellikler:**")
+        st.dataframe(feature_importance, use_container_width=True)
+    st.markdown("""</div>""", unsafe_allow_html=True)
