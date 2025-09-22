@@ -4,10 +4,20 @@ import os
 import pandas as pd
 import plotly.graph_objects as go
 
+
 st.set_page_config(page_title="Veri Sanatı Portföyü", layout="wide")
+
+# Sol menü
+with st.sidebar:
+    st.title("Hakkımda")
+    st.markdown(
+        """
+        Veri analizi ve görselleştirme alanında 4+ yıllık deneyime sahip Kıdemli Veri Analistiyim. SQL, Python ve VBA konularında uzman seviyede bilgi sahibi. CRM veri analizi, İK analitik çözümleri, çağrı merkezi ve operasyonel raporlama konularında kapsamlı deneyim. Veri odaklı karar alma süreçlerini destekleyen analitik çözümler geliştirme konusunda uzman.
+        """
+    )
+
 st.title("Tolunay Özcan - Veri Sanatı Portföyü")
 st.markdown("""
-## Hakkımda
 Veri sanatı ve görselleştirme alanında çalışmalarımı bu portföyde bulabilirsiniz. Aşağıda bazı örnek projelerimi görebilirsiniz.
 """)
 
