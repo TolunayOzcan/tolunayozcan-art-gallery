@@ -11,6 +11,15 @@ import numpy as np
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from scraper import scrape_ekonomi_verileri, scrape_borsa_verileri, scrape_kripto_verileri
 
+# HR Analytics modülünü import et
+try:
+    from app.hr_analytics import (generate_employee_data, create_attrition_department_chart,
+                               create_salary_distribution_chart, create_performance_distribution_chart,
+                               create_hiring_trends_chart, create_department_demographics_chart,
+                               create_satisfaction_vs_attrition_chart)
+except ImportError as e:
+    st.error(f"HR Analytics modül import hatası: {e}")
+
 # datascience fonksiyonlarını import etme - sklearn olmayan sürümü kullan
 try:
     from app.datascience_no_sklearn import (generate_classification_data, generate_regression_data,
@@ -144,7 +153,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Menü sekmeleri
-menu = st.tabs(["📊 Anasayfa", "📈 Analizler", "🔄 Canlı Veriler", "🧪 Veri Bilimi"])
+menu = st.tabs(["📊 Anasayfa", "📈 Analizler", "🔄 Canlı Veriler", "🧪 Veri Bilimi", "👥 İK Analitiği"])
 
 with menu[0]:
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
@@ -571,4 +580,184 @@ with menu[3]:
         
         st.write("**En Önemli Özellikler:**")
         st.dataframe(feature_importance, use_container_width=True)
+    st.markdown("""</div>""", unsafe_allow_html=True)
+    
+with menu[4]:
+    st.markdown("""<div class="card">""", unsafe_allow_html=True)
+    st.markdown("<h2>İnsan Kaynakları Analitiği</h2>", unsafe_allow_html=True)
+    st.markdown("""
+    <p>İnsan kaynakları verilerinizden değer elde etmeye yönelik analitik çözümler sunuyorum.
+    İşgücü planlaması, çalışan deneyimi optimizasyonu, işe alım süreçleri ve performans değerlendirme gibi
+    konularda veri odaklı içgörüler sağlıyorum.</p>
+    """, unsafe_allow_html=True)
+    st.markdown("""</div>""", unsafe_allow_html=True)
+    
+    # HR verilerini oluştur
+    with st.spinner('İK verileri hazırlanıyor...'):
+        employee_data = generate_employee_data(n_employees=200)
+    
+    # İşten Ayrılma Analizi
+    st.markdown("""<div class="card">""", unsafe_allow_html=True)
+    st.markdown("<h3>Departmanlara Göre İşten Ayrılma Analizi</h3>", unsafe_allow_html=True)
+    st.markdown("""
+    <p>Çalışan devir oranı (attrition), şirketlerin sürdürülebilirliği için kritik bir metriktir.
+    Bu analiz, hangi departmanların daha yüksek işten ayrılma oranlarına sahip olduğunu gösterir ve
+    insan kaynakları stratejilerinin iyileştirilmesi için odak noktaları sağlar.</p>
+    """, unsafe_allow_html=True)
+    
+    # İşten ayrılma grafiği
+    fig_attrition = create_attrition_department_chart(employee_data)
+    st.plotly_chart(fig_attrition, use_container_width=True)
+    
+    # İşten ayrılma nedenleri dağılımı
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        st.subheader("İşten Ayrılma Nedenleri")
+        reasons_data = employee_data[employee_data['işten_ayrılma']]['ayrılma_nedeni'].value_counts().reset_index()
+        reasons_data.columns = ['Ayrılma Nedeni', 'Çalışan Sayısı']
+        
+        fig_reasons = px.pie(
+            reasons_data,
+            values='Çalışan Sayısı',
+            names='Ayrılma Nedeni',
+            hole=0.4,
+            color_discrete_sequence=px.colors.qualitative.Set2
+        )
+        fig_reasons.update_layout(height=350)
+        st.plotly_chart(fig_reasons, use_container_width=True)
+        
+    with col2:
+        st.subheader("Özet Metrikler")
+        total_attrition_rate = employee_data['işten_ayrılma'].mean() * 100
+        st.metric(
+            label="Genel İşten Ayrılma Oranı", 
+            value=f"{total_attrition_rate:.1f}%",
+            delta=f"{total_attrition_rate - 17.0:.1f}%" if total_attrition_rate != 17.0 else None,
+            delta_color="inverse"
+        )
+        
+        high_risk_dept = employee_data.groupby('departman')['işten_ayrılma'].mean().idxmax()
+        high_risk_rate = employee_data[employee_data['departman'] == high_risk_dept]['işten_ayrılma'].mean() * 100
+        
+        st.metric(
+            label="En Riskli Departman", 
+            value=high_risk_dept,
+            delta=f"{high_risk_rate:.1f}%"
+        )
+        
+        avg_satisfaction = employee_data['tatmin_skoru'].mean()
+        st.metric(
+            label="Ortalama Çalışan Memnuniyeti", 
+            value=f"{avg_satisfaction:.1f}/10",
+            delta=f"{avg_satisfaction - 7.0:.1f}" if avg_satisfaction != 7.0 else None
+        )
+    st.markdown("""</div>""", unsafe_allow_html=True)
+    
+    # Maaş Dağılımı Analizi
+    st.markdown("""<div class="card">""", unsafe_allow_html=True)
+    st.markdown("<h3>Departmanlara Göre Maaş Dağılımı</h3>", unsafe_allow_html=True)
+    st.markdown("""
+    <p>Maaş dağılımı analizi, şirket içi ücret politikalarının adil ve rekabetçi olup olmadığını değerlendirmenize yardımcı olur.
+    Bu grafik, departmanlar arasındaki maaş farklılıklarını ve aykırı değerleri gösterir.</p>
+    """, unsafe_allow_html=True)
+    
+    fig_salary = create_salary_distribution_chart(employee_data)
+    st.plotly_chart(fig_salary, use_container_width=True)
+    
+    # Maaş özet istatistikleri
+    st.subheader("Maaş Özet İstatistikleri")
+    salary_stats = employee_data.groupby('departman')['aylık_maaş'].agg(['mean', 'median', 'min', 'max']).reset_index()
+    salary_stats.columns = ['Departman', 'Ortalama', 'Medyan', 'Minimum', 'Maksimum']
+    
+    # Formatla (TL ekle ve yuvarla)
+    for col in ['Ortalama', 'Medyan', 'Minimum', 'Maksimum']:
+        salary_stats[col] = salary_stats[col].apply(lambda x: f"{x:,.0f} TL")
+    
+    st.dataframe(salary_stats, use_container_width=True)
+    st.markdown("""</div>""", unsafe_allow_html=True)
+    
+    # Performans Dağılımı
+    st.markdown("""<div class="card">""", unsafe_allow_html=True)
+    st.markdown("<h3>Performans Puan Dağılımı</h3>", unsafe_allow_html=True)
+    st.markdown("""
+    <p>Çalışanların performans puanlarının dağılımı, şirketin genel performans değerlendirme eğilimlerini anlamanıza yardımcı olur.
+    Bu analiz, performans değerlendirme sisteminin etkinliğini ve potansiyel önyargıları değerlendirmenize olanak tanır.</p>
+    """, unsafe_allow_html=True)
+    
+    fig_performance = create_performance_distribution_chart(employee_data)
+    st.plotly_chart(fig_performance, use_container_width=True)
+    
+    # Performans ve maaş ilişkisi
+    st.subheader("Performans ve Maaş İlişkisi")
+    fig_perf_salary = px.scatter(
+        employee_data,
+        x='performans_puanı',
+        y='aylık_maaş',
+        color='departman',
+        size='şirket_deneyimi_yıl',
+        hover_data=['pozisyon', 'cinsiyet', 'yaş'],
+        opacity=0.7,
+        title='Performans Puanı ve Maaş İlişkisi'
+    )
+    
+    fig_perf_salary.update_layout(
+        height=500,
+        xaxis_title='Performans Puanı',
+        yaxis_title='Aylık Maaş (TL)'
+    )
+    
+    st.plotly_chart(fig_perf_salary, use_container_width=True)
+    st.markdown("""</div>""", unsafe_allow_html=True)
+    
+    # İşe Alım Trendleri ve Departman Demografisi
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("""<div class="card">""", unsafe_allow_html=True)
+        st.markdown("<h3>İşe Alım Trendleri</h3>", unsafe_allow_html=True)
+        st.markdown("""
+        <p>İşe alım trendleri, şirketin büyüme dinamiklerini ve işe alım stratejilerindeki değişiklikleri gösterir.
+        Bu grafik, yıllar içinde işe alınan çalışan sayılarını göstermektedir.</p>
+        """, unsafe_allow_html=True)
+        
+        fig_hiring = create_hiring_trends_chart(employee_data)
+        st.plotly_chart(fig_hiring, use_container_width=True)
+        st.markdown("""</div>""", unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""<div class="card">""", unsafe_allow_html=True)
+        st.markdown("<h3>Departman ve Cinsiyet Dağılımı</h3>", unsafe_allow_html=True)
+        st.markdown("""
+        <p>Departman ve cinsiyet dağılımı, şirketin çeşitlilik ve kapsayıcılık konusundaki durumunu değerlendirir.
+        Bu analiz, cinsiyet dengesi açısından iyileştirme gerektiren alanları belirlemenize yardımcı olur.</p>
+        """, unsafe_allow_html=True)
+        
+        fig_demographics = create_department_demographics_chart(employee_data)
+        st.plotly_chart(fig_demographics, use_container_width=True)
+        st.markdown("""</div>""", unsafe_allow_html=True)
+    
+    # Tatmin Skoru ve İşten Ayrılma İlişkisi
+    st.markdown("""<div class="card">""", unsafe_allow_html=True)
+    st.markdown("<h3>Tatmin Skoru ve İşten Ayrılma İlişkisi</h3>", unsafe_allow_html=True)
+    st.markdown("""
+    <p>Çalışan tatmini ve işten ayrılma arasındaki ilişki, insan kaynakları stratejileri için kritik bir içgörü sağlar.
+    Bu analiz, tatmin skorlarının işten ayrılma olasılığı üzerindeki etkisini gösterir.</p>
+    """, unsafe_allow_html=True)
+    
+    fig_satisfaction = create_satisfaction_vs_attrition_chart(employee_data)
+    st.plotly_chart(fig_satisfaction, use_container_width=True)
+    
+    st.markdown("""
+    <p><strong>Analiz Sonucu:</strong> Çalışanların tatmin skorları düştükçe, işten ayrılma olasılıklarının 
+    belirgin şekilde arttığı görülmektedir. Tatmin skoru 5'in altında olan çalışanlarda 
+    işten ayrılma riski önemli ölçüde yükselmektedir.</p>
+    
+    <p><strong>Öneriler:</strong></p>
+    <ul>
+        <li>Düşük tatmin skoruna sahip çalışanlarla düzenli geribildirim görüşmeleri yapılmalı</li>
+        <li>Çalışan memnuniyeti anketleri ile sorun alanları belirlenip çözüm stratejileri geliştirilmeli</li>
+        <li>Departman yöneticilerine çalışan bağlılığını artırma konusunda eğitimler verilmeli</li>
+    </ul>
+    """, unsafe_allow_html=True)
     st.markdown("""</div>""", unsafe_allow_html=True)
