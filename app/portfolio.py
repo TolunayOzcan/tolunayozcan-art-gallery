@@ -1,6 +1,7 @@
 import streamlit as st
 from PIL import Image
 import os
+import pandas as pd
 
 st.set_page_config(page_title="Veri Sanatı Portföyü", layout="wide")
 st.title("Tolunay Özcan - Veri Sanatı Portföyü")
@@ -8,6 +9,24 @@ st.markdown("""
 ## Hakkımda
 Veri sanatı ve görselleştirme alanında çalışmalarımı bu portföyde bulabilirsiniz. Aşağıda bazı örnek projelerimi görebilirsiniz.
 """)
+
+# --- Örnek Grafikler ---
+st.subheader("Örnek Veri Görselleştirmeleri")
+
+# 1. Sanatçıların Değerleri
+csv1 = "app/gallery/ornek_veri1.csv"
+if os.path.exists(csv1):
+    df1 = pd.read_csv(csv1)
+    st.markdown("**Sanatçılara Göre Değerler**")
+    st.bar_chart(df1.set_index("name")['value'])
+
+# 2. Sanat Eserleri Kategorileri
+csv2 = "app/gallery/ornek_veri2.csv"
+if os.path.exists(csv2):
+    df2 = pd.read_csv(csv2)
+    st.markdown("**Sanat Eserleri Kategorileri**")
+    st.dataframe(df2)
+    st.line_chart(df2.set_index("kategori")['sayi'])
 
 # Örnek görsellerin bulunduğu klasör
 gallery_path = "app/gallery"
