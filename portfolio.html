@@ -3,165 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streamlit Portfolyo - Tolunay Özcan</title>
+    <title>Portfolyo Yükleniyor - Tolunay Özcan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Courier New', monospace;
+        :root {
+            --primary: #2563EB;
+            --primary-dark: #1D4ED8;
+            --secondary: #4B5563;
+            --light: #F3F4F6;
+            --dark: #1F2937;
+            --background: #FFFFFF;
+            --text: #111827;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --success: #10B981;
+        }
+        
+        * {
             margin: 0;
             padding: 0;
-            background-color: #101010;
-            color: #00FF41;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            text-align: center;
-            line-height: 1.6;
-        }
-        .container {
-            max-width: 800px;
-            padding: 40px;
-            border: 1px solid #00FF41;
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
-        }
-        h1 {
-            color: #00FF41;
-            font-size: 2.4rem;
-            margin-bottom: 10px;
-            text-shadow: 0 0 5px rgba(0, 255, 65, 0.7);
-        }
-        h2 {
-            color: #C8FFC8;
-            font-size: 1.6rem;
-            margin-bottom: 20px;
-        }
-        p {
-            font-size: 1.2rem;
-            margin-bottom: 40px;
-            color: #C8FFC8;
-        }
-        .button {
-            display: inline-block;
-            background-color: transparent;
-            color: #00FF41;
-            border: 2px solid #00FF41;
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-            font-family: 'Courier New', monospace;
-            margin: 10px;
-            font-weight: bold;
-        }
-        .button:hover {
-            background-color: #00FF41;
-            color: #101010;
-            box-shadow: 0 0 15px rgba(0, 255, 65, 0.8);
-            transform: scale(1.05);
-        }
-        .instruction {
-            background-color: rgba(0, 255, 65, 0.1);
-            border: 1px dashed #00FF41;
+            min-height: 100vh;
             padding: 20px;
-            margin-bottom: 30px;
-            border-radius: 5px;
         }
-        .progress {
-            height: 5px;
-            background: linear-gradient(90deg, #00FF41, #C8FFC8);
-            margin-top: 20px;
-            width: 0%;
-            transition: width 3s ease;
-        }
-        .matrix-effect {
-            position: absolute;
-            top: 0;
-            left: 0;
+        
+        .container {
+            max-width: 700px;
             width: 100%;
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px var(--shadow);
+            background-color: var(--background);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 12px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h2 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--secondary);
+            margin-bottom: 30px;
+        }
+        
+        .status-card {
+            background-color: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: var(--light);
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
             height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            opacity: 0.15;
+            width: 0%;
+            background-color: var(--primary);
+            border-radius: 4px;
+            transition: width 2s ease;
+        }
+        
+        p {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .primary-button {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+        
+        .primary-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(37, 99, 235, 0.3);
+        }
+        
+        .secondary-button {
+            background-color: transparent;
+            color: var(--secondary);
+            border: 1px solid var(--secondary);
+        }
+        
+        .secondary-button:hover {
+            background-color: var(--light);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Portfolyoyu Görüntüleme</h1>
-        <h2>Tolunay Özcan Veri Sanatı Portfolyosu</h2>
+        <h1>Portfolyo Yükleniyor</h1>
+        <h2>Veri bilimi uygulaması hazırlanıyor</h2>
         
-        <div class="instruction">
-            <p>Streamlit uygulaması yeni bir pencerede açılacak. Tarayıcınızın açılır pencere izinlerini kontrol edin.</p>
-            <div class="progress" id="progress-bar"></div>
+        <div class="status-card">
+            <p>Streamlit uygulaması yeni pencerede açılacak. Lütfen tarayıcınızın açılır pencere izinlerini kontrol edin.</p>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
         </div>
         
-        <div>
-            <a href="https://tolunayozcan.streamlit.app/" class="button" id="portfolyo-btn" target="_blank">Portfolyoyu Yeni Pencerede Aç</a>
-            <a href="/" class="button">Ana Sayfaya Dön</a>
-        </div>
+        <p>Tarayıcı ayarlarınıza bağlı olarak, pencere açılmazsa aşağıdaki butonu kullanabilirsiniz.</p>
         
-        <div style="margin-top: 30px;">
-            <p>Otomatik yönlendirme çalışmazsa, lütfen manuel olarak butona tıklayın.</p>
+        <div class="button-container">
+            <a href="https://tolunayozcan.streamlit.app/" class="button primary-button" id="portfolyo-btn" target="_blank">Uygulamayı Aç</a>
+            <a href="/" class="button secondary-button">Ana Sayfaya Dön</a>
         </div>
     </div>
-    
-    <canvas class="matrix-effect" id="matrix"></canvas>
-    
     <script>
-        // Matrix efekti
-        const canvas = document.getElementById('matrix');
-        const ctx = canvas.getContext('2d');
-        
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
-        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const nums = '0123456789';
-        
-        const alphabet = katakana + latin + nums;
-        
-        const fontSize = 16;
-        const columns = canvas.width / fontSize;
-        
-        const rainDrops = [];
-        
-        for(let x = 0; x < columns; x++) {
-            rainDrops[x] = 1;
-        }
-        
-        const draw = () => {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = '#0F0';
-            ctx.font = fontSize + 'px monospace';
-            
-            for(let i = 0; i < rainDrops.length; i++) {
-                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
-                
-                if(rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    rainDrops[i] = 0;
-                }
-                rainDrops[i]++;
-            }
-        };
-        
-        setInterval(draw, 30);
-        
-        // İlerleme çubuğu
-        window.onload = function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            // İlerleme çubuğu animasyonu
             setTimeout(function() {
-                document.getElementById("progress-bar").style.width = "100%";
+                document.getElementById('progress-bar').style.width = '100%';
+            }, 200);
+            
+            // Sayfa yüklendiğinde yumuşak bir görünüm efekti
+            const container = document.querySelector('.container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(15px)';
+            container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            
+            setTimeout(() => {
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
             }, 100);
             
-            // 3 saniye sonra portfolyo butonuna tıkla
+            // 2 saniye sonra portfolyo butonuna tıkla
             setTimeout(function() {
-                document.getElementById("portfolyo-btn").click();
+                document.getElementById('portfolyo-btn').click();
             }, 2000);
-        };
+        });
     </script>
 </body>
 </html>
