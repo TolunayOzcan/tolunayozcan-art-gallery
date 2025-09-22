@@ -1,0 +1,12 @@
+{
+  "title": "Tolunay Özcan - Veri Sanatı Portfolyosu",
+  "tagline": "Veri görselleştirme, interaktif analizler ve veri sanatı çalışmaları",
+  "description": "Veri görselleştirme, interaktif analizler ve veri bilimi çalışmalarının yer aldığı dijital portfolyo.",
+  "url": "https://tolunayozcan.art",
+  "baseurl": "",
+  "repository": "tolunayozcan/tolunayozcan-art-gallery",
+  "github": {
+    "is_project_page": true,
+    "is_user_page": false
+  }
+}
