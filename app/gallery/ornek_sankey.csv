@@ -1,0 +1,7 @@
+source,target,value
+Veri Toplama,Veri Temizleme,10
+Veri Temizleme,Analiz,8
+Analiz,Görselleştirme,6
+Görselleştirme,Sunum,5
+Veri Toplama,Analiz,2
+Analiz,Sunum,3
