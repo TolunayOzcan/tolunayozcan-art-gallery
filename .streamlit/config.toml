@@ -1,0 +1,16 @@
+# Bu yapılandırma dosyası Streamlit Cloud'a uygulamanızın 24/7 aktif kalması gerektiğini söyler
+
+[server]
+headless = true
+enableCORS = false
+enableXsrfProtection = false
+
+[runner]
+# "static" olarak ayarlamak Streamlit'e bu uygulamanın sürekli çalışması gerektiğini söyler
+staticExecutor = true 
+
+[theme]
+primaryColor = "#00FF41"
+backgroundColor = "#101010"
+secondaryBackgroundColor = "#0D1F0C"
+textColor = "#C8FFC8"
