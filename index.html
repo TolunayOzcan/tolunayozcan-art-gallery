@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="js/portfolio.css">
     <style>
         :root {
             --primary: #2563EB;
@@ -17,6 +18,7 @@
             --background: #FFFFFF;
             --text: #111827;
             --shadow: rgba(0, 0, 0, 0.1);
+            --success: #10B981;
         }
         
         * {
@@ -120,6 +122,7 @@
             text-decoration: none;
             border-radius: 6px;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
         
         .primary-button {
@@ -153,53 +156,140 @@
             justify-content: space-between;
             align-items: center;
         }
+        
+        /* Portfolyo sayfası özellikleri */
+        .status-card {
+            background-color: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: var(--primary);
+            border-radius: 4px;
+            transition: width 2s ease;
+        }
+
+        /* Responsive tasarım */
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.2rem;
+            }
+            
+            p {
+                font-size: 1rem;
+            }
+            
+            .button-container {
+                flex-direction: column;
+            }
+            
+            .button {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="accent-shape"></div>
-        <div class="content">
-            <header>
-                <h1>Tolunay Özcan</h1>
-                <h2>Veri Bilimi Portfolyosu</h2>
-            </header>
-            
-            <p>Veri görselleştirme, ileri analitik ve makine öğrenimi üzerine yaptığım çalışmalarımı içeren interaktif portfolyoma hoş geldiniz. Verinin bilgiyi, bilginin ise değeri nasıl şekillendirdiğini keşfedin.</p>
-            
-            <div class="button-container">
-                <a href="portfolio.html" class="button primary-button">Portfolyoyu Görüntüle</a>
-                <a href="https://github.com/TolunayOzcan/tolunayozcan-art-gallery" class="button secondary-button">GitHub Repo</a>
-            </div>
-            
-            <div class="footer">
-                <div>© 2025 Tolunay Özcan</div>
-                <div>Veri Bilimci & Analist</div>
-            </div>
-        </div>
-    </div>
+    <!-- SPA (Single Page Application) kök elementi -->
+    <div id="app"></div>
+    
+    <!-- JavaScript -->
+    <script src="js/pages.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Router'a sayfaları ekle
+        window.appRouter.addRoute('/', homePage);
+        window.appRouter.addRoute('/portfolio', portfolioPage);
+        window.appRouter.addRoute('/404', notFoundPage);
+        
+        // Mevcut sayfayı yükle
+        document.addEventListener('DOMContentLoaded', () => {
+            // Varsayılan olarak ana sayfayı göster
+            const path = window.location.pathname;
+            if (path === '/' || path === '/index.html') {
+                window.appRouter.navigate('/', false);
+            } else if (path === '/portfolio' || path === '/portfolio.html') {
+                window.appRouter.navigate('/portfolio', false);
+            } else {
+                window.appRouter.navigate('/404', false);
+            }
+        });
+    </script>
+    
+    <!-- Chart.js kütüphanesi -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Veri görselleştirme script -->
+    <script src="js/dataVisualizer.js"></script>
     
     <script>
-        // Modern interaktif efektler
-        document.addEventListener('DOMContentLoaded', function() {
-            const buttons = document.querySelectorAll('.button');
-            
-            buttons.forEach(button => {
-                button.addEventListener('mouseenter', () => {
-                    button.style.transition = 'all 0.3s ease';
-                });
+        // Portfolyo sayfası için tab yönetimi
+        document.addEventListener('DOMContentLoaded', () => {
+            window.appRouter.addListener('pageChanged', (pagePath) => {
+                if (pagePath === '/portfolio') {
+                    setupPortfolioTabs();
+                    
+                    // İlk sekmenin içeriğini yükle
+                    createHRDashboard('hr-dashboard');
+                }
             });
-            
-            // Sayfa yüklendiğinde yumuşak bir görünüm efekti
-            const container = document.querySelector('.container');
-            container.style.opacity = '0';
-            container.style.transform = 'translateY(20px)';
-            container.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-            
-            setTimeout(() => {
-                container.style.opacity = '1';
-                container.style.transform = 'translateY(0)';
-            }, 200);
         });
+        
+        // Portfolyo sekmelerini ayarla
+        function setupPortfolioTabs() {
+            setTimeout(() => {
+                const tabButtons = document.querySelectorAll('.tab-button');
+                const tabPanes = document.querySelectorAll('.tab-pane');
+                
+                if (!tabButtons.length) return;
+                
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        // Aktif tab'ı değiştir
+                        tabButtons.forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+                        
+                        // İçeriği göster/gizle
+                        const tabId = button.dataset.tab;
+                        tabPanes.forEach(pane => {
+                            pane.style.display = 'none';
+                        });
+                        
+                        const activePane = document.getElementById(`${tabId}-dashboard`);
+                        if (activePane) {
+                            activePane.style.display = 'block';
+                            
+                            // İlk kez içerik yükleniyorsa grafikleri oluştur
+                            if (tabId === 'ml' && !activePane.querySelector('.dashboard')) {
+                                createMLDashboard('ml-dashboard');
+                            }
+                        }
+                    });
+                });
+            }, 100);
+        }
     </script>
 </body>
 </html>
