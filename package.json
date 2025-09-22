@@ -1,0 +1,26 @@
+{
+  "name": "tolunayozcan-art-gallery",
+  "version": "1.0.0",
+  "description": "Tolunay Özcan Veri Bilimi Portfolyosu",
+  "main": "js/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TolunayOzcan/tolunayozcan-art-gallery.git"
+  },
+  "keywords": [
+    "portfolio",
+    "data-science",
+    "visualization",
+    "javascript",
+    "streamlit"
+  ],
+  "author": "Tolunay Özcan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TolunayOzcan/tolunayozcan-art-gallery/issues"
+  },
+  "homepage": "https://tolunayozcan.art"
+}
