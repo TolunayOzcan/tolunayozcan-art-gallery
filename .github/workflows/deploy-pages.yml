@@ -1,0 +1,24 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: . # Ana dizindeki tüm dosyalar
+          branch: gh-pages # GitHub Pages için kullanılacak branch
+          clean: true # Önceki yapılandırmayı temizle
+          single-commit: true # Tüm geçmişi tek bir commit'e sıkıştır
+          git-config-name: GitHub Actions
+          git-config-email: actions@github.com
+          cname: tolunayozcan.art # CNAME dosyasını otomatik oluştur
