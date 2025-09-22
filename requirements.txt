@@ -6,6 +6,7 @@ Pillow==9.5.0
 requests==2.30.0
 beautifulsoup4==4.12.2
 gunicorn==20.1.0
+uvicorn==0.23.2
 aiohttp==3.8.4
 watchdog==3.0.0
 # scikit-learn opsiyonel, eğer yüklenemezse uygulama mock veri kullanacak
