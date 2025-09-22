@@ -8,7 +8,6 @@ st.set_page_config(page_title="Veri Sanatı Portföyü", layout="wide")
 
 # Sol menü
 with st.sidebar:
-    st.image("app/profile.jpg", width=180)
     st.title("Hakkımda")
     st.markdown(
         """
