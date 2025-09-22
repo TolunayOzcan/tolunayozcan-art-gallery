@@ -6,3 +6,4 @@ Pillow==9.5.0
 requests==2.30.0
 beautifulsoup4==4.12.2
 # scikit-learn opsiyonel, eğer yüklenemezse uygulama mock veri kullanacak
+requests==2.30.0

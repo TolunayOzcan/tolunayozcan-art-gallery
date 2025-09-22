@@ -6,10 +6,21 @@ import plotly.graph_objects as go
 import sys
 import base64
 import numpy as np
+import threading
+import time
+from datetime import datetime
 
 # Import için yolu düzenleme
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from scraper import scrape_ekonomi_verileri, scrape_borsa_verileri, scrape_kripto_verileri
+
+# Sürekli çalışma için heartbeat mekanizmasını ekle
+try:
+    from app.heartbeat import heartbeat_manager
+    # Uygulama başladığında heartbeat başlat
+    heartbeat_manager.start()
+except ImportError as e:
+    st.warning(f"Heartbeat mekanizması yüklenemedi: {e}")
 
 # HR Analytics modülünü import et
 try:
