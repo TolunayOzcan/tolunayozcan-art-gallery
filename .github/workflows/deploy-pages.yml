@@ -23,21 +23,12 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup Pages
         uses: actions/configure-pages@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "16"
-      - name: Dosyaları kopyala
-        run: |
-          mkdir -p build
-          cp index.html build/index.html
-          mkdir -p build/js
-          cp -r js/* build/js/
-          echo "tolunayozcan.art" > build/CNAME
+      - name: Create CNAME
+        run: echo "tolunayozcan.art" > CNAME
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: './build'
+          path: '.'
   
   # Deployment job
   deploy:
