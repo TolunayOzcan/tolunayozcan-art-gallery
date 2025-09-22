@@ -1,14 +1,15 @@
 /* Ana stil değişkenleri */
 :root {
   --primary-color: #7986CB;  /* Önceki: #1E88E5 - Daha soft mavi */
-  --background-color: #F8F9FA;  /* Önceki: #FAFAFA - Biraz daha sıcak bir arka plan */
+  --background-color: #F5F7FA;  /* Önceki: #F8F9FA - Biraz daha sıcak bir arka plan */
   --text-color: #3A3A3A;  /* Önceki: #212121 - Daha yumuşak siyah */
   --secondary-color: #9E9E9E;  /* Önceki: #757575 - Daha açık gri */
   --accent-color: #9FA8DA;  /* Önceki: #2979FF - Pastel mor tonunda */
   --success-color: #81C784;  /* Önceki: #4CAF50 - Pastel yeşil */
   --warning-color: #FFD54F;  /* Önceki: #FFC107 - Pastel sarı */
   --error-color: #E57373;  /* Önceki: #F44336 - Pastel kırmızı */
-  --card-bg-color: #FFFFFF;
+  --card-bg-color: #F0F4F8;  /* Önceki: #FFFFFF - Çok açık mavi-gri tonu */
+  --sidebar-bg-color: #EDF2F7;  /* Sidebar için açık mavi-gri tonu */
   --border-radius: 12px;  /* Önceki: 6px - Daha yuvarlak köşeler */
   --box-shadow: 0 4px 12px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.03);  /* Daha soft gölgeler */
   --padding: 1.8rem;  /* Önceki: 1.5rem - Biraz daha fazla boşluk */
@@ -56,7 +57,7 @@ p, li, div {
 
 /* Sidebar stili */
 .sidebar .sidebar-content {
-  background-color: var(--card-bg-color);
+  background-color: var(--sidebar-bg-color);
   border-right: 1px solid rgba(0,0,0,0.03);  /* İnce bir kenarlık eklendi */
 }
 
@@ -79,7 +80,7 @@ p, li, div {
 }
 
 button[role="tab"] {
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(224, 230, 240, 0.7);  /* Önceki: rgba(255, 255, 255, 0.7) - Daha soft mavi-gri tonu */
   backdrop-filter: blur(5px);  /* Buzlu cam efekti */
   border-radius: var(--border-radius);
   color: var(--secondary-color);
@@ -93,7 +94,7 @@ button[role="tab"] {
 }
 
 button[role="tab"]:hover {
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(230, 236, 245, 0.9);  /* Önceki: rgba(255, 255, 255, 0.9) - Daha soft mavi-gri tonu */
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.05);
 }
@@ -112,24 +113,25 @@ button[role="tab"][aria-selected="true"] {
   border: none;
   border-radius: var(--border-radius);
   overflow: hidden;
+  background-color: var(--card-bg-color);  /* Kart rengiyle uyumlu arka plan */
 }
 
 .dataframe th {
-  background-color: rgba(121, 134, 203, 0.1);  /* Pastel mavi arka plan */
+  background-color: rgba(121, 134, 203, 0.15);  /* Biraz daha belirgin pastel mavi arka plan */
   padding: 0.9rem;  /* Önceki: 0.75rem - Daha fazla iç boşluk */
   text-align: left;
   color: var(--primary-color);
   font-weight: 600;
-  border-bottom: 2px solid #e1e4e8;
+  border-bottom: 2px solid rgba(121, 134, 203, 0.2);  /* Önceki: #e1e4e8 - Daha soft renk */
 }
 
 .dataframe td {
   padding: 0.9rem;
-  border-bottom: 1px solid #e1e4e8;
+  border-bottom: 1px solid rgba(121, 134, 203, 0.1);  /* Önceki: #e1e4e8 - Daha soft renk */
 }
 
 .dataframe tr:hover {
-  background-color: rgba(121, 134, 203, 0.03);  /* Pastel mavi hover */
+  background-color: rgba(121, 134, 203, 0.08);  /* Biraz daha belirgin hover efekti */
 }
 
 /* Grafik konteynerı */
@@ -138,7 +140,7 @@ button[role="tab"][aria-selected="true"] {
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   padding: 1rem;  /* Önceki: 0.5rem - Daha fazla iç boşluk */
-  border: 1px solid rgba(0,0,0,0.03);
+  border: 1px solid rgba(121, 134, 203, 0.1);  /* Önceki: rgba(0,0,0,0.03) - Daha belirgin kenarlık */
 }
 
 /* Buton stilleri - Daha gerçekçi ve minimalist */
