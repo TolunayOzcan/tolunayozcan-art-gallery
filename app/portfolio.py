@@ -421,14 +421,27 @@ with st.sidebar:
     profile_img_b64 = get_profile_image_base64()
     
     if profile_img_b64:
-        # Fotoğraf varsa göster
-        st.markdown(f"""
-        <div style="text-align:center; padding: 0.6rem 0;">
-            <div style="width: 80px; height: 80px; margin: 0 auto 0.8rem auto; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 3px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); overflow: hidden;">
-                <img src="data:image/jpeg;base64,{profile_img_b64}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-            </div>
-            <h2 style="margin: 0; font-size: 0.95rem; font-family: 'Trebuchet MS', sans-serif; line-height: 1.2;">Tolunay ÖZCAN</h2>
-            <p style="color:#757575; margin: 0.1rem 0; font-size: 0.75rem; font-family: 'Trebuchet MS', sans-serif;">Data Analyst</p>
+        # Streamlit'in st.image ile güvenilir görüntüleme
+        st.markdown('<div style="text-align:center; padding: 0.6rem 0;">', unsafe_allow_html=True)
+        
+        # Base64'ü decode edip binary olarak st.image'e gönder
+        import base64
+        from io import BytesIO
+        
+        try:
+            image_bytes = base64.b64decode(profile_img_b64)
+            st.image(
+                image_bytes, 
+                width=80, 
+                caption=None,
+                use_column_width=False
+            )
+        except Exception as e:
+            st.error(f"Profil fotoğrafı yüklenirken hata: {e}")
+            
+        st.markdown("""
+            <h2 style="margin: 0; font-size: 0.95rem; font-family: 'Trebuchet MS', sans-serif; line-height: 1.2; text-align: center;">Tolunay ÖZCAN</h2>
+            <p style="color:#757575; margin: 0.1rem 0; font-size: 0.75rem; font-family: 'Trebuchet MS', sans-serif; text-align: center;">Data Analyst</p>
         </div>
         """, unsafe_allow_html=True)
     else:
