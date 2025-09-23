@@ -270,34 +270,59 @@ button[role="tab"][aria-selected="true"] {
   box-shadow: 0 0 20px rgba(59,130,246,0.5), 0 0 32px rgba(139,92,246,0.3);
 }
 
-/* DataFrame stili */
+/* DataFrame stili - Transparan arka plan */
 .dataframe {
   border-collapse: collapse;
   width: 100%;
   border: none;
   border-radius: var(--border-radius);
   overflow: hidden;
-  background: linear-gradient(135deg, var(--card-bg-color-1) 0%, var(--card-bg-color-2) 100%);
+  background: transparent !important;
 }
 
 .dataframe th {
-  background: linear-gradient(135deg, rgba(59,130,246,0.2) 0%, rgba(139,92,246,0.15) 100%);
+  background: rgba(59,130,246,0.1) !important;
   padding: 0.9rem;
   text-align: left;
-  color: var(--primary-color);
+  color: var(--primary-color) !important;
   font-weight: 600;
-  border-bottom: 2px solid rgba(59,130,246,0.3);
+  border-bottom: 2px solid rgba(59,130,246,0.2);
   text-shadow: 0 0 4px rgba(59,130,246,0.3);
 }
 
 .dataframe td {
   padding: 0.9rem;
   border-bottom: 1px solid rgba(59,130,246,0.1);
-  color: var(--text-color);
+  color: var(--text-color) !important;
+  background: transparent !important;
 }
 
 .dataframe tr:hover {
-  background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(139,92,246,0.05) 100%);
+  background: rgba(59,130,246,0.05) !important;
+}
+
+/* Streamlit DataFrame override */
+div[data-testid="stDataFrame"] {
+  background: transparent !important;
+}
+
+.stDataFrame {
+  background: transparent !important;
+}
+
+/* Streamlit DataFrame table override */
+div[data-testid="stDataFrame"] table {
+  background: transparent !important;
+}
+
+div[data-testid="stDataFrame"] th {
+  background: rgba(59,130,246,0.1) !important;
+  color: var(--primary-color) !important;
+}
+
+div[data-testid="stDataFrame"] td {
+  background: transparent !important;
+  color: var(--text-color) !important;
 }
 
 /* Grafik konteynerı - Transparan arka plan */
