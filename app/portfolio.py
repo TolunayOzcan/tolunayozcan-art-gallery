@@ -10,6 +10,12 @@ import threading
 import time
 from datetime import datetime
 
+# D3Graph import
+try:
+    from d3graph import d3graph
+except ImportError as e:
+    st.warning(f"D3Graph yüklenemedi: {e}")
+
 # Import için yolu düzenleme
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from scraper import scrape_ekonomi_verileri, scrape_borsa_verileri, scrape_kripto_verileri
@@ -115,6 +121,160 @@ def local_css():
 load_css("app/style.css")
 local_css()
 
+# D3Graph Visualization Functions
+def create_d3graph_visualizations():
+    """D3Graph interaktif görselleştirmeleri oluştur"""
+    st.header("🌐 D3Graph İnteraktif Görselleştirmeler")
+    st.write("D3Graph kütüphanesi kullanılarak oluşturulan interaktif ağ grafikleri")
+    
+    try:
+        # Grafik türü seçimi
+        graph_type = st.selectbox(
+            "Grafik Türünü Seçin:",
+            ["Organizasyon Ağı", "Beceri Ağı", "Proje İlişkileri", "Departman Bağlantıları"]
+        )
+        
+        if graph_type == "Organizasyon Ağı":
+            create_organization_network()
+        elif graph_type == "Beceri Ağı":
+            create_skill_network()
+        elif graph_type == "Proje İlişkileri":
+            create_project_network()
+        elif graph_type == "Departman Bağlantıları":
+            create_department_network()
+            
+    except Exception as e:
+        st.error(f"D3Graph görselleştirme hatası: {e}")
+        st.info("D3Graph kütüphanesi yüklü değil veya bir hata oluştu.")
+
+def create_organization_network():
+    """Organizasyon ağ grafiği"""
+    st.subheader("📊 Organizasyon Ağı")
+    
+    # Örnek organizasyon verisi
+    source = ['CEO', 'CEO', 'CEO', 'HR Manager', 'HR Manager', 'IT Manager', 'IT Manager', 'Sales Manager', 'Sales Manager']
+    target = ['HR Manager', 'IT Manager', 'Sales Manager', 'HR Specialist', 'Recruiter', 'Developer', 'Analyst', 'Sales Rep', 'Account Manager']
+    weight = [1, 1, 1, 1, 1, 1, 1, 1, 1]
+    
+    try:
+        d3 = d3graph()
+        d3.graph(source, target, weight=weight)
+        d3.set_node_properties(color='cluster')
+        
+        # HTML dosyası oluştur ve göster
+        html_file = d3.show(filepath='/tmp/organization_network.html', show_slider=True, notebook=False)
+        
+        # HTML içeriğini okuyup Streamlit'te göster
+        with open('/tmp/organization_network.html', 'r', encoding='utf-8') as f:
+            html_content = f.read()
+        st.components.v1.html(html_content, height=600, scrolling=True)
+        
+    except Exception as e:
+        st.error(f"Organizasyon ağı oluşturulamadı: {e}")
+
+def create_skill_network():
+    """Beceri ağ grafiği"""
+    st.subheader("🎯 Beceri Ağı")
+    
+    # Beceri verisi
+    skills = ['Python', 'SQL', 'Machine Learning', 'Data Analysis', 'Visualization', 'Statistics']
+    employees = ['Ahmet', 'Ayşe', 'Mehmet', 'Fatma', 'Ali', 'Zeynep']
+    
+    source = []
+    target = []
+    weight = []
+    
+    # Çalışan-beceri ilişkileri
+    for emp in employees:
+        for skill in np.random.choice(skills, size=np.random.randint(2, 4), replace=False):
+            source.append(emp)
+            target.append(skill)
+            weight.append(np.random.randint(1, 5))
+    
+    try:
+        d3 = d3graph()
+        d3.graph(source, target, weight=weight)
+        d3.set_node_properties(color='cluster', size='centrality')
+        
+        html_file = d3.show(filepath='/tmp/skill_network.html', show_slider=True, notebook=False)
+        
+        with open('/tmp/skill_network.html', 'r', encoding='utf-8') as f:
+            html_content = f.read()
+        st.components.v1.html(html_content, height=600, scrolling=True)
+        
+    except Exception as e:
+        st.error(f"Beceri ağı oluşturulamadı: {e}")
+
+def create_project_network():
+    """Proje ilişkileri ağ grafiği"""
+    st.subheader("🚀 Proje İlişkileri")
+    
+    # Proje verisi
+    projects = ['Web App', 'Mobile App', 'Data Pipeline', 'Analytics Dashboard', 'ML Model']
+    technologies = ['React', 'Python', 'Docker', 'AWS', 'PostgreSQL', 'Streamlit', 'Plotly']
+    
+    source = []
+    target = []
+    weight = []
+    
+    # Proje-teknoloji ilişkileri
+    for proj in projects:
+        for tech in np.random.choice(technologies, size=np.random.randint(2, 4), replace=False):
+            source.append(proj)
+            target.append(tech)
+            weight.append(np.random.randint(1, 3))
+    
+    try:
+        d3 = d3graph()
+        d3.graph(source, target, weight=weight)
+        d3.set_node_properties(color='cluster', size='centrality')
+        
+        html_file = d3.show(filepath='/tmp/project_network.html', show_slider=True, notebook=False)
+        
+        with open('/tmp/project_network.html', 'r', encoding='utf-8') as f:
+            html_content = f.read()
+        st.components.v1.html(html_content, height=600, scrolling=True)
+        
+    except Exception as e:
+        st.error(f"Proje ağı oluşturulamadı: {e}")
+
+def create_department_network():
+    """Departman bağlantıları ağ grafiği"""
+    st.subheader("🏢 Departman Bağlantıları")
+    
+    # Departman verisi
+    departments = ['İK', 'IT', 'Satış', 'Pazarlama', 'Finans', 'Operasyon']
+    
+    source = []
+    target = []
+    weight = []
+    
+    # Departman arası işbirliği
+    collaborations = [
+        ('İK', 'IT', 3), ('İK', 'Finans', 2), ('Satış', 'Pazarlama', 5),
+        ('IT', 'Operasyon', 4), ('Finans', 'Operasyon', 3), ('Pazarlama', 'IT', 2),
+        ('İK', 'Operasyon', 2), ('Satış', 'Finans', 3), ('IT', 'Pazarlama', 2)
+    ]
+    
+    for collab in collaborations:
+        source.append(collab[0])
+        target.append(collab[1])
+        weight.append(collab[2])
+    
+    try:
+        d3 = d3graph()
+        d3.graph(source, target, weight=weight)
+        d3.set_node_properties(color='cluster', size='centrality')
+        
+        html_file = d3.show(filepath='/tmp/department_network.html', show_slider=True, notebook=False)
+        
+        with open('/tmp/department_network.html', 'r', encoding='utf-8') as f:
+            html_content = f.read()
+        st.components.v1.html(html_content, height=600, scrolling=True)
+        
+    except Exception as e:
+        st.error(f"Departman ağı oluşturulamadı: {e}")
+
 # Sol menü
 with st.sidebar:
     st.markdown("""
@@ -176,7 +336,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Daha büyük sekme butonları
-menu = st.tabs(["📊 Anasayfa", "📈 Analizler", "🔄 Canlı Veri", "🧪 Veri Bilim", "👥 İK Analiz"])
+menu = st.tabs(["📊 Anasayfa", "📈 Analizler", "🔄 Canlı Veri", "🧪 Veri Bilim", "👥 İK Analiz", "🌐 D3 Grafik"])
 
 with menu[0]:
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
@@ -790,3 +950,7 @@ with menu[4]:
     </ul>
     """, unsafe_allow_html=True)
     st.markdown("""</div>""", unsafe_allow_html=True)
+
+# D3Graph Tab (menu[5])
+with menu[5]:
+    create_d3graph_visualizations()
