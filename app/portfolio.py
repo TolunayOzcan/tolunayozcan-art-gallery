@@ -10,11 +10,14 @@ import threading
 import time
 from datetime import datetime
 
-# D3Graph import
+# Network Graph imports
 try:
-    from d3graph import d3graph
+    import networkx as nx
+    import plotly.graph_objects as go
+    NETWORK_AVAILABLE = True
 except ImportError as e:
-    st.warning(f"D3Graph yüklenemedi: {e}")
+    st.warning(f"NetworkX/Plotly yüklenemedi: {e}")
+    NETWORK_AVAILABLE = False
 
 # Import için yolu düzenleme
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -122,227 +125,242 @@ load_css("app/style.css")
 local_css()
 
 # D3Graph Visualization Functions
-def create_d3graph_visualizations():
-    """D3Graph interaktif görselleştirmeleri oluştur"""
-    st.header("🌐 D3Graph İnteraktif Görselleştirmeler")
-    st.write("D3Graph kütüphanesi kullanılarak oluşturulan interaktif ağ grafikleri")
+def create_networkx_plotly_graph(G, title, node_colors=None):
+    """NetworkX grafiğini Plotly ile interaktif görselleştir"""
+    # Grafik konumlarını hesapla
+    pos = nx.spring_layout(G, seed=42)
     
-    # Veri akışı durumu kontrolü
-    try:
-        from d3graph import d3graph
-        st.success("✅ D3Graph kütüphanesi başarıyla yüklendi!")
-        
-        # Grafik türü seçimi
-        graph_type = st.selectbox(
-            "Grafik Türünü Seçin:",
-            ["Organizasyon Ağı", "Beceri Ağı", "Proje İlişkileri", "Departman Bağlantıları"],
-            help="Görmek istediğiniz ağ grafiği türünü seçin"
+    # Kenarları çiz
+    edge_x, edge_y = [], []
+    for edge in G.edges():
+        x0, y0 = pos[edge[0]]
+        x1, y1 = pos[edge[1]]
+        edge_x.extend([x0, x1, None])
+        edge_y.extend([y0, y1, None])
+    
+    edge_trace = go.Scatter(
+        x=edge_x, y=edge_y,
+        line=dict(width=2, color='#888'),
+        hoverinfo='none',
+        mode='lines'
+    )
+    
+    # Düğümleri çiz
+    node_x, node_y, node_text = [], [], []
+    for node in G.nodes():
+        x, y = pos[node]
+        node_x.append(x)
+        node_y.append(y)
+        # Bağlantı sayısını göster
+        adjacencies = list(G.neighbors(node))
+        node_text.append(f'{node}<br>Bağlantı: {len(adjacencies)}')
+    
+    node_trace = go.Scatter(
+        x=node_x, y=node_y,
+        mode='markers+text',
+        hoverinfo='text',
+        text=[node for node in G.nodes()],
+        textposition="middle center",
+        hovertext=node_text,
+        marker=dict(
+            size=20,
+            color=node_colors if node_colors else 'lightblue',
+            line=dict(width=2, color='black'),
+            colorscale='Viridis'
         )
-        
-        st.info(f"📊 Seçili grafik: **{graph_type}**")
-        
-        if graph_type == "Organizasyon Ağı":
-            create_organization_network()
-        elif graph_type == "Beceri Ağı":
-            create_skill_network()
-        elif graph_type == "Proje İlişkileri":
-            create_project_network()
-        elif graph_type == "Departman Bağlantıları":
-            create_department_network()
-            
-    except ImportError as e:
-        st.error(f"❌ D3Graph import hatası: {e}")
-        st.info("💡 D3Graph kütüphanesi yüklenmemiş olabilir. Lütfen sayfayı yenileyin.")
-        st.code("pip install git+https://github.com/erdogant/d3graph", language="bash")
-    except Exception as e:
-        st.error(f"🔧 D3Graph genel hatası: {e}")
-        st.info("🔄 Sistem yeniden bağlanıyor, lütfen sayfayı yenileyin.")
+    )
+    
+    # Figürü oluştur
+    fig = go.Figure(data=[edge_trace, node_trace],
+                   layout=go.Layout(
+                        title=title,
+                        titlefont_size=16,
+                        showlegend=False,
+                        hovermode='closest',
+                        margin=dict(b=20,l=5,r=5,t=40),
+                        annotations=[ dict(
+                            text="Düğümlere tıklayarak detay görebilirsiniz",
+                            showarrow=False,
+                            xref="paper", yref="paper",
+                            x=0.005, y=-0.002,
+                            xanchor="left", yanchor="bottom",
+                            font=dict(color="gray", size=12)
+                        )],
+                        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        paper_bgcolor='rgba(0,0,0,0)'
+                   ))
+    
+    return fig
+
+def create_d3graph_visualizations():
+    """NetworkX + Plotly ile interaktif ağ görselleştirmeleri"""
+    st.header("🌐 İnteraktif Ağ Görselleştirmeleri")
+    st.write("NetworkX ve Plotly kullanılarak oluşturulan gerçek zamanlı interaktif grafikleri")
+    
+    if not NETWORK_AVAILABLE:
+        st.error("❌ NetworkX veya Plotly yüklenemedi")
+        return
+    
+    st.success("✅ Ağ görselleştirme kütüphaneleri hazır!")
+    
+    # Grafik türü seçimi
+    graph_type = st.selectbox(
+        "Grafik Türünü Seçin:",
+        ["Organizasyon Ağı", "Beceri Ağı", "Proje İlişkileri", "Departman Bağlantıları"],
+        help="Görmek istediğiniz ağ grafiği türünü seçin"
+    )
+    
+    st.info(f"📊 Seçili grafik: **{graph_type}** - Gerçek zamanlı veri akışı aktif!")
+    
+    if graph_type == "Organizasyon Ağı":
+        create_organization_network()
+    elif graph_type == "Beceri Ağı":
+        create_skill_network()
+    elif graph_type == "Proje İlişkileri":
+        create_project_network()
+    elif graph_type == "Departman Bağlantıları":
+        create_department_network()
 
 def create_organization_network():
-    """Organizasyon ağ grafiği"""
+    """NetworkX ile organizasyon ağ grafiği"""
     st.subheader("📊 Organizasyon Ağı")
-    st.info("Organizasyon şeması - Şirket hiyerarşisi ve departman yapıları")
-    
-    # Örnek organizasyon verisi
-    source = ['CEO', 'CEO', 'CEO', 'HR Manager', 'HR Manager', 'IT Manager', 'IT Manager', 'Sales Manager', 'Sales Manager']
-    target = ['HR Manager', 'IT Manager', 'Sales Manager', 'HR Specialist', 'Recruiter', 'Developer', 'Analyst', 'Sales Rep', 'Account Manager']
-    weight = [1, 1, 1, 1, 1, 1, 1, 1, 1]
+    st.info("Şirket hiyerarşisi ve departman yapıları - Gerçek zamanlı veri akışı")
     
     try:
-        d3 = d3graph()
-        d3.graph(source, target, weight=weight)
-        d3.set_node_properties(color='cluster', size='centrality')
+        # NetworkX graf oluştur
+        G = nx.DiGraph()
         
-        # Verileri göster
-        st.success("✅ D3Graph veri akışı başarılı!")
+        # Örnek organizasyon verisi
+        edges = [
+            ('CEO', 'HR Manager'), ('CEO', 'IT Manager'), ('CEO', 'Sales Manager'),
+            ('HR Manager', 'HR Specialist'), ('HR Manager', 'Recruiter'),
+            ('IT Manager', 'Developer'), ('IT Manager', 'Analyst'),
+            ('Sales Manager', 'Sales Rep'), ('Sales Manager', 'Account Manager')
+        ]
         
-        # Basit tablo gösterimi
+        G.add_edges_from(edges)
+        
+        st.success("✅ Organizasyon verisi yüklendi!")
+        
+        # Veri tablosu göster
         import pandas as pd
-        org_data = pd.DataFrame({
-            'Yönetici': source,
-            'Çalışan': target,
-            'Bağlantı Seviyesi': weight
-        })
+        org_data = pd.DataFrame(edges, columns=['Yönetici', 'Çalışan'])
         st.dataframe(org_data, use_container_width=True)
         
-        # D3Graph HTML oluşturma
-        html_path = '/tmp/organization_network.html'
-        d3.show(filepath=html_path, show_slider=False, notebook=False)
+        # İnteraktif Plotly grafiği
+        fig = create_networkx_plotly_graph(G, "🏢 Organizasyon Şeması")
+        st.plotly_chart(fig, use_container_width=True)
         
-        # HTML dosyasının var olup olmadığını kontrol et
-        import os
-        if os.path.exists(html_path):
-            with open(html_path, 'r', encoding='utf-8') as f:
-                html_content = f.read()
-            st.components.v1.html(html_content, height=600, scrolling=True)
-            st.success("🌐 İnteraktif grafik yüklendi!")
-        else:
-            st.warning("HTML dosyası oluşturulamadı")
+        st.success("� İnteraktif organizasyon ağı başarıyla yüklendi!")
+        st.info("💡 Düğümlere tıklayarak detayları görebilirsiniz")
         
     except Exception as e:
         st.error(f"Organizasyon ağı hatası: {str(e)}")
-        st.info("💡 D3Graph kütüphanesi yükleniyor olabilir, lütfen sayfayı yenileyin.")
+        st.info("� Veri yeniden işleniyor...")
 
 def create_skill_network():
-    """Beceri ağ grafiği"""
+    """NetworkX ile beceri ağ grafiği"""
     st.subheader("🎯 Beceri Ağı")
     st.info("Çalışan yetenekleri ve teknoloji becerileri arasındaki ilişki haritası")
     
-    # Beceri verisi
-    skills = ['Python', 'SQL', 'Machine Learning', 'Data Analysis', 'Visualization', 'Statistics']
-    employees = ['Ahmet', 'Ayşe', 'Mehmet', 'Fatma', 'Ali', 'Zeynep']
-    
-    source = []
-    target = []
-    weight = []
-    
-    # Çalışan-beceri ilişkileri (sabit seed için tutarlılık)
-    np.random.seed(42)
-    for emp in employees:
-        for skill in np.random.choice(skills, size=np.random.randint(2, 4), replace=False):
-            source.append(emp)
-            target.append(skill)
-            weight.append(np.random.randint(1, 5))
-    
     try:
+        # NetworkX graf oluştur
+        G = nx.Graph()
+        
+        # Beceri verisi (sabit seed için tutarlılık)
+        skills = ['Python', 'SQL', 'Machine Learning', 'Data Analysis', 'Visualization', 'Statistics']
+        employees = ['Ahmet', 'Ayşe', 'Mehmet', 'Fatma', 'Ali', 'Zeynep']
+        
+        np.random.seed(42)
+        edges = []
+        for emp in employees:
+            for skill in np.random.choice(skills, size=np.random.randint(2, 4), replace=False):
+                edges.append((emp, skill))
+        
+        G.add_edges_from(edges)
+        
         st.success("✅ Beceri verisi hazırlandı!")
         
         # Beceri matrisi göster
         import pandas as pd
-        skill_data = pd.DataFrame({
-            'Çalışan': source,
-            'Beceri': target,
-            'Seviye': weight
-        })
+        skill_data = pd.DataFrame(edges, columns=['Çalışan', 'Beceri'])
         st.dataframe(skill_data, use_container_width=True)
         
-        d3 = d3graph()
-        d3.graph(source, target, weight=weight)
-        d3.set_node_properties(color='cluster', size='centrality')
+        # İnteraktif Plotly grafiği
+        fig = create_networkx_plotly_graph(G, "🎯 Beceri-Çalışan İlişki Ağı")
+        st.plotly_chart(fig, use_container_width=True)
         
-        html_path = '/tmp/skill_network.html'
-        d3.show(filepath=html_path, show_slider=False, notebook=False)
-        
-        import os
-        if os.path.exists(html_path):
-            with open(html_path, 'r', encoding='utf-8') as f:
-                html_content = f.read()
-            st.components.v1.html(html_content, height=600, scrolling=True)
-            st.success("🌐 Beceri ağı yüklendi!")
-        else:
-            st.warning("HTML dosyası oluşturulamadı")
+        st.success("🌐 Beceri ağı yüklendi!")
         
     except Exception as e:
         st.error(f"Beceri ağı hatası: {str(e)}")
         st.info("💡 Veri yeniden işleniyor...")
 
 def create_project_network():
-    """Proje ilişkileri ağ grafiği"""
+    """NetworkX ile proje ilişkileri ağ grafiği"""
     st.subheader("🚀 Proje İlişkileri")
     st.info("Projeler ve kullanılan teknolojiler arasındaki bağlantı haritası")
     
-    # Proje verisi
-    projects = ['Web App', 'Mobile App', 'Data Pipeline', 'Analytics Dashboard', 'ML Model']
-    technologies = ['React', 'Python', 'Docker', 'AWS', 'PostgreSQL', 'Streamlit', 'Plotly']
-    
-    source = []
-    target = []
-    weight = []
-    
-    # Proje-teknoloji ilişkileri (sabit seed)
-    np.random.seed(123)
-    for proj in projects:
-        for tech in np.random.choice(technologies, size=np.random.randint(2, 4), replace=False):
-            source.append(proj)
-            target.append(tech)
-            weight.append(np.random.randint(1, 3))
-    
     try:
+        # NetworkX graf oluştur
+        G = nx.Graph()
+        
+        # Proje verisi (sabit seed)
+        projects = ['Web App', 'Mobile App', 'Data Pipeline', 'Analytics Dashboard', 'ML Model']
+        technologies = ['React', 'Python', 'Docker', 'AWS', 'PostgreSQL', 'Streamlit', 'Plotly']
+        
+        np.random.seed(123)
+        edges = []
+        for proj in projects:
+            for tech in np.random.choice(technologies, size=np.random.randint(2, 4), replace=False):
+                edges.append((proj, tech))
+        
+        G.add_edges_from(edges)
+        
         st.success("✅ Proje verileri hazırlandı!")
         
         # Proje-teknoloji matrisi
         import pandas as pd
-        project_data = pd.DataFrame({
-            'Proje': source,
-            'Teknoloji': target,
-            'Kullanım Yoğunluğu': weight
-        })
+        project_data = pd.DataFrame(edges, columns=['Proje', 'Teknoloji'])
         st.dataframe(project_data, use_container_width=True)
         
-        d3 = d3graph()
-        d3.graph(source, target, weight=weight)
-        d3.set_node_properties(color='cluster', size='centrality')
+        # İnteraktif Plotly grafiği
+        fig = create_networkx_plotly_graph(G, "🚀 Proje-Teknoloji Bağlantı Ağı")
+        st.plotly_chart(fig, use_container_width=True)
         
-        html_path = '/tmp/project_network.html'
-        d3.show(filepath=html_path, show_slider=False, notebook=False)
-        
-        import os
-        if os.path.exists(html_path):
-            with open(html_path, 'r', encoding='utf-8') as f:
-                html_content = f.read()
-            st.components.v1.html(html_content, height=600, scrolling=True)
-            st.success("🌐 Proje ağı başarıyla yüklendi!")
-        else:
-            st.warning("HTML dosyası oluşturulamadı")
+        st.success("🌐 Proje ağı başarıyla yüklendi!")
         
     except Exception as e:
         st.error(f"Proje ağı hatası: {str(e)}")
         st.info("🛠️ Teknik sorun gideriliyor...")
 
 def create_department_network():
-    """Departman bağlantıları ağ grafiği"""
+    """NetworkX ile departman bağlantıları ağ grafiği"""
     st.subheader("🏢 Departman Bağlantıları")
     st.info("Departmanlar arası işbirliği ve iletişim yoğunluğu")
     
-    # Departman verisi
-    departments = ['İK', 'IT', 'Satış', 'Pazarlama', 'Finans', 'Operasyon']
-    
-    source = []
-    target = []
-    weight = []
-    
-    # Departman arası işbirliği
-    collaborations = [
-        ('İK', 'IT', 3), ('İK', 'Finans', 2), ('Satış', 'Pazarlama', 5),
-        ('IT', 'Operasyon', 4), ('Finans', 'Operasyon', 3), ('Pazarlama', 'IT', 2),
-        ('İK', 'Operasyon', 2), ('Satış', 'Finans', 3), ('IT', 'Pazarlama', 2)
-    ]
-    
-    for collab in collaborations:
-        source.append(collab[0])
-        target.append(collab[1])
-        weight.append(collab[2])
-    
     try:
+        # NetworkX graf oluştur
+        G = nx.Graph()
+        
+        # Departman arası işbirliği
+        collaborations = [
+            ('İK', 'IT', 3), ('İK', 'Finans', 2), ('Satış', 'Pazarlama', 5),
+            ('IT', 'Operasyon', 4), ('Finans', 'Operasyon', 3), ('Pazarlama', 'IT', 2),
+            ('İK', 'Operasyon', 2), ('Satış', 'Finans', 3), ('IT', 'Pazarlama', 2)
+        ]
+        
+        # Ağırlıklı kenarlar ekle
+        for dept1, dept2, weight in collaborations:
+            G.add_edge(dept1, dept2, weight=weight)
+        
         st.success("✅ Departman verileri yüklendi!")
         
         # Departman işbirliği tablosu
         import pandas as pd
-        dept_data = pd.DataFrame({
-            'Departman 1': source,
-            'Departman 2': target,
-            'İşbirliği Seviyesi': weight
-        })
+        dept_data = pd.DataFrame(collaborations, columns=['Departman 1', 'Departman 2', 'İşbirliği Seviyesi'])
         st.dataframe(dept_data, use_container_width=True)
         
         # En yoğun işbirliği
@@ -353,21 +371,11 @@ def create_department_network():
             f"Seviye: {max_collab['İşbirliği Seviyesi']}"
         )
         
-        d3 = d3graph()
-        d3.graph(source, target, weight=weight)
-        d3.set_node_properties(color='cluster', size='centrality')
+        # İnteraktif Plotly grafiği
+        fig = create_networkx_plotly_graph(G, "🏢 Departman İşbirliği Ağı")
+        st.plotly_chart(fig, use_container_width=True)
         
-        html_path = '/tmp/department_network.html'
-        d3.show(filepath=html_path, show_slider=False, notebook=False)
-        
-        import os
-        if os.path.exists(html_path):
-            with open(html_path, 'r', encoding='utf-8') as f:
-                html_content = f.read()
-            st.components.v1.html(html_content, height=600, scrolling=True)
-            st.success("🌐 Departman ağı aktif!")
-        else:
-            st.warning("HTML dosyası oluşturulamadı")
+        st.success("🌐 Departman ağı aktif!")
         
     except Exception as e:
         st.error(f"Departman ağı hatası: {str(e)}")
