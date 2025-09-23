@@ -300,33 +300,31 @@ button[role="tab"][aria-selected="true"] {
   background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(139,92,246,0.05) 100%);
 }
 
-/* Grafik konteynerı - Rastgele renkler atanacak */
+/* Grafik konteynerı - Transparan arka plan */
 .plotly-chart {
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
-  padding: 1rem;  /* Önceki: 0.5rem - Daha fazla iç boşluk */
-  border: 1px solid rgba(121, 134, 203, 0.1);  /* Önceki: rgba(0,0,0,0.03) - Daha belirgin kenarlık */
+  padding: 1rem;
+  border: 1px solid rgba(59,130,246,0.1);
+  background: transparent !important;
 }
 
-/* Farklı grafik konteynerleri için stil sınıfları */
-.plotly-chart:nth-child(5n+1) {
-  background-color: var(--card-bg-color-1);
+/* Streamlit plotly grafikleri için */
+div[data-testid="stPlotlyChart"] {
+  background: transparent !important;
 }
 
-.plotly-chart:nth-child(5n+2) {
-  background-color: var(--card-bg-color-2);
+.stPlotlyChart {
+  background: transparent !important;
 }
 
-.plotly-chart:nth-child(5n+3) {
-  background-color: var(--card-bg-color-3);
-}
-
-.plotly-chart:nth-child(5n+4) {
-  background-color: var(--card-bg-color-4);
-}
-
+/* Farklı grafik konteynerleri için transparan stil */
+.plotly-chart:nth-child(5n+1),
+.plotly-chart:nth-child(5n+2),
+.plotly-chart:nth-child(5n+3),
+.plotly-chart:nth-child(5n+4),
 .plotly-chart:nth-child(5n+5) {
-  background-color: var(--card-bg-color-5);
+  background: transparent !important;
 }
 
 /* Buton stilleri - Daha gerçekçi ve minimalist */

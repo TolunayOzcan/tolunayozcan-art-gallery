@@ -647,7 +647,11 @@ with menu[4]:
             hole=0.4,
             color_discrete_sequence=px.colors.qualitative.Set2
         )
-        fig_reasons.update_layout(height=350)
+        fig_reasons.update_layout(
+            height=350,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)'
+        )
         st.plotly_chart(fig_reasons, use_container_width=True)
         
     with col2:
@@ -727,7 +731,9 @@ with menu[4]:
     fig_perf_salary.update_layout(
         height=500,
         xaxis_title='Performans Puanı',
-        yaxis_title='Aylık Maaş (TL)'
+        yaxis_title='Aylık Maaş (TL)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)'
     )
     
     st.plotly_chart(fig_perf_salary, use_container_width=True)
