@@ -242,7 +242,8 @@ def create_d3graph_visualizations():
     graph_type = st.selectbox(
         "Grafik Türünü Seçin:",
         ["Organizasyon Ağı", "Beceri Ağı", "Proje İlişkileri", "Departman Bağlantıları"],
-        help="Görmek istediğiniz ağ grafiği türünü seçin"
+        help="Görmek istediğiniz ağ grafiği türünü seçin",
+        key="hr_graph_type_selector"
     )
     
     st.info(f"📊 Seçili grafik: **{graph_type}** - Gerçek zamanlı veri akışı aktif!")
@@ -711,121 +712,364 @@ with menu[2]:
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
     st.markdown("<h2>Api entegrasyon</h2>", unsafe_allow_html=True)
     st.markdown("""
-    <p>Bu sayfada çeşitli finansal kaynaklardan elde edilen güncel veriler ve analizleri görebilirsiniz. 
-    Veriler, en son piyasa hareketlerini ve ekonomik göstergeleri yansıtır.</p>
+    <p>Bu sayfada çeşitli API'lerden gerçek zamanlı veriler çekilmekte ve analiz edilmektedir. 
+    CoinGecko, ExchangeRate-API ve diğer public API'lerden güncel finansal veriler sağlanır.</p>
     """, unsafe_allow_html=True)
-    st.info("Not: Bu veriler örnek amaçlıdır ve gerçek zamanlı veri çekimi yerine demo veriler gösterilmektedir.")
+    
+    # API Service import ve başlatma
+    api_status = {"success": False, "error": None}
+    
+    try:
+        import sys
+        import os
+        sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+        from api_services import api_service
+        api_status["success"] = True
+        st.success("✅ API servisleri başarıyla yüklendi!")
+    except Exception as e:
+        api_status["error"] = str(e)
+        st.error(f"❌ API servisleri yüklenemedi: {e}")
+        st.info("Fallback demo veriler kullanılacak.")
+    
     st.markdown("""</div>""", unsafe_allow_html=True)
-    
-    # Ekonomi Göstergeleri
-    st.markdown("""<div class="card">""", unsafe_allow_html=True)
-    st.markdown("<h3>Ekonomi Göstergeleri</h3>", unsafe_allow_html=True)
-    ekonomi_df = scrape_ekonomi_verileri()
-    
-    if not ekonomi_df.empty:
-        # Veri tablosu stil iyileştirmesiyle
-        st.markdown("<p><strong>Güncel Ekonomik Veriler</strong></p>", unsafe_allow_html=True)
-        st.dataframe(ekonomi_df, use_container_width=True)
-        
-        # Önem derecesine göre gösterge sayısı - geliştirilmiş grafik
-        if 'onem' in ekonomi_df.columns:
-            onem_counts = ekonomi_df['onem'].value_counts().reset_index()
-            onem_counts.columns = ['Önem Derecesi', 'Sayı']
-            
-            fig = px.pie(onem_counts, values='Sayı', names='Önem Derecesi', 
-                        title='Ekonomik Göstergelerin Önem Derecesine Göre Dağılımı',
-                        color_discrete_sequence=px.colors.sequential.Blues_r,
-                        hole=0.4)
-            
-            fig.update_layout(
-                legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5),
-                margin=dict(t=50, b=50, l=20, r=20),
-                plot_bgcolor='rgba(0,0,0,0)'
-            )
-            
-            fig.update_traces(textinfo='percent+label', pull=[0.05, 0, 0], 
-                             marker=dict(line=dict(color='#FFFFFF', width=2)))
-            
-            st.plotly_chart(fig, use_container_width=True)
-    st.markdown("""</div>""", unsafe_allow_html=True)
-    
-    # Borsa ve Kripto Verileri Yan Yana
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("""<div class="card">""", unsafe_allow_html=True)
-        st.markdown("<h3>Borsa Verileri</h3>", unsafe_allow_html=True)
-        borsa_df = scrape_borsa_verileri()
-        
-        if not borsa_df.empty:
-            # Stilize edilmiş tablo
-            st.markdown("<p><strong>Güncel Borsa Endeksleri</strong></p>", unsafe_allow_html=True)
-            st.dataframe(borsa_df, use_container_width=True)
-            
-            # Borsa değişim yüzdesi grafiği - geliştirilmiş
-            if 'endeks' in borsa_df.columns and 'degisim_yuzde' in borsa_df.columns:
-                # Yüzde işaretini kaldırıp sayısal değere dönüştür
-                borsa_df['degisim_yuzde_numeric'] = borsa_df['degisim_yuzde'].str.rstrip('%').astype('float')
-                
-                # Değerlere göre renklendirme için koşullar
-                colors = ['#F44336' if x < 0 else '#4CAF50' for x in borsa_df['degisim_yuzde_numeric']]
-                
-                fig = px.bar(borsa_df, x='endeks', y='degisim_yuzde_numeric',
-                            title='Günlük Değişim (%)',
-                            text='degisim_yuzde')
-                
-                fig.update_layout(
-                    xaxis_title="",
-                    yaxis_title="Değişim (%)",
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    xaxis=dict(showgrid=False),
-                    yaxis=dict(showgrid=True, gridcolor='rgba(230,230,230,0.8)'),
-                    margin=dict(t=50, b=20, l=20, r=20)
-                )
-                
-                fig.update_traces(marker_color=colors, textposition='outside')
-                st.plotly_chart(fig, use_container_width=True)
-        st.markdown("""</div>""", unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("""<div class="card">""", unsafe_allow_html=True)
-        st.markdown("<h3>Kripto Para Verileri</h3>", unsafe_allow_html=True)
-        kripto_df = scrape_kripto_verileri()
-        
-        if not kripto_df.empty:
-            st.markdown("<p><strong>Güncel Kripto Piyasası</strong></p>", unsafe_allow_html=True)
-            st.dataframe(kripto_df, use_container_width=True)
-            
-            # Kripto para değişim grafiği - geliştirilmiş
-            if 'kripto' in kripto_df.columns and 'degisim24h' in kripto_df.columns:
-                # Yüzde işaretini kaldırıp sayısal değere dönüştür
-                kripto_df['degisim_numeric'] = kripto_df['degisim24h'].str.rstrip('%').astype('float')
-                
-                # Değerlere göre renklendirme için koşullar
-                colors = ['#F44336' if x < 0 else '#4CAF50' for x in kripto_df['degisim_numeric']]
-                
-                fig = px.bar(kripto_df, x='kripto', y='degisim_numeric',
-                            title='24 Saatlik Değişim (%)',
-                            text='degisim24h')
-                
-                fig.update_layout(
-                    xaxis_title="",
-                    yaxis_title="Değişim (%)",
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    xaxis=dict(showgrid=False),
-                    yaxis=dict(showgrid=True, gridcolor='rgba(230,230,230,0.8)'),
-                    margin=dict(t=50, b=20, l=20, r=20)
-                )
-                
-                fig.update_traces(marker_color=colors, textposition='outside')
-                st.plotly_chart(fig, use_container_width=True)
-        st.markdown("""</div>""", unsafe_allow_html=True)
-    
-    # Son Güncellenme Bilgisi
-    st.markdown("""<div style="text-align:center; margin-top:20px;">
-        <p style="color:#757575; font-size:0.9rem;">Son güncellenme: 22 Eylül 2025, 14:30</p>
-    </div>""", unsafe_allow_html=True)
 
+    if api_status["success"]:
+        # Real-time Kripto Para Verileri
+        st.markdown("""<div class="card">""", unsafe_allow_html=True)
+        st.markdown("<h3>🚀 Gerçek Zamanlı Kripto Para Verileri</h3>", unsafe_allow_html=True)
+        st.markdown("<p><strong>CoinGecko API'den canlı veri çekimi</strong></p>", unsafe_allow_html=True)
+        
+        try:
+            with st.spinner('Kripto para verileri çekiliyor...'):
+                crypto_df = api_service.get_crypto_data()
+                
+            if not crypto_df.empty:
+                st.dataframe(crypto_df, use_container_width=True)
+                
+                # Kripto para grafiği
+                if 'Değişim 24h' in crypto_df.columns:
+                    crypto_df_chart = crypto_df.copy()
+                    crypto_df_chart['degisim_numeric'] = crypto_df_chart['Değişim 24h'].str.rstrip('%').astype('float')
+                    
+                    fig = px.bar(crypto_df_chart, x='Sembol', y='degisim_numeric',
+                                title='Kripto Para 24 Saatlik Değişim (%)',
+                                text='Değişim 24h',
+                                color='degisim_numeric',
+                                color_continuous_scale=['red', 'white', 'green'])
+                    
+                    fig.update_layout(
+                        xaxis_title="Kripto Para",
+                        yaxis_title="Değişim (%)",
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        showlegend=False,
+                        margin=dict(t=50, b=20, l=20, r=20)
+                    )
+                    
+                    st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.warning("Kripto para verileri alınamadı.")
+                
+        except Exception as e:
+            st.error(f"Kripto para veri hatası: {e}")
+            
+        st.markdown("""</div>""", unsafe_allow_html=True)
+        
+        # Döviz Kurları ve Hisse Senetleri
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("""<div class="card">""", unsafe_allow_html=True)
+            st.markdown("<h3>💱 Döviz Kurları</h3>", unsafe_allow_html=True)
+            st.markdown("<p><strong>ExchangeRate-API'den güncel kurlar</strong></p>", unsafe_allow_html=True)
+            
+            try:
+                with st.spinner('Döviz kurları güncelleniyor...'):
+                    exchange_df = api_service.get_exchange_rates()
+                    
+                if not exchange_df.empty:
+                    st.dataframe(exchange_df, use_container_width=True)
+                    
+                    # Döviz kurları grafiği
+                    exchange_df_chart = exchange_df.copy()
+                    exchange_df_chart['Kur'] = exchange_df_chart['Kur'].astype('float')
+                    
+                    fig = px.bar(exchange_df_chart, x='Döviz Çifti', y='Kur',
+                                title='USD Bazında Döviz Kurları',
+                                text='Kur')
+                    
+                    fig.update_layout(
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        xaxis=dict(tickangle=45),
+                        margin=dict(t=50, b=80, l=20, r=20)
+                    )
+                    
+                    st.plotly_chart(fig, use_container_width=True)
+                else:
+                    st.warning("Döviz kuru verileri alınamadı.")
+                    
+            except Exception as e:
+                st.error(f"Döviz kuru veri hatası: {e}")
+                
+            st.markdown("""</div>""", unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown("""<div class="card">""", unsafe_allow_html=True)
+            st.markdown("<h3>📈 Hisse Senedi Verileri</h3>", unsafe_allow_html=True)
+            st.markdown("<p><strong>Demo hisse senedi verileri</strong></p>", unsafe_allow_html=True)
+            
+            try:
+                stock_df = api_service.get_stock_data()
+                
+                if not stock_df.empty:
+                    st.dataframe(stock_df, use_container_width=True)
+                    
+                    # Hisse senedi değişim grafiği
+                    stock_df_chart = stock_df.copy()
+                    stock_df_chart['degisim_numeric'] = stock_df_chart['Değişim'].str.rstrip('%').astype('float')
+                    
+                    fig = px.scatter(stock_df_chart, x='Hisse', y='degisim_numeric',
+                                   title='Hisse Senedi Günlük Değişim (%)',
+                                   text='Değişim',
+                                   size_max=15)
+                    
+                    fig.update_layout(
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        margin=dict(t=50, b=20, l=20, r=20)
+                    )
+                    
+                    st.plotly_chart(fig, use_container_width=True)
+                else:
+                    st.warning("Hisse senedi verileri alınamadı.")
+                    
+            except Exception as e:
+                st.error(f"Hisse senedi veri hatası: {e}")
+                
+            st.markdown("""</div>""", unsafe_allow_html=True)
+        
+        # Hava Durumu API
+        st.markdown("""<div class="card">""", unsafe_allow_html=True)
+        st.markdown("<h3>🌤️ Hava Durumu Verisi</h3>", unsafe_allow_html=True)
+        
+        city = st.selectbox("Şehir Seçin:", ["Istanbul", "Ankara", "Izmir", "London", "New York"], key="api_weather_city_selector")
+        
+        try:
+            weather_data = api_service.get_weather_data(city)
+            
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Sıcaklık", f"{weather_data['temperature']}°C")
+            with col2:
+                st.metric("Nem", f"{weather_data['humidity']}%")
+            with col3:
+                st.metric("Rüzgar", f"{weather_data['wind_speed']} km/h")
+            with col4:
+                st.metric("Basınç", f"{weather_data['pressure']} hPa")
+            
+            st.info(f"📍 {weather_data['city']} - {weather_data['description']}")
+            st.caption(f"Son güncelleme: {weather_data['timestamp']}")
+            
+        except Exception as e:
+            st.error(f"Hava durumu veri hatası: {e}")
+            
+        st.markdown("""</div>""", unsafe_allow_html=True)
+        
+        # Son Haberler
+        st.markdown("""<div class="card">""", unsafe_allow_html=True)
+        st.markdown("<h3>📰 Son Haberler</h3>", unsafe_allow_html=True)
+        
+        try:
+            news_data = api_service.get_news_headlines()
+            
+            for news in news_data:
+                with st.expander(f"📰 {news['title']}"):
+                    st.write(news['description'])
+                    st.caption(f"Kaynak: {news['source']} | {news['publishedAt']}")
+                    
+        except Exception as e:
+            st.error(f"Haber veri hatası: {e}")
+        
+        st.markdown("""</div>""", unsafe_allow_html=True)
+        
+        # API Status
+        st.markdown("""<div class="card">""", unsafe_allow_html=True)
+        st.markdown("<h3>🔧 API Durum Bilgisi</h3>", unsafe_allow_html=True)
+        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.success("✅ CoinGecko API")
+            st.caption("Kripto para verileri")
+        with col2:
+            st.success("✅ ExchangeRate API")
+            st.caption("Döviz kurları")
+        with col3:
+            st.info("ℹ️ Demo APIs")
+            st.caption("Hisse & Haber verileri")
+        
+        st.markdown("""</div>""", unsafe_allow_html=True)
+        
+    else:
+        # Fallback - eski sistem
+        st.markdown("""<div class="card">""", unsafe_allow_html=True)
+        st.markdown("<h3>⚠️ Fallback Sistem</h3>", unsafe_allow_html=True)
+        st.warning("API servisleri yüklenemediği için demo veriler gösteriliyor.")
+        
+        # Eski ekonomi verileri
+        ekonomi_df = scrape_ekonomi_verileri()
+        
+        if not ekonomi_df.empty:
+            st.markdown("<p><strong>Demo Ekonomik Veriler</strong></p>", unsafe_allow_html=True)
+            st.dataframe(ekonomi_df, use_container_width=True)
+        
+        st.markdown("""</div>""", unsafe_allow_html=True)
+    try:
+        from app.api_services import api_service
+        
+        # Real-time Kripto Para Verileri
+        st.markdown("""<div class="card">""", unsafe_allow_html=True)
+        st.markdown("<h3>🚀 Gerçek Zamanlı Kripto Para Verileri</h3>", unsafe_allow_html=True)
+        st.markdown("<p><strong>CoinGecko API'den canlı veri çekimi</strong></p>", unsafe_allow_html=True)
+        
+        with st.spinner('Kripto para verileri çekiliyor...'):
+            crypto_df = api_service.get_crypto_data()
+            
+        if not crypto_df.empty:
+            st.dataframe(crypto_df, use_container_width=True)
+            
+            # Kripto para grafiği
+            if 'Değişim 24h' in crypto_df.columns:
+                crypto_df['degisim_numeric'] = crypto_df['Değişim 24h'].str.rstrip('%').astype('float')
+                colors = ['#F44336' if x < 0 else '#4CAF50' for x in crypto_df['degisim_numeric']]
+                
+                fig = px.bar(crypto_df, x='Sembol', y='degisim_numeric',
+                            title='Kripto Para 24 Saatlik Değişim (%)',
+                            text='Değişim 24h',
+                            color='degisim_numeric',
+                            color_continuous_scale=['red', 'green'])
+                
+                fig.update_layout(
+                    xaxis_title="Kripto Para",
+                    yaxis_title="Değişim (%)",
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    showlegend=False,
+                    margin=dict(t=50, b=20, l=20, r=20)
+                )
+                
+                st.plotly_chart(fig, use_container_width=True)
+        st.markdown("""</div>""", unsafe_allow_html=True)
+        
+        # Döviz Kurları
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("""<div class="card">""", unsafe_allow_html=True)
+            st.markdown("<h3>💱 Döviz Kurları</h3>", unsafe_allow_html=True)
+            st.markdown("<p><strong>ExchangeRate-API'den güncel kurlar</strong></p>", unsafe_allow_html=True)
+            
+            with st.spinner('Döviz kurları güncelleniyor...'):
+                exchange_df = api_service.get_exchange_rates()
+                
+            if not exchange_df.empty:
+                st.dataframe(exchange_df, use_container_width=True)
+                
+                # Döviz kurları grafiği
+                fig = px.bar(exchange_df, x='Döviz Çifti', y='Kur',
+                            title='USD Bazında Döviz Kurları',
+                            text='Kur')
+                
+                fig.update_layout(
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    xaxis=dict(tickangle=45),
+                    margin=dict(t=50, b=80, l=20, r=20)
+                )
+                
+                st.plotly_chart(fig, use_container_width=True)
+            st.markdown("""</div>""", unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown("""<div class="card">""", unsafe_allow_html=True)
+            st.markdown("<h3>📈 Hisse Senedi Verileri</h3>", unsafe_allow_html=True)
+            st.markdown("<p><strong>Demo hisse senedi verileri</strong></p>", unsafe_allow_html=True)
+            
+            stock_df = api_service.get_stock_data()
+            
+            if not stock_df.empty:
+                st.dataframe(stock_df, use_container_width=True)
+                
+                # Hisse senedi değişim grafiği
+                stock_df['degisim_numeric'] = stock_df['Değişim'].str.rstrip('%').astype('float')
+                
+                fig = px.scatter(stock_df, x='Hisse', y='degisim_numeric',
+                               title='Hisse Senedi Günlük Değişim (%)',
+                               text='Değişim',
+                               size_max=15)
+                
+                fig.update_layout(
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    margin=dict(t=50, b=20, l=20, r=20)
+                )
+                
+                st.plotly_chart(fig, use_container_width=True)
+            st.markdown("""</div>""", unsafe_allow_html=True)
+        
+        # Hava Durumu API
+        st.markdown("""<div class="card">""", unsafe_allow_html=True)
+        st.markdown("<h3>🌤️ Hava Durumu Verisi</h3>", unsafe_allow_html=True)
+        
+        city = st.selectbox("Şehir Seçin:", ["Istanbul", "Ankara", "Izmir", "London", "New York"], key="fallback_weather_city_selector")
+        
+        weather_data = api_service.get_weather_data(city)
+        
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Sıcaklık", f"{weather_data['temperature']}°C")
+        with col2:
+            st.metric("Nem", f"{weather_data['humidity']}%")
+        with col3:
+            st.metric("Rüzgar", f"{weather_data['wind_speed']} km/h")
+        with col4:
+            st.metric("Basınç", f"{weather_data['pressure']} hPa")
+        
+        st.info(f"📍 {weather_data['city']} - {weather_data['description']}")
+        st.caption(f"Son güncelleme: {weather_data['timestamp']}")
+        st.markdown("""</div>""", unsafe_allow_html=True)
+        
+        # Son Haberler
+        st.markdown("""<div class="card">""", unsafe_allow_html=True)
+        st.markdown("<h3>📰 Son Haberler</h3>", unsafe_allow_html=True)
+        
+        news_data = api_service.get_news_headlines()
+        
+        for news in news_data:
+            with st.expander(f"📰 {news['title']}"):
+                st.write(news['description'])
+                st.caption(f"Kaynak: {news['source']} | {news['publishedAt']}")
+        
+        st.markdown("""</div>""", unsafe_allow_html=True)
+        
+        # API Status
+        st.markdown("""<div class="card">""", unsafe_allow_html=True)
+        st.markdown("<h3>🔧 API Durum Bilgisi</h3>", unsafe_allow_html=True)
+        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.success("✅ CoinGecko API")
+            st.caption("Kripto para verileri")
+        with col2:
+            st.success("✅ ExchangeRate API")
+            st.caption("Döviz kurları")
+        with col3:
+            st.info("ℹ️ Demo APIs")
+            st.caption("Hisse & Haber verileri")
+        
+        st.markdown("""</div>""", unsafe_allow_html=True)
+        
+    except ImportError as e:
+        st.error(f"API servisleri yüklenemedi: {e}")
+        # Fallback to old system
+        st.markdown("""<div class="card">""", unsafe_allow_html=True)
+        st.markdown("<h3>Ekonomi Göstergeleri</h3>", unsafe_allow_html=True)
+        ekonomi_df = scrape_ekonomi_verileri()
+        
 with menu[3]:
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
     st.markdown("<h2>Data science</h2>", unsafe_allow_html=True)
