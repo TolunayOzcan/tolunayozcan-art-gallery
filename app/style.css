@@ -1,23 +1,31 @@
 /* Ana stil değişkenleri */
 
 :root {
-  --primary-color: #00FF41; /* Matrix yeşili */
-  --background-color: #101010; /* Neredeyse siyah */
-  --text-color: #C8FFC8; /* Matrix açık yeşil */
-  --secondary-color: #008F11; /* Koyu Matrix yeşili */
-  --accent-color: #00B86B; /* Canlı Matrix yeşili */
-  --success-color: #00FF41;
-  --warning-color: #B3FF00;
-  --error-color: #FF1744;
-  /* Kart renkleri - Matrix teması */
-  --card-bg-color-1: #0D1F0C; /* Koyu yeşil-siyah */
-  --card-bg-color-2: #142A12; /* Biraz daha açık koyu yeşil */
-  --card-bg-color-3: #1B3B1A; /* Orta koyu yeşil */
-  --card-bg-color-4: #112A19; /* Koyu yeşil */
-  --card-bg-color-5: #1A2F23; /* Koyu yeşil-gri */
-  --sidebar-bg-color: #111A13; /* Sidebar için koyu Matrix yeşili */
+  --primary-color: #3B82F6; /* Modern elektrik mavisi */
+  --background-color: #0F172A; /* Koyu lacivert arka plan */
+  --text-color: #E2E8F0; /* Açık gri-mavi metin */
+  --secondary-color: #1E293B; /* Koyu lacivert secondary */
+  --accent-color: /* İnfo kutuları */
+.stAlert {
+  background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(139,92,246,0.05) 100%);
+  border-radius: var(--border-radius);
+  padding: 1.2rem;
+  color: var(--primary-color);
+  border-left: 4px solid var(--primary-color);
+  box-shadow: 0 2px 8px rgba(59,130,246,0.1);
+} /* Mor-mavi vurgu rengi */
+  --success-color: #10B981; /* Modern yeşil */
+  --warning-color: #F59E0B; /* Modern turuncu */
+  --error-color: #EF4444; /* Modern kırmızı */
+  /* Kart renkleri - Modern mavi-mor teması */
+  --card-bg-color-1: #1E293B; /* Koyu lacivert */
+  --card-bg-color-2: #334155; /* Orta lacivert */
+  --card-bg-color-3: #475569; /* Açık lacivert */
+  --card-bg-color-4: #64748B; /* Gri-mavi */
+  --card-bg-color-5: #94A3B8; /* Açık gri-mavi */
+  --sidebar-bg-color: #1E293B; /* Sidebar için koyu lacivert */
   --border-radius: 12px;
-  --box-shadow: 0 4px 12px rgba(0,255,65,0.05), 0 1px 3px rgba(0,255,65,0.03);
+  --box-shadow: 0 4px 12px rgba(59,130,246,0.15), 0 1px 3px rgba(59,130,246,0.1);
   --padding: 1.8rem;
   --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
@@ -39,7 +47,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   margin-bottom: 1rem;
   letter-spacing: 0.03em;
-  text-shadow: 0 0 4px #00FF41, 0 0 12px #00FF4133;
+  text-shadow: 0 0 8px rgba(59,130,246,0.4), 0 0 16px rgba(59,130,246,0.2);
 }
 
 /* Markdown metni stilleri */
@@ -48,20 +56,21 @@ p, li, div {
   font-family: 'Share Tech Mono', 'Fira Mono', 'Consolas', monospace;
   color: var(--text-color);
   line-height: 1.7;
-  text-shadow: 0 0 2px #00FF41, 0 0 8px #00FF4133;
+  text-shadow: 0 0 4px rgba(59,130,246,0.2), 0 0 8px rgba(59,130,246,0.1);
 }
 
-/* Card stili - Matrix */
+/* Card stili - Modern mavi-mor */
 .card {
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   padding: var(--padding);
   margin-bottom: 1.8rem;
   transition: var(--transition);
-  border: 1px solid #00FF41;
+  border: 1px solid rgba(59,130,246,0.3);
   color: var(--text-color);
-  text-shadow: 0 0 2px #00FF41, 0 0 8px #00FF4133;
+  text-shadow: 0 0 4px rgba(59,130,246,0.2), 0 0 8px rgba(59,130,246,0.1);
   font-family: 'Share Tech Mono', 'Fira Mono', 'Consolas', monospace;
+  background: linear-gradient(135deg, var(--card-bg-color-1) 0%, var(--card-bg-color-2) 100%);
 }
 
 /* Farklı kart renkleri için stil sınıfları */
@@ -86,15 +95,16 @@ p, li, div {
 }
 
 .card:hover {
-  box-shadow: 0 0 16px #00FF41, 0 0 32px #00FF4133;
+  box-shadow: 0 0 20px rgba(59,130,246,0.4), 0 0 40px rgba(139,92,246,0.2);
   transform: translateY(-3px) scale(1.01);
-  border-color: #00FF41;
+  border-color: var(--accent-color);
+  background: linear-gradient(135deg, var(--card-bg-color-2) 0%, var(--card-bg-color-3) 100%);
 }
 
 /* Sidebar stili */
 .sidebar .sidebar-content {
   background-color: var(--sidebar-bg-color);
-  border-right: 1px solid #00FF41;
+  border-right: 1px solid rgba(59,130,246,0.3);
   color: var(--text-color);
   font-family: 'Share Tech Mono', 'Fira Mono', 'Consolas', monospace;
 }
@@ -134,36 +144,36 @@ p, li, div {
   z-index: 999;
   padding-top: 5px;
   margin-bottom: 20px;
-  background-color: #101010;
-  border-bottom: 2px solid #00FF41;
+  background-color: var(--background-color);
+  border-bottom: 2px solid var(--primary-color);
 }
 
 button[role="tab"] {
-  background-color: #111A13;
+  background: linear-gradient(135deg, var(--secondary-color) 0%, var(--card-bg-color-1) 100%);
   border-radius: var(--border-radius);
   color: var(--primary-color);
-  border: 1px solid #00FF41;
+  border: 1px solid rgba(59,130,246,0.3);
   padding: 1rem 1.5rem;
   margin-right: 0.8rem;
   font-weight: 600;
   transition: var(--transition);
   font-size: 1.1rem;
-  box-shadow: 0 2px 6px #00FF4133;
+  box-shadow: 0 2px 6px rgba(59,130,246,0.2);
   font-family: 'Share Tech Mono', 'Fira Mono', 'Consolas', monospace;
-  text-shadow: 0 0 2px #00FF41, 0 0 8px #00FF4133;
+  text-shadow: 0 0 4px rgba(59,130,246,0.3), 0 0 8px rgba(59,130,246,0.1);
 }
 
 button[role="tab"]:hover {
-  background-color: #142A12;
+  background: linear-gradient(135deg, var(--card-bg-color-2) 0%, var(--card-bg-color-3) 100%);
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 0 12px #00FF41, 0 0 24px #00FF4133;
+  box-shadow: 0 0 16px rgba(59,130,246,0.4), 0 0 24px rgba(139,92,246,0.2);
 }
 
 button[role="tab"][aria-selected="true"] {
-  background-color: #0D1F0C;
-  color: #00FF41;
-  border-bottom: 3px solid #00FF41;
-  box-shadow: 0 0 16px #00FF41, 0 0 32px #00FF4133;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+  color: white;
+  border-bottom: 3px solid var(--accent-color);
+  box-shadow: 0 0 20px rgba(59,130,246,0.5), 0 0 32px rgba(139,92,246,0.3);
 }
 
 /* DataFrame stili */
@@ -173,25 +183,27 @@ button[role="tab"][aria-selected="true"] {
   border: none;
   border-radius: var(--border-radius);
   overflow: hidden;
-  background-color: var(--card-bg-color-3);  /* Mavi tonlarında arka plan */
+  background: linear-gradient(135deg, var(--card-bg-color-1) 0%, var(--card-bg-color-2) 100%);
 }
 
 .dataframe th {
-  background-color: rgba(121, 134, 203, 0.15);  /* Biraz daha belirgin pastel mavi arka plan */
-  padding: 0.9rem;  /* Önceki: 0.75rem - Daha fazla iç boşluk */
+  background: linear-gradient(135deg, rgba(59,130,246,0.2) 0%, rgba(139,92,246,0.15) 100%);
+  padding: 0.9rem;
   text-align: left;
   color: var(--primary-color);
   font-weight: 600;
-  border-bottom: 2px solid rgba(121, 134, 203, 0.2);  /* Önceki: #e1e4e8 - Daha soft renk */
+  border-bottom: 2px solid rgba(59,130,246,0.3);
+  text-shadow: 0 0 4px rgba(59,130,246,0.3);
 }
 
 .dataframe td {
   padding: 0.9rem;
-  border-bottom: 1px solid rgba(121, 134, 203, 0.1);  /* Önceki: #e1e4e8 - Daha soft renk */
+  border-bottom: 1px solid rgba(59,130,246,0.1);
+  color: var(--text-color);
 }
 
 .dataframe tr:hover {
-  background-color: rgba(121, 134, 203, 0.08);  /* Biraz daha belirgin hover efekti */
+  background: linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(139,92,246,0.05) 100%);
 }
 
 /* Grafik konteynerı - Rastgele renkler atanacak */
@@ -228,14 +240,15 @@ button[role="tab"][aria-selected="true"] {
   border-radius: var(--border-radius);
   border: none;
   color: white;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);  /* Gradyan arka plan */
-  padding: 0.7rem 1.5rem;  /* Önceki: 0.5rem 1rem - Daha büyük butonlar */
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+  padding: 0.7rem 1.5rem;
   font-weight: 600;
   transition: var(--transition);
-  box-shadow: 0 4px 10px rgba(121, 134, 203, 0.3);  /* Özel gölge */
+  box-shadow: 0 4px 10px rgba(59,130,246,0.3), 0 2px 4px rgba(139,92,246,0.2);
   letter-spacing: 0.03em;
   position: relative;
   overflow: hidden;
+  text-shadow: 0 0 4px rgba(255,255,255,0.3);
 }
 
 .stButton button:before {
@@ -250,25 +263,25 @@ button[role="tab"][aria-selected="true"] {
 }
 
 .stButton button:hover {
-  background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);  /* Hover durumunda ters gradyan */
+  background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);
   transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(121, 134, 203, 0.4);  /* Daha belirgin gölge */
+  box-shadow: 0 6px 15px rgba(59,130,246,0.4), 0 3px 6px rgba(139,92,246,0.3);
 }
 
 .stButton button:hover:before {
-  left: 100%;  /* Parlama efekti */
+  left: 100%;
 }
 
 .stButton button:active {
-  transform: translateY(1px);  /* Tıklama efekti */
-  box-shadow: 0 2px 5px rgba(121, 134, 203, 0.2);
+  transform: translateY(1px);
+  box-shadow: 0 2px 5px rgba(59,130,246,0.2);
 }
 
 /* Sayfa bölücü */
 hr {
   border: 0;
   height: 1px;
-  background: linear-gradient(90deg, rgba(121,134,203,0) 0%, rgba(121,134,203,0.5) 50%, rgba(121,134,203,0) 100%);
+  background: linear-gradient(90deg, rgba(59,130,246,0) 0%, rgba(59,130,246,0.5) 50%, rgba(59,130,246,0) 100%);
   margin: 2rem 0;
 }
 
