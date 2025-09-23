@@ -4,26 +4,10 @@ import os
 import pandas as pd
 import plotly.graph_objects as go
 import sys
-import base64
 import numpy as np
 import threading
 import time
 from datetime import datetime
-
-# Profil fotoğrafını base64 formatında yükle
-@st.cache_data
-def get_profile_image_base64():
-    """Profil fotoğrafını base64 formatında döndür"""
-    try:
-        profile_path = os.path.join(os.path.dirname(__file__), "profile.jpg")
-        if os.path.exists(profile_path):
-            with open(profile_path, "rb") as img_file:
-                return base64.b64encode(img_file.read()).decode()
-        else:
-            # Fotoğraf yoksa varsayılan avatar oluştur
-            return ""
-    except Exception as e:
-        return ""
 
 # Network Graph imports
 try:
@@ -417,46 +401,18 @@ def create_department_network():
 
 # Sol menü - Profil fotoğrafı ve kompakt tasarım
 with st.sidebar:
-    # Profil fotoğrafı kısmı
-    profile_img_b64 = get_profile_image_base64()
-    
-    if profile_img_b64:
-        # Streamlit'in st.image ile güvenilir görüntüleme
-        st.markdown('<div style="text-align:center; padding: 0.6rem 0;">', unsafe_allow_html=True)
-        
-        # Base64'ü decode edip binary olarak st.image'e gönder
-        import base64
-        from io import BytesIO
-        
-        try:
-            image_bytes = base64.b64decode(profile_img_b64)
-            st.image(
-                image_bytes, 
-                width=80, 
-                caption=None,
-                use_column_width=False
-            )
-        except Exception as e:
-            st.error(f"Profil fotoğrafı yüklenirken hata: {e}")
-            
-        st.markdown("""
-            <h2 style="margin: 0; font-size: 0.95rem; font-family: 'Trebuchet MS', sans-serif; line-height: 1.2; text-align: center;">Tolunay ÖZCAN</h2>
-            <p style="color:#757575; margin: 0.1rem 0; font-size: 0.75rem; font-family: 'Trebuchet MS', sans-serif; text-align: center;">Data Analyst</p>
-        </div>
-        """, unsafe_allow_html=True)
-    else:
-        # Fotoğraf yoksa avatar oluştur
-        st.markdown("""
-        <div style="text-align:center; padding: 0.6rem 0;">
-            <div style="width: 80px; height: 80px; margin: 0 auto 0.8rem auto; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 3px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);">
-                <div style="width: 100%; height: 100%; border-radius: 50%; background-color: #1E293B; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: bold; color: #3B82F6; font-family: 'Trebuchet MS', sans-serif;">
-                    TÖ
-                </div>
+    # Profil avatarı (TÖ yazılı)
+    st.markdown("""
+    <div style="text-align:center; padding: 0.6rem 0;">
+        <div style="width: 80px; height: 80px; margin: 0 auto 0.8rem auto; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 3px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center;">
+            <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #1E40AF, #7C3AED); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; font-family: 'Trebuchet MS', sans-serif;">
+                TÖ
             </div>
-            <h2 style="margin: 0; font-size: 0.95rem; font-family: 'Trebuchet MS', sans-serif; line-height: 1.2;">Tolunay ÖZCAN</h2>
-            <p style="color:#757575; margin: 0.1rem 0; font-size: 0.75rem; font-family: 'Trebuchet MS', sans-serif;">Data Analyst</p>
         </div>
-        """, unsafe_allow_html=True)
+        <h2 style="margin: 0; font-size: 0.95rem; font-family: 'Trebuchet MS', sans-serif; line-height: 1.2;">Tolunay ÖZCAN</h2>
+        <p style="color:#757575; margin: 0.1rem 0; font-size: 0.75rem; font-family: 'Trebuchet MS', sans-serif;">Data Analyst</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Kompakt iletişim bölümü
     st.markdown("""
