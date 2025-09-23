@@ -561,15 +561,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Büyük tab menüsü - En üstte
-menu = st.tabs(["👤 Hakkımda", "🔄 Api Entegrasyon", "🧪 Data Science", "👥 HR Analytics", "🌐 D3 Grafik"])
+menu = st.tabs(["👤 Hakkımda", "� Analytics", "�🔄 Api entegrasyon", "🧪 Data science", "👥 HR analytics"])
 
-# Ana içerik - Kompakt başlık
-st.markdown("""
-<div style="text-align:center; padding: 0.5rem 0 0.3rem 0;">
-    <h1 style="font-size: 1.5rem; margin-bottom: 0.2rem; color: #8B5CF6 !important; font-weight: bold !important; font-family: 'Trebuchet MS', sans-serif !important; text-shadow: none !important; background: none !important;">Veri Analizi Portföyü</h1>
-    <p style="color: #8B5CF6; font-size: 0.9rem; margin-bottom: 0.3rem; font-weight: bold;">Veri Sanatı Portföyüme Hoşgeldin</p>
-</div>
-""", unsafe_allow_html=True)
+
 
 
 with menu[0]:
@@ -611,7 +605,7 @@ with menu[0]:
 
 with menu[1]:
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
-    st.markdown("<h2>Veri Görselleştirme Galeri</h2>", unsafe_allow_html=True)
+    st.markdown("<h2>Analytics</h2>", unsafe_allow_html=True)
     st.markdown("""
     <p>Bu bölümde çeşitli veri görselleştirme örneklerini bulabilirsiniz. Her görselleştirme, 
     veri hikayesini en etkili şekilde anlatmak için özel olarak tasarlanmıştır.</p>
@@ -715,7 +709,7 @@ with menu[1]:
 
 with menu[2]:
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
-    st.markdown("<h2>Canlı Finansal Veriler</h2>", unsafe_allow_html=True)
+    st.markdown("<h2>Api entegrasyon</h2>", unsafe_allow_html=True)
     st.markdown("""
     <p>Bu sayfada çeşitli finansal kaynaklardan elde edilen güncel veriler ve analizleri görebilirsiniz. 
     Veriler, en son piyasa hareketlerini ve ekonomik göstergeleri yansıtır.</p>
@@ -834,7 +828,7 @@ with menu[2]:
 
 with menu[3]:
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
-    st.markdown("<h2>Veri Bilimi Örnekleri</h2>", unsafe_allow_html=True)
+    st.markdown("<h2>Data science</h2>", unsafe_allow_html=True)
     st.markdown("""
     <p>Bu bölümde veri bilimi ve makine öğrenimi projelerinden örnekler bulabilirsiniz.
     Her bir örnek, farklı veri bilimi tekniklerini ve algoritmaları göstermektedir.</p>
@@ -1000,7 +994,7 @@ with menu[3]:
     
 with menu[4]:
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
-    st.markdown("<h2>İnsan Kaynakları Analitiği</h2>", unsafe_allow_html=True)
+    st.markdown("<h2>HR analytics</h2>", unsafe_allow_html=True)
     st.markdown("""
     <p>İnsan kaynakları verilerinizden değer elde etmeye yönelik analitik çözümler sunuyorum.
     İşgücü planlaması, çalışan deneyimi optimizasyonu, işe alım süreçleri ve performans değerlendirme gibi
