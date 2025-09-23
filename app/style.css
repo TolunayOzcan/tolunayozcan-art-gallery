@@ -22,9 +22,9 @@
   --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   
   /* Typography değişkenleri */
-  --heading-font: 'Orbitron', 'Exo 2', 'Rajdhani', 'Michroma', sans-serif;
-  --body-font: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-  --mono-font: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+  --heading-font: 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;
+  --body-font: 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;
+  --mono-font: 'Trebuchet MS', 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
 }
 
 /* Ana stil */
@@ -182,29 +182,94 @@ code, pre {
   background: linear-gradient(135deg, var(--card-bg-color-2) 0%, var(--card-bg-color-3) 100%);
 }
 
-/* Sidebar stili */
+/* Sidebar stili - Sabit ve daha kompakt tasarım */
 .sidebar .sidebar-content {
   background-color: var(--sidebar-bg-color) !important;
   border-right: 1px solid rgba(59,130,246,0.3);
   color: var(--text-color);
   font-family: var(--body-font);
+  padding: 0.8rem 0.3rem !important;
+  width: 140px !important;
+  max-width: 140px !important;
+  position: fixed !important;
+  height: 100vh !important;
 }
 
-/* Streamlit sidebar override */
-.css-1544g2n.e1fqkh3o4 {
+/* Streamlit sidebar override - Sabit konumlandırma */
+.css-1544g2n.e1fqkh3o4, section[data-testid="stSidebar"] {
   background-color: var(--sidebar-bg-color) !important;
   background: linear-gradient(135deg, var(--sidebar-bg-color) 0%, var(--card-bg-color-1) 100%) !important;
+  width: 140px !important;
+  max-width: 140px !important;
+  min-width: 140px !important;
+  position: fixed !important;
+  height: 100vh !important;
+  z-index: 999999 !important;
+  left: 0 !important;
+  top: 0 !important;
 }
 
 .css-pjtuob {
   background-color: var(--sidebar-bg-color) !important;
   background: linear-gradient(135deg, var(--sidebar-bg-color) 0%, var(--card-bg-color-1) 100%) !important;
+  width: 140px !important;
+  max-width: 140px !important;
 }
 
-/* Metrik widget'ı stili */
+/* Ana içerik alanını sidebar genişliği kadar kaydır */
+.main > div {
+  margin-left: 160px !important;
+  padding-left: 1rem !important;
+}
+
+/* Sidebar içerik padding */
+section[data-testid="stSidebar"] > div {
+  padding-top: 0.8rem !important;
+  padding-left: 0.3rem !important;
+  padding-right: 0.3rem !important;
+  width: 140px !important;
+}
+
+/* Sidebar buton stili */
+section[data-testid="stSidebar"] button {
+  width: 100% !important;
+  border: none !important;
+  background: none !important;
+}
+
+/* Plotly grafik stilleri - Şeffaf arka planlar */
+.js-plotly-plot .plotly {
+  background: transparent !important;
+}
+
+.js-plotly-plot .plotly .svg-container {
+  background: transparent !important;
+}
+
+.js-plotly-plot .main-svg {
+  background: transparent !important;
+}
+
+/* Streamlit plotly container */
+.stPlotlyChart {
+  background: transparent !important;
+}
+
+.stPlotlyChart > div {
+  background: transparent !important;
+}
+
+/* Grafik kapsayıcı stilleri */
+.plot-container {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Metrik widget'ı stili - Şeffaf */
 .stMetric {
+  background: transparent !important;
+  border: 1px solid rgba(59,130,246,0.2) !important;
   border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
   padding: var(--padding);
 }
 
@@ -416,4 +481,90 @@ hr {
   padding: 1.2rem;  /* Önceki: 1rem - Daha fazla iç boşluk */
   color: var(--primary-color);
   border-left: 4px solid var(--primary-color);  /* Sol kenarlık eklendi */
+}
+
+/* ===== GELİŞMİŞ ANİMASYONLAR ===== */
+
+/* Keyframe animasyonları */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    50% { left: 100%; }
+    100% { left: 100%; }
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+    50% { box-shadow: 0 6px 25px rgba(59, 130, 246, 0.6); }
+}
+
+@keyframes bounceIn {
+    0% { opacity: 0; transform: scale(0.3); }
+    50% { opacity: 1; transform: scale(1.05); }
+    70% { transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Tab bar gelişmiş animasyonları */
+.stTabs [data-baseweb="tab"] {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.stTabs [data-baseweb="tab"]:hover {
+    transform: translateY(-1px) scale(1.02) !important;
+}
+
+.stTabs [aria-selected="true"] {
+    transform: translateY(-2px) scale(1.05) !important;
+    animation: pulse 2s infinite;
+}
+
+/* İçerik fade-in animasyonu */
+.main .block-container {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Sidebar slide-in animasyonu */
+.css-1d391kg {
+    animation: slideIn 0.5s ease-out;
+}
+
+/* Grafik konteynerleri için animasyon */
+.js-plotly-plot {
+    animation: bounceIn 0.8s ease-out;
+}
+
+/* Başlıklar için net görünüm - gradient animasyonu kaldırıldı */
+h1, h2, h3 {
+    color: var(--accent-color) !important;
+    font-weight: bold !important;
+    font-family: var(--heading-font) !important;
+    text-shadow: none !important;
+}
+
+/* Hover efektleri */
+.stButton > button:hover {
+    animation: pulse 0.6s ease-in-out;
+}
+
+/* Kart hover animasyonları */
+.stMetric:hover {
+    animation: bounceIn 0.3s ease-out;
 }

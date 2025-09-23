@@ -10,6 +10,21 @@ import threading
 import time
 from datetime import datetime
 
+# Profil fotoğrafını base64 formatında yükle
+@st.cache_data
+def get_profile_image_base64():
+    """Profil fotoğrafını base64 formatında döndür"""
+    try:
+        profile_path = os.path.join(os.path.dirname(__file__), "profile.jpg")
+        if os.path.exists(profile_path):
+            with open(profile_path, "rb") as img_file:
+                return base64.b64encode(img_file.read()).decode()
+        else:
+            # Fotoğraf yoksa varsayılan avatar oluştur
+            return ""
+    except Exception as e:
+        return ""
+
 # Network Graph imports
 try:
     import networkx as nx
@@ -123,6 +138,24 @@ def local_css():
 # CSS'i yükle
 load_css("app/style.css")
 local_css()
+
+# Global grafik arka plan şeffaflık fonksiyonu
+def make_transparent_bg(fig):
+    """Plotly grafiklerinin arka planını şeffaf yapar"""
+    fig.update_layout(
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#E2E8F0'),
+        xaxis=dict(
+            gridcolor='rgba(148,163,184,0.2)',
+            zerolinecolor='rgba(148,163,184,0.3)'
+        ),
+        yaxis=dict(
+            gridcolor='rgba(148,163,184,0.2)',
+            zerolinecolor='rgba(148,163,184,0.3)'
+        )
+    )
+    return fig
 
 # D3Graph Visualization Functions
 def create_networkx_plotly_graph(G, title, node_colors=None):
@@ -381,82 +414,180 @@ def create_department_network():
         st.error(f"Departman ağı hatası: {str(e)}")
         st.info("🔄 Sistem yeniden bağlanıyor...")
 
-# Sol menü
+# Sol menü - Profil fotoğrafı ve kompakt tasarım
 with st.sidebar:
+    # Profil fotoğrafı kısmı
+    profile_img_b64 = get_profile_image_base64()
+    
+    if profile_img_b64:
+        # Fotoğraf varsa göster
+        st.markdown(f"""
+        <div style="text-align:center; padding: 0.6rem 0;">
+            <div style="width: 80px; height: 80px; margin: 0 auto 0.8rem auto; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 3px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); overflow: hidden;">
+                <img src="data:image/jpeg;base64,{profile_img_b64}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+            </div>
+            <h2 style="margin: 0; font-size: 0.95rem; font-family: 'Trebuchet MS', sans-serif; line-height: 1.2;">Tolunay ÖZCAN</h2>
+            <p style="color:#757575; margin: 0.1rem 0; font-size: 0.75rem; font-family: 'Trebuchet MS', sans-serif;">Data Analyst</p>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        # Fotoğraf yoksa avatar oluştur
+        st.markdown("""
+        <div style="text-align:center; padding: 0.6rem 0;">
+            <div style="width: 80px; height: 80px; margin: 0 auto 0.8rem auto; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 3px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);">
+                <div style="width: 100%; height: 100%; border-radius: 50%; background-color: #1E293B; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: bold; color: #3B82F6; font-family: 'Trebuchet MS', sans-serif;">
+                    TÖ
+                </div>
+            </div>
+            <h2 style="margin: 0; font-size: 0.95rem; font-family: 'Trebuchet MS', sans-serif; line-height: 1.2;">Tolunay ÖZCAN</h2>
+            <p style="color:#757575; margin: 0.1rem 0; font-size: 0.75rem; font-family: 'Trebuchet MS', sans-serif;">Data Analyst</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Kompakt iletişim bölümü
     st.markdown("""
-    <div style="text-align:center">
-        <h1 style="margin-bottom:0">Tolunay Özcan</h1>
-        <p style="color:#757575; margin-top:0">Kıdemli Veri Analisti</p>
+    <div style="text-align:center; padding: 0.3rem 0;">
+        <a href="https://www.linkedin.com/in/tolunayozcan/" target="_blank" style="text-decoration:none; margin: 0 6px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="20" title="LinkedIn">
+        </a>
+        <a href="https://github.com/TolunayOzcan" target="_blank" style="text-decoration:none; margin: 0 6px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" width="20" title="GitHub">
+        </a>
+        <a href="mailto:tolunayozcan95@gmail.com" style="text-decoration:none; margin: 0 6px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png" width="20" title="E-posta">
+        </a>
     </div>
     """, unsafe_allow_html=True)
-    
-    st.markdown("""<div class="card">""", unsafe_allow_html=True)
-    st.subheader("Hakkımda")
-    st.markdown(
-        """
-        Veri analizi ve görselleştirme alanında 4+ yıllık deneyime sahip Kıdemli Veri Analistiyim. SQL, Python ve VBA konularında uzman seviyede bilgi sahibi. CRM veri analizi, İK analitik çözümleri, çağrı merkezi ve operasyonel raporlama konularında kapsamlı deneyim. Veri odaklı karar alma süreçlerini destekleyen analitik çözümler geliştirme konusunda uzman.
-        """
-    )
-    st.markdown("""</div>""", unsafe_allow_html=True)
-    
-    st.markdown("""<div class="card">""", unsafe_allow_html=True)
-    st.subheader("İletişim")
-    st.markdown("""
-        <a href="https://www.linkedin.com/in/tolunayozcan/" target="_blank" style="text-decoration:none;">
-            <div style="display:flex; align-items:center; margin-bottom:10px;">
-                <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="20" style="margin-right:10px;">
-                LinkedIn
-            </div>
-        </a>
-        <a href="https://github.com/TolunayOzcan" target="_blank" style="text-decoration:none;">
-            <div style="display:flex; align-items:center; margin-bottom:10px;">
-                <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" width="20" style="margin-right:10px;">
-                GitHub
-            </div>
-        </a>
-        <a href="mailto:ornek@email.com" style="text-decoration:none;">
-            <div style="display:flex; align-items:center;">
-                <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png" width="20" style="margin-right:10px;">
-                E-posta
-            </div>
-        </a>
-    """, unsafe_allow_html=True)
-    st.markdown("""</div>""", unsafe_allow_html=True)
 
-# Ana içerik
-st.markdown("""
-<div style="text-align:center; padding: 2rem 0 1rem 0;">
-    <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Veri Sanatı Portföyü</h1>
-    <p style="color: #757575; font-size: 1.2rem;">Veri analizi ve görselleştirme üzerine çalışmalarım</p>
-</div>
-""", unsafe_allow_html=True)
-
-# Menü sekmeleri - Daha büyük ve görünür butonlar
+# Büyük ve animasyonlu tab bar tasarımı - En üstte ortalanmış
 st.markdown("""
 <style>
-    div[data-testid="stHorizontalBlock"] {
-        align-items: center;
+    /* Tab bar büyük ve animasyonlu tasarım - Ortalanmış */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 12px;
+        background: rgba(30, 41, 59, 0.4);
+        border-radius: 20px;
+        padding: 8px;
+        margin: 0 auto 1.5rem auto;
+        box-shadow: 
+            0 4px 20px rgba(59, 130, 246, 0.15),
+            0 0 0 1px rgba(139, 92, 246, 0.3),
+            0 0 10px rgba(139, 92, 246, 0.2),
+            inset 0 0 0 1px rgba(139, 92, 246, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(139, 92, 246, 0.4);
+        display: flex;
         justify-content: center;
+        width: fit-content;
+        max-width: 100%;
+        position: relative;
+        animation: neonGlow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes neonGlow {
+        0% {
+            box-shadow: 
+                0 4px 20px rgba(59, 130, 246, 0.15),
+                0 0 0 1px rgba(139, 92, 246, 0.3),
+                0 0 10px rgba(139, 92, 246, 0.2),
+                inset 0 0 0 1px rgba(139, 92, 246, 0.1);
+        }
+        100% {
+            box-shadow: 
+                0 4px 20px rgba(59, 130, 246, 0.25),
+                0 0 0 1px rgba(139, 92, 246, 0.5),
+                0 0 20px rgba(139, 92, 246, 0.4),
+                0 0 40px rgba(139, 92, 246, 0.1),
+                inset 0 0 0 1px rgba(139, 92, 246, 0.2);
+        }
+    }
+    .stTabs [data-baseweb="tab"] {
+        height: 50px;
+        padding: 0 20px;
+        border-radius: 15px;
+        font-size: 1rem;
+        font-weight: 600;
+        font-family: 'Trebuchet MS', sans-serif;
+        background: transparent;
+        border: none;
+        color: #94A3B8;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    .stTabs [data-baseweb="tab"]:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.6s;
+    }
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #3B82F6, #8B5CF6) !important;
+        color: white !important;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        transform: translateY(-2px) scale(1.05);
+    }
+    .stTabs [data-baseweb="tab"]:hover {
+        background: rgba(59, 130, 246, 0.15);
+        color: #E2E8F0;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 10px rgba(59, 130, 246, 0.2);
+    }
+    .stTabs [data-baseweb="tab"]:hover:before {
+        left: 100%;
+    }
+    .stTabs [aria-selected="true"]:before {
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        animation: shimmer 2s infinite;
+    }
+    @keyframes shimmer {
+        0% { left: -100%; }
+        50% { left: 100%; }
+        100% { left: 100%; }
+    }
+    
+    /* Tab container'ı ortala */
+    .stTabs {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Daha büyük sekme butonları
-menu = st.tabs(["📊 Anasayfa", "📈 Analizler", "🔄 Canlı Veri", "🧪 Veri Bilim", "👥 İK Analiz", "🌐 D3 Grafik"])
+# Büyük tab menüsü - En üstte
+menu = st.tabs(["👤 Hakkımda", "🔄 Api Entegrasyon", "🧪 Data Science", "👥 HR Analytics", "🌐 D3 Grafik"])
+
+# Ana içerik - Kompakt başlık
+st.markdown("""
+<div style="text-align:center; padding: 0.5rem 0 0.3rem 0;">
+    <h1 style="font-size: 1.5rem; margin-bottom: 0.2rem; color: #8B5CF6 !important; font-weight: bold !important; font-family: 'Trebuchet MS', sans-serif !important; text-shadow: none !important; background: none !important;">Veri Analizi Portföyü</h1>
+    <p style="color: #8B5CF6; font-size: 0.9rem; margin-bottom: 0.3rem; font-weight: bold;">Veri Sanatı Portföyüme Hoşgeldin</p>
+</div>
+""", unsafe_allow_html=True)
+
 
 with menu[0]:
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
     st.markdown("""
-    <h2>Hoş Geldiniz</h2>
-    <p>Veri sanatı ve görselleştirme alanında çalışmalarımı bu portföyde bulabilirsiniz. 
-    Veri odaklı hikaye anlatımı ve görselleştirme teknikleriyle karmaşık verileri anlamlı içgörülere dönüştürüyorum.</p>
+    <h2 style="color: #8B5CF6 !important; font-weight: bold !important; font-family: 'Trebuchet MS', sans-serif !important; text-shadow: none !important; background: none !important;">Hakkımda</h2>
+    <p>Veri analizi ve görselleştirme alanında 4+ yıllık deneyime sahip Kıdemli Veri Analistiyim. SQL, Python ve VBA 
+    konularında uzman seviyede bilgi sahibi. CRM veri analizi, İK analitik çözümleri, çağrı merkezi ve operasyonel 
+    raporlama konularında kapsamlı deneyim. Veri odaklı karar alma süreçlerini destekleyen analitik çözümler 
+    geliştirme konusunda uzman.</p>
     
-    <p>Portföyümde bulunan çalışmalar:</p>
+    <p><strong>Uzmanlık Alanlarım:</strong></p>
     <ul>
-        <li>Özel tasarlanmış veri görselleştirmeleri</li>
-        <li>İnteraktif dashboard projeleri</li>
-        <li>Gerçek zamanlı veri analizleri</li>
-        <li>Sektörel trend analiz raporları</li>
+        <li>SQL ve veritabanı yönetimi</li>
+        <li>Python ile veri analizi ve görselleştirme</li>
+        <li>VBA ile otomasyon çözümleri</li>
+        <li>CRM ve İK veri analizleri</li>
+        <li>Operasyonel raporlama ve dashboard geliştirme</li>
     </ul>
     """, unsafe_allow_html=True)
     st.markdown("""</div>""", unsafe_allow_html=True)
@@ -502,11 +633,9 @@ with menu[1]:
         fig1.update_layout(
             xaxis_title="Sanatçı",
             yaxis_title="Değer (Bin TL)",
-            plot_bgcolor='rgba(0,0,0,0)',
-            xaxis=dict(showgrid=False),
-            yaxis=dict(showgrid=True, gridcolor='rgba(230,230,230,0.8)'),
             margin=dict(t=50, b=50, l=40, r=40),
         )
+        fig1 = make_transparent_bg(fig1)
         st.plotly_chart(fig1, use_container_width=True)
         
         # Ek bilgi/açıklama
@@ -536,11 +665,9 @@ with menu[1]:
         fig2.update_layout(
             xaxis_title="Kategori",
             yaxis_title="Eser Sayısı",
-            plot_bgcolor='rgba(0,0,0,0)',
-            xaxis=dict(showgrid=False),
-            yaxis=dict(showgrid=True, gridcolor='rgba(230,230,230,0.8)'),
             margin=dict(t=50, b=50, l=40, r=40),
         )
+        fig2 = make_transparent_bg(fig2)
         st.plotly_chart(fig2, use_container_width=True)
     st.markdown("""</div>""", unsafe_allow_html=True)
 
@@ -578,10 +705,10 @@ with menu[1]:
         sankey_fig.update_layout(
             title="Veri Akış Süreçleri",
             font=dict(size=12),
-            plot_bgcolor='rgba(0,0,0,0)',
             margin=dict(t=50, b=50, l=40, r=40),
             height=500,
         )
+        sankey_fig = make_transparent_bg(sankey_fig)
         
         st.plotly_chart(sankey_fig, use_container_width=True)
     st.markdown("""</div>""", unsafe_allow_html=True)
@@ -1058,5 +1185,5 @@ with menu[4]:
     st.markdown("""</div>""", unsafe_allow_html=True)
 
 # D3Graph Tab (menu[5])
-with menu[5]:
+with menu[4]:
     create_d3graph_visualizations()

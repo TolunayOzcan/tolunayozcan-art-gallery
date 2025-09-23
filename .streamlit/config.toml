@@ -1,4 +1,4 @@
-# Bu yapılandırma dosyası Streamlit Cloud'a uygulamanızın 24/7 aktif kalması gerektiğini söyler
+# Streamlit configuration
 
 [server]
 headless = true
@@ -6,25 +6,9 @@ enableCORS = false
 enableXsrfProtection = false
 maxUploadSize = 5
 port = 8501
-enableWebsocketCompression = true
-
-# Uygulama kapatıldığında otomatik olarak yeniden başlatılması için ayarlar
-runOnSave = true
-fileWatcherType = "auto"
-
-[runner]
-# "static" olarak ayarlamak Streamlit'e bu uygulamanın sürekli çalışması gerektiğini söyler
-staticExecutor = true
-# Uygulamanın sürekli çalışması için ek parametreler
-fastReruns = true
-caching = true
-magicEnabled = true
 
 [browser]
-# Tarayıcı kapatıldığında bile bağlantının korunması için
 gatherUsageStats = false
-serverAddress = "localhost"
-serverPort = 8501
 
 [theme]
 primaryColor = "#00FF41"
