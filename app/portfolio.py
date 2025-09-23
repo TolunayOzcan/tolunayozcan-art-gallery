@@ -176,7 +176,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Daha büyük sekme butonları
-menu = st.tabs(["📊 Anasayfa", "📈 Analizler", "🔄 Canlı Veriler", "🧪 Veri Bilimi", "👥 İK Analitiği"])
+menu = st.tabs(["📊 Anasayfa", "📈 Analizler", "🔄 Canlı Veri", "🧪 Veri Bilim", "👥 İK Analiz"])
 
 with menu[0]:
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
