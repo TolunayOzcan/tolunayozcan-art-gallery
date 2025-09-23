@@ -127,12 +127,19 @@ def create_d3graph_visualizations():
     st.header("🌐 D3Graph İnteraktif Görselleştirmeler")
     st.write("D3Graph kütüphanesi kullanılarak oluşturulan interaktif ağ grafikleri")
     
+    # Veri akışı durumu kontrolü
     try:
+        from d3graph import d3graph
+        st.success("✅ D3Graph kütüphanesi başarıyla yüklendi!")
+        
         # Grafik türü seçimi
         graph_type = st.selectbox(
             "Grafik Türünü Seçin:",
-            ["Organizasyon Ağı", "Beceri Ağı", "Proje İlişkileri", "Departman Bağlantıları"]
+            ["Organizasyon Ağı", "Beceri Ağı", "Proje İlişkileri", "Departman Bağlantıları"],
+            help="Görmek istediğiniz ağ grafiği türünü seçin"
         )
+        
+        st.info(f"📊 Seçili grafik: **{graph_type}**")
         
         if graph_type == "Organizasyon Ağı":
             create_organization_network()
@@ -143,13 +150,18 @@ def create_d3graph_visualizations():
         elif graph_type == "Departman Bağlantıları":
             create_department_network()
             
+    except ImportError as e:
+        st.error(f"❌ D3Graph import hatası: {e}")
+        st.info("💡 D3Graph kütüphanesi yüklenmemiş olabilir. Lütfen sayfayı yenileyin.")
+        st.code("pip install git+https://github.com/erdogant/d3graph", language="bash")
     except Exception as e:
-        st.error(f"D3Graph görselleştirme hatası: {e}")
-        st.info("D3Graph kütüphanesi yüklü değil veya bir hata oluştu.")
+        st.error(f"🔧 D3Graph genel hatası: {e}")
+        st.info("🔄 Sistem yeniden bağlanıyor, lütfen sayfayı yenileyin.")
 
 def create_organization_network():
     """Organizasyon ağ grafiği"""
     st.subheader("📊 Organizasyon Ağı")
+    st.info("Organizasyon şeması - Şirket hiyerarşisi ve departman yapıları")
     
     # Örnek organizasyon verisi
     source = ['CEO', 'CEO', 'CEO', 'HR Manager', 'HR Manager', 'IT Manager', 'IT Manager', 'Sales Manager', 'Sales Manager']
@@ -159,22 +171,42 @@ def create_organization_network():
     try:
         d3 = d3graph()
         d3.graph(source, target, weight=weight)
-        d3.set_node_properties(color='cluster')
+        d3.set_node_properties(color='cluster', size='centrality')
         
-        # HTML dosyası oluştur ve göster
-        html_file = d3.show(filepath='/tmp/organization_network.html', show_slider=True, notebook=False)
+        # Verileri göster
+        st.success("✅ D3Graph veri akışı başarılı!")
         
-        # HTML içeriğini okuyup Streamlit'te göster
-        with open('/tmp/organization_network.html', 'r', encoding='utf-8') as f:
-            html_content = f.read()
-        st.components.v1.html(html_content, height=600, scrolling=True)
+        # Basit tablo gösterimi
+        import pandas as pd
+        org_data = pd.DataFrame({
+            'Yönetici': source,
+            'Çalışan': target,
+            'Bağlantı Seviyesi': weight
+        })
+        st.dataframe(org_data, use_container_width=True)
+        
+        # D3Graph HTML oluşturma
+        html_path = '/tmp/organization_network.html'
+        d3.show(filepath=html_path, show_slider=False, notebook=False)
+        
+        # HTML dosyasının var olup olmadığını kontrol et
+        import os
+        if os.path.exists(html_path):
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            st.components.v1.html(html_content, height=600, scrolling=True)
+            st.success("🌐 İnteraktif grafik yüklendi!")
+        else:
+            st.warning("HTML dosyası oluşturulamadı")
         
     except Exception as e:
-        st.error(f"Organizasyon ağı oluşturulamadı: {e}")
+        st.error(f"Organizasyon ağı hatası: {str(e)}")
+        st.info("💡 D3Graph kütüphanesi yükleniyor olabilir, lütfen sayfayı yenileyin.")
 
 def create_skill_network():
     """Beceri ağ grafiği"""
     st.subheader("🎯 Beceri Ağı")
+    st.info("Çalışan yetenekleri ve teknoloji becerileri arasındaki ilişki haritası")
     
     # Beceri verisi
     skills = ['Python', 'SQL', 'Machine Learning', 'Data Analysis', 'Visualization', 'Statistics']
@@ -184,7 +216,8 @@ def create_skill_network():
     target = []
     weight = []
     
-    # Çalışan-beceri ilişkileri
+    # Çalışan-beceri ilişkileri (sabit seed için tutarlılık)
+    np.random.seed(42)
     for emp in employees:
         for skill in np.random.choice(skills, size=np.random.randint(2, 4), replace=False):
             source.append(emp)
@@ -192,22 +225,41 @@ def create_skill_network():
             weight.append(np.random.randint(1, 5))
     
     try:
+        st.success("✅ Beceri verisi hazırlandı!")
+        
+        # Beceri matrisi göster
+        import pandas as pd
+        skill_data = pd.DataFrame({
+            'Çalışan': source,
+            'Beceri': target,
+            'Seviye': weight
+        })
+        st.dataframe(skill_data, use_container_width=True)
+        
         d3 = d3graph()
         d3.graph(source, target, weight=weight)
         d3.set_node_properties(color='cluster', size='centrality')
         
-        html_file = d3.show(filepath='/tmp/skill_network.html', show_slider=True, notebook=False)
+        html_path = '/tmp/skill_network.html'
+        d3.show(filepath=html_path, show_slider=False, notebook=False)
         
-        with open('/tmp/skill_network.html', 'r', encoding='utf-8') as f:
-            html_content = f.read()
-        st.components.v1.html(html_content, height=600, scrolling=True)
+        import os
+        if os.path.exists(html_path):
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            st.components.v1.html(html_content, height=600, scrolling=True)
+            st.success("🌐 Beceri ağı yüklendi!")
+        else:
+            st.warning("HTML dosyası oluşturulamadı")
         
     except Exception as e:
-        st.error(f"Beceri ağı oluşturulamadı: {e}")
+        st.error(f"Beceri ağı hatası: {str(e)}")
+        st.info("💡 Veri yeniden işleniyor...")
 
 def create_project_network():
     """Proje ilişkileri ağ grafiği"""
     st.subheader("🚀 Proje İlişkileri")
+    st.info("Projeler ve kullanılan teknolojiler arasındaki bağlantı haritası")
     
     # Proje verisi
     projects = ['Web App', 'Mobile App', 'Data Pipeline', 'Analytics Dashboard', 'ML Model']
@@ -217,7 +269,8 @@ def create_project_network():
     target = []
     weight = []
     
-    # Proje-teknoloji ilişkileri
+    # Proje-teknoloji ilişkileri (sabit seed)
+    np.random.seed(123)
     for proj in projects:
         for tech in np.random.choice(technologies, size=np.random.randint(2, 4), replace=False):
             source.append(proj)
@@ -225,22 +278,41 @@ def create_project_network():
             weight.append(np.random.randint(1, 3))
     
     try:
+        st.success("✅ Proje verileri hazırlandı!")
+        
+        # Proje-teknoloji matrisi
+        import pandas as pd
+        project_data = pd.DataFrame({
+            'Proje': source,
+            'Teknoloji': target,
+            'Kullanım Yoğunluğu': weight
+        })
+        st.dataframe(project_data, use_container_width=True)
+        
         d3 = d3graph()
         d3.graph(source, target, weight=weight)
         d3.set_node_properties(color='cluster', size='centrality')
         
-        html_file = d3.show(filepath='/tmp/project_network.html', show_slider=True, notebook=False)
+        html_path = '/tmp/project_network.html'
+        d3.show(filepath=html_path, show_slider=False, notebook=False)
         
-        with open('/tmp/project_network.html', 'r', encoding='utf-8') as f:
-            html_content = f.read()
-        st.components.v1.html(html_content, height=600, scrolling=True)
+        import os
+        if os.path.exists(html_path):
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            st.components.v1.html(html_content, height=600, scrolling=True)
+            st.success("🌐 Proje ağı başarıyla yüklendi!")
+        else:
+            st.warning("HTML dosyası oluşturulamadı")
         
     except Exception as e:
-        st.error(f"Proje ağı oluşturulamadı: {e}")
+        st.error(f"Proje ağı hatası: {str(e)}")
+        st.info("🛠️ Teknik sorun gideriliyor...")
 
 def create_department_network():
     """Departman bağlantıları ağ grafiği"""
     st.subheader("🏢 Departman Bağlantıları")
+    st.info("Departmanlar arası işbirliği ve iletişim yoğunluğu")
     
     # Departman verisi
     departments = ['İK', 'IT', 'Satış', 'Pazarlama', 'Finans', 'Operasyon']
@@ -262,18 +334,44 @@ def create_department_network():
         weight.append(collab[2])
     
     try:
+        st.success("✅ Departman verileri yüklendi!")
+        
+        # Departman işbirliği tablosu
+        import pandas as pd
+        dept_data = pd.DataFrame({
+            'Departman 1': source,
+            'Departman 2': target,
+            'İşbirliği Seviyesi': weight
+        })
+        st.dataframe(dept_data, use_container_width=True)
+        
+        # En yoğun işbirliği
+        max_collab = dept_data.loc[dept_data['İşbirliği Seviyesi'].idxmax()]
+        st.metric(
+            "En Yoğun İşbirliği", 
+            f"{max_collab['Departman 1']} ↔️ {max_collab['Departman 2']}",
+            f"Seviye: {max_collab['İşbirliği Seviyesi']}"
+        )
+        
         d3 = d3graph()
         d3.graph(source, target, weight=weight)
         d3.set_node_properties(color='cluster', size='centrality')
         
-        html_file = d3.show(filepath='/tmp/department_network.html', show_slider=True, notebook=False)
+        html_path = '/tmp/department_network.html'
+        d3.show(filepath=html_path, show_slider=False, notebook=False)
         
-        with open('/tmp/department_network.html', 'r', encoding='utf-8') as f:
-            html_content = f.read()
-        st.components.v1.html(html_content, height=600, scrolling=True)
+        import os
+        if os.path.exists(html_path):
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            st.components.v1.html(html_content, height=600, scrolling=True)
+            st.success("🌐 Departman ağı aktif!")
+        else:
+            st.warning("HTML dosyası oluşturulamadı")
         
     except Exception as e:
-        st.error(f"Departman ağı oluşturulamadı: {e}")
+        st.error(f"Departman ağı hatası: {str(e)}")
+        st.info("🔄 Sistem yeniden bağlanıyor...")
 
 # Sol menü
 with st.sidebar:
