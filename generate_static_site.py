@@ -1,0 +1,325 @@
+#!/usr/bin/env python3
+"""
+GitHub Pages için static HTML generator
+Streamlit portfolio'yu static HTML'e çevirir
+"""
+
+import os
+import sys
+import json
+import pandas as pd
+import plotly.graph_objects as go
+import plotly.express as px
+import plotly.io as pio
+import numpy as np
+from datetime import datetime
+
+# HTML template
+HTML_TEMPLATE = """
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tolunay Özcan | Veri Sanatı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Trebuchet+MS:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Trebuchet MS', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0d1117, #161b22);
+            color: #f0f6fc;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0 auto 1rem auto;
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 0.8rem 1.5rem;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 10px;
+            color: #f0f6fc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            transform: translateY(-2px);
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255,255,255,0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .metric {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            margin: 0.5rem;
+        }
+        
+        .metrics-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .chart-container {
+            margin: 2rem 0;
+            background: rgba(255,255,255,0.05);
+            padding: 1rem;
+            border-radius: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .tab {
+                width: 200px;
+            }
+            
+            .metrics-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="avatar">TÖ</div>
+            <h1>Tolunay ÖZCAN</h1>
+            <p style="color: #757575; margin-top: 0.5rem;">Data Analyst</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('about')">👤 Hakkımda</button>
+            <button class="tab" onclick="showTab('analytics')">📊 Analytics</button>
+            <button class="tab" onclick="showTab('api')">🔄 Api entegrasyon</button>
+            <button class="tab" onclick="showTab('datascience')">🧪 Data science</button>
+            <button class="tab" onclick="showTab('hr')">👥 HR analytics</button>
+        </div>
+        
+        <div id="about" class="tab-content active">
+            <h2 style="color: #8B5CF6; margin-bottom: 1rem;">Hakkımda</h2>
+            <p style="line-height: 1.6; margin-bottom: 2rem;">
+                Veri analizi ve görselleştirme alanında 4+ yıllık deneyime sahip Kıdemli Veri Analistiyim. 
+                SQL, Python ve VBA konularında uzman seviyede bilgi sahibi. CRM veri analizi, İK analitik 
+                çözümleri, çağrı merkezi ve operasyonel raporlama konularında kapsamlı deneyim.
+            </p>
+            
+            <div class="metrics-row">
+                <div class="metric">
+                    <h3>24+</h3>
+                    <p>Tamamlanan Proje</p>
+                    <small style="color: #22c55e;">3 son ayda</small>
+                </div>
+                <div class="metric">
+                    <h3>15</h3>
+                    <p>Veri Kaynakları</p>
+                    <small style="color: #22c55e;">5 yeni eklendi</small>
+                </div>
+                <div class="metric">
+                    <h3>97%</h3>
+                    <p>Memnuniyet Oranı</p>
+                    <small style="color: #22c55e;">2% artış</small>
+                </div>
+            </div>
+        </div>
+        
+        <div id="analytics" class="tab-content">
+            <h2 style="color: #8B5CF6; margin-bottom: 1rem;">Analytics</h2>
+            <div class="chart-container">
+                <div id="analytics-chart"></div>
+            </div>
+        </div>
+        
+        <div id="api" class="tab-content">
+            <h2 style="color: #8B5CF6; margin-bottom: 1rem;">Api entegrasyon</h2>
+            <p style="margin-bottom: 1rem;">API servisleri demo modunda çalışmaktadır.</p>
+            
+            <table style="width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden;">
+                <thead>
+                    <tr style="background: rgba(139, 92, 246, 0.3);">
+                        <th style="padding: 1rem; text-align: left;">Sembol</th>
+                        <th style="padding: 1rem; text-align: left;">Fiyat</th>
+                        <th style="padding: 1rem; text-align: left;">Değişim 24h</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td style="padding: 1rem;">BTC</td><td style="padding: 1rem;">$43,250</td><td style="padding: 1rem; color: #22c55e;">+2.5%</td></tr>
+                    <tr><td style="padding: 1rem;">ETH</td><td style="padding: 1rem;">$2,680</td><td style="padding: 1rem; color: #ef4444;">-1.2%</td></tr>
+                    <tr><td style="padding: 1rem;">BNB</td><td style="padding: 1rem;">$308</td><td style="padding: 1rem; color: #22c55e;">+0.8%</td></tr>
+                    <tr><td style="padding: 1rem;">ADA</td><td style="padding: 1rem;">$0.52</td><td style="padding: 1rem; color: #22c55e;">+3.1%</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="datascience" class="tab-content">
+            <h2 style="color: #8B5CF6; margin-bottom: 1rem;">Data Science</h2>
+            <div class="chart-container">
+                <div id="datascience-chart"></div>
+            </div>
+        </div>
+        
+        <div id="hr" class="tab-content">
+            <h2 style="color: #8B5CF6; margin-bottom: 1rem;">HR Analytics</h2>
+            <div class="chart-container">
+                <div id="hr-chart"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Tab functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+        
+        // Analytics Chart
+        const analyticsData = {
+            x: ['Sanatçı A', 'Sanatçı B', 'Sanatçı C', 'Sanatçı D'],
+            y: [150, 200, 120, 180],
+            type: 'bar',
+            marker: {
+                color: ['#3B82F6', '#8B5CF6', '#06B6D4', '#10B981']
+            }
+        };
+        
+        Plotly.newPlot('analytics-chart', [analyticsData], {
+            title: 'Sanatçıların Piyasa Değerleri',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            font: { color: 'white' },
+            xaxis: { color: 'white' },
+            yaxis: { color: 'white' }
+        });
+        
+        // Data Science Chart
+        const x = Array.from({length: 100}, () => Math.random() * 4 - 2);
+        const y = x.map(val => 2 * val + Math.random() - 0.5);
+        
+        const dataScienceData = {
+            x: x,
+            y: y,
+            mode: 'markers',
+            type: 'scatter',
+            marker: { color: '#8B5CF6', size: 6 }
+        };
+        
+        Plotly.newPlot('datascience-chart', [dataScienceData], {
+            title: 'Sample Regression Analysis',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            font: { color: 'white' },
+            xaxis: { color: 'white' },
+            yaxis: { color: 'white' }
+        });
+        
+        // HR Analytics Chart
+        const hrData = {
+            x: ['IT', 'Sales', 'HR', 'Finance'],
+            y: [12, 18, 8, 10],
+            type: 'bar',
+            marker: {
+                color: ['#ef4444', '#f97316', '#22c55e', '#3b82f6']
+            }
+        };
+        
+        Plotly.newPlot('hr-chart', [hrData], {
+            title: 'Departmanlara Göre İşten Ayrılma Oranları',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            font: { color: 'white' },
+            xaxis: { color: 'white' },
+            yaxis: { color: 'white', title: 'Ayrılma Oranı (%)' }
+        });
+    </script>
+</body>
+</html>
+"""
+
+def generate_static_site():
+    """GitHub Pages için static HTML site oluştur"""
+    
+    # _site dizinini oluştur
+    os.makedirs('_site', exist_ok=True)
+    
+    # Ana HTML dosyasını oluştur
+    with open('_site/index.html', 'w', encoding='utf-8') as f:
+        f.write(HTML_TEMPLATE)
+    
+    # CNAME dosyası oluştur (custom domain için)
+    with open('_site/CNAME', 'w') as f:
+        f.write('tolunayozcan.art')
+    
+    print("✅ Static site generated successfully!")
+    print("📁 Files created in _site/ directory")
+    print("🌐 Ready for GitHub Pages deployment")
+
+if __name__ == "__main__":
+    generate_static_site()
