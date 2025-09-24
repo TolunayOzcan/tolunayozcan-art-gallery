@@ -9,6 +9,10 @@ import threading
 import time
 from datetime import datetime
 
+# Railway environment optimizations
+st.set_option('deprecation.showPyplotGlobalUse', False)
+os.environ['MPLBACKEND'] = 'Agg'
+
 # Network Graph imports
 try:
     import networkx as nx
