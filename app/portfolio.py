@@ -20,7 +20,18 @@ except ImportError as e:
 
 # Import için yolu düzenleme
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from scraper import scrape_ekonomi_verileri, scrape_borsa_verileri, scrape_kripto_verileri
+
+# Güvenli scraper import (Cloud ortamında hata engelleme)
+try:
+    from scraper import scrape_ekonomi_verileri, scrape_borsa_verileri, scrape_kripto_verileri
+except Exception as e:
+    st.warning(f"Scraper import edilemedi, demo veriler kullanılacak: {e}")
+    def scrape_ekonomi_verileri():
+        return pd.DataFrame({'Gösterge': ['Demo'], 'Değer': [100]})
+    def scrape_borsa_verileri():
+        return pd.DataFrame({'Hisse': ['DEMO'], 'Fiyat': [100]})
+    def scrape_kripto_verileri():
+        return pd.DataFrame({'Kripto': ['DEMO'], 'Fiyat': [100]})
 
 # Sürekli çalışma için heartbeat mekanizmasını ekle
 try:
@@ -105,11 +116,15 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS dosyasını okuyup inject et
+# CSS dosyasını okuyup inject et (güvenli)
 def load_css(css_file):
-    with open(css_file, "r") as f:
-        css = f"<style>{f.read()}</style>"
-        st.markdown(css, unsafe_allow_html=True)
+    try:
+        if os.path.exists(css_file):
+            with open(css_file, "r", encoding="utf-8") as f:
+                css = f"<style>{f.read()}</style>"
+                st.markdown(css, unsafe_allow_html=True)
+    except Exception as e:
+        st.warning(f"style.css yüklenemedi: {e}")
 
 # Font eklemek için
 def local_css():
@@ -1390,7 +1405,3 @@ with menu[4]:
     </ul>
     """, unsafe_allow_html=True)
     st.markdown("""</div>""", unsafe_allow_html=True)
-
-# D3Graph Tab (menu[5])
-with menu[4]:
-    create_d3graph_visualizations()
