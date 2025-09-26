@@ -613,22 +613,139 @@ with menu[0]:
     
     st.markdown("""</div>""", unsafe_allow_html=True)
     
-    # Metrikler ekle
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.markdown("""<div class="card metric-card-1" style="text-align:center; background-color: #E1BEE7;">""", unsafe_allow_html=True)
-        st.metric(label="Tamamlanan Proje", value="24+", delta="3 son ayda")
-        st.markdown("""</div>""", unsafe_allow_html=True)
+    # Site Mapping Diagramı
+    st.markdown("""<div class="card">""", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #8B5CF6; font-family: Trebuchet MS;'>📍 Site Haritası</h3>", unsafe_allow_html=True)
     
-    with col2:
-        st.markdown("""<div class="card metric-card-2" style="text-align:center; background-color: #C5CAE9;">""", unsafe_allow_html=True)
-        st.metric(label="Veri Kaynakları", value="15", delta="5 yeni eklendi")
-        st.markdown("""</div>""", unsafe_allow_html=True)
+    # Site yapısını tanımlayalım
+    import plotly.graph_objects as go
+    import plotly.express as px
+    
+    # Hierarchical site structure
+    fig = go.Figure()
+    
+    # Ana sayfa (merkez)
+    fig.add_trace(go.Scatter(
+        x=[0], y=[0],
+        mode='markers+text',
+        marker=dict(size=80, color='#8B5CF6', line=dict(width=3, color='white')),
+        text=['🏠 Ana Sayfa'],
+        textposition="middle center",
+        textfont=dict(size=14, color='white', family='Trebuchet MS'),
+        name='Ana Sayfa',
+        hovertemplate='<b>Ana Sayfa</b><br>Portfolio giriş sayfası<extra></extra>'
+    ))
+    
+    # Ana kategoriler (ilk seviye)
+    categories = [
+        {'name': '👤 Hakkımda', 'x': -2, 'y': 1.5, 'color': '#3B82F6'},
+        {'name': '📊 Analytics', 'x': 2, 'y': 1.5, 'color': '#10B981'},
+        {'name': '🧠 Data Science', 'x': -2, 'y': -1.5, 'color': '#F59E0B'},
+        {'name': '👥 HR Analytics', 'x': 2, 'y': -1.5, 'color': '#EF4444'}
+    ]
+    
+    for cat in categories:
+        fig.add_trace(go.Scatter(
+            x=[cat['x']], y=[cat['y']],
+            mode='markers+text',
+            marker=dict(size=60, color=cat['color'], line=dict(width=2, color='white')),
+            text=[cat['name']],
+            textposition="middle center",
+            textfont=dict(size=11, color='white', family='Trebuchet MS'),
+            name=cat['name'].split(' ')[1],
+            hovertemplate=f'<b>{cat["name"]}</b><br>Ana kategori<extra></extra>'
+        ))
         
-    with col3:
-        st.markdown("""<div class="card metric-card-3" style="text-align:center; background-color: #BBDEFB;">""", unsafe_allow_html=True)
-        st.metric(label="Memnuniyet Oranı", value="97%", delta="2% geçen yıla göre")
-        st.markdown("""</div>""", unsafe_allow_html=True)
+        # Ana sayfadan kategorilere bağlantı çizgileri
+        fig.add_trace(go.Scatter(
+            x=[0, cat['x']], y=[0, cat['y']],
+            mode='lines',
+            line=dict(color='rgba(139, 92, 246, 0.3)', width=2),
+            showlegend=False,
+            hoverinfo='skip'
+        ))
+    
+    # Alt kategoriler (ikinci seviye)
+    subcategories = [
+        # Hakkımda alt kategorileri
+        {'name': '📝 Özgeçmiş', 'x': -3.5, 'y': 2.8, 'parent_x': -2, 'parent_y': 1.5, 'color': '#60A5FA'},
+        {'name': '🎯 Yetenekler', 'x': -0.5, 'y': 2.8, 'parent_x': -2, 'parent_y': 1.5, 'color': '#60A5FA'},
+        
+        # Analytics alt kategorileri
+        {'name': '📈 Grafikler', 'x': 3.5, 'y': 2.8, 'parent_x': 2, 'parent_y': 1.5, 'color': '#34D399'},
+        {'name': '📊 Tablolar', 'x': 0.5, 'y': 2.8, 'parent_x': 2, 'parent_y': 1.5, 'color': '#34D399'},
+        
+        # Data Science alt kategorileri
+        {'name': '🤖 ML Modeller', 'x': -3.5, 'y': -2.8, 'parent_x': -2, 'parent_y': -1.5, 'color': '#FBBF24'},
+        {'name': '📉 Tahminler', 'x': -0.5, 'y': -2.8, 'parent_x': -2, 'parent_y': -1.5, 'color': '#FBBF24'},
+        
+        # HR Analytics alt kategorileri
+        {'name': '👔 Performans', 'x': 3.5, 'y': -2.8, 'parent_x': 2, 'parent_y': -1.5, 'color': '#F87171'},
+        {'name': '📋 Raporlar', 'x': 0.5, 'y': -2.8, 'parent_x': 2, 'parent_y': -1.5, 'color': '#F87171'}
+    ]
+    
+    for sub in subcategories:
+        fig.add_trace(go.Scatter(
+            x=[sub['x']], y=[sub['y']],
+            mode='markers+text',
+            marker=dict(size=40, color=sub['color'], line=dict(width=2, color='white')),
+            text=[sub['name']],
+            textposition="middle center",
+            textfont=dict(size=9, color='white', family='Trebuchet MS'),
+            name=sub['name'].split(' ')[1],
+            hovertemplate=f'<b>{sub["name"]}</b><br>Alt kategori<extra></extra>'
+        ))
+        
+        # Ana kategorilerden alt kategorilere bağlantı çizgileri
+        fig.add_trace(go.Scatter(
+            x=[sub['parent_x'], sub['x']], y=[sub['parent_y'], sub['y']],
+            mode='lines',
+            line=dict(color='rgba(107, 114, 128, 0.3)', width=1.5),
+            showlegend=False,
+            hoverinfo='skip'
+        ))
+    
+    # Layout ayarları
+    fig.update_layout(
+        title={
+            'text': 'Portfolio Site Yapısı',
+            'x': 0.5,
+            'font': {'size': 18, 'color': '#8B5CF6', 'family': 'Trebuchet MS'}
+        },
+        xaxis=dict(
+            showgrid=False,
+            showticklabels=False,
+            zeroline=False,
+            range=[-4.5, 4.5]
+        ),
+        yaxis=dict(
+            showgrid=False,
+            showticklabels=False,
+            zeroline=False,
+            range=[-3.5, 3.5]
+        ),
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        height=500,
+        margin=dict(l=20, r=20, t=60, b=20),
+        showlegend=False
+    )
+    
+    fig = make_transparent_bg(fig)
+    st.plotly_chart(fig, use_container_width=True)
+    
+    # Site yapısı açıklaması
+    st.markdown("""
+    <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px; border-radius: 10px; margin-top: 15px;'>
+        <h4 style='color: white; margin: 0 0 10px 0;'>🗺️ Site Navigasyonu</h4>
+        <p style='color: white; margin: 0; font-size: 14px;'>
+            Bu diyagram, portfolio sitesinin yapısını ve bölümler arası ilişkileri göstermektedir. 
+            Her kategori altında ilgili alt konular organize edilmiştir.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""</div>""", unsafe_allow_html=True)
 
 with menu[1]:
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
