@@ -116,7 +116,7 @@ st.set_page_config(
     page_title="Tolunay Özcan | Veri Sanatı",
     page_icon="📊",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # CSS dosyasını okuyup inject et (güvenli)
@@ -417,35 +417,7 @@ def create_department_network():
         st.error(f"Departman ağı hatası: {str(e)}")
         st.info("🔄 Sistem yeniden bağlanıyor...")
 
-# Sol menü - Profil fotoğrafı ve kompakt tasarım
-with st.sidebar:
-    # Profil avatarı (TÖ yazılı)
-    st.markdown("""
-    <div style="text-align:center; padding: 0.6rem 0;">
-        <div style="width: 80px; height: 80px; margin: 0 auto 0.8rem auto; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 3px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center;">
-            <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #1E40AF, #7C3AED); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; font-family: 'Trebuchet MS', sans-serif;">
-                TÖ
-            </div>
-        </div>
-        <h2 style="margin: 0; font-size: 0.95rem; font-family: 'Trebuchet MS', sans-serif; line-height: 1.2;">Tolunay ÖZCAN</h2>
-        <p style="color:#757575; margin: 0.1rem 0; font-size: 0.75rem; font-family: 'Trebuchet MS', sans-serif;">Data Analyst</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Kompakt iletişim bölümü
-    st.markdown("""
-    <div style="text-align:center; padding: 0.3rem 0;">
-        <a href="https://www.linkedin.com/in/tolunayozcan/" target="_blank" style="text-decoration:none; margin: 0 6px;">
-            <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="20" title="LinkedIn">
-        </a>
-        <a href="https://github.com/TolunayOzcan" target="_blank" style="text-decoration:none; margin: 0 6px;">
-            <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" width="20" title="GitHub">
-        </a>
-        <a href="mailto:tolunayozcan95@gmail.com" style="text-decoration:none; margin: 0 6px;">
-            <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png" width="20" title="E-posta">
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
+# Sidebar kaldırıldı - Profil bilgileri Hakkımda kısmına taşındı
 
 # Büyük ve animasyonlu tab bar tasarımı - En üstte ortalanmış
 st.markdown("""
@@ -556,22 +528,55 @@ menu = st.tabs(["👤 Hakkımda", "📊 Analytics", "🔄 Api entegrasyon", "�
 
 with menu[0]:
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
-    st.markdown("""
-    <h2 style="color: #8B5CF6 !important; font-weight: bold !important; font-family: 'Trebuchet MS', sans-serif !important; text-shadow: none !important; background: none !important;">Hakkımda</h2>
-    <p>Veri analizi ve görselleştirme alanında 4+ yıllık deneyime sahip Kıdemli Veri Analistiyim. SQL, Python ve VBA 
-    konularında uzman seviyede bilgi sahibi. CRM veri analizi, İK analitik çözümleri, çağrı merkezi ve operasyonel 
-    raporlama konularında kapsamlı deneyim. Veri odaklı karar alma süreçlerini destekleyen analitik çözümler 
-    geliştirme konusunda uzman.</p>
     
-    <p><strong>Uzmanlık Alanlarım:</strong></p>
-    <ul>
-        <li>SQL ve veritabanı yönetimi</li>
-        <li>Python ile veri analizi ve görselleştirme</li>
-        <li>VBA ile otomasyon çözümleri</li>
-        <li>CRM ve İK veri analizleri</li>
-        <li>Operasyonel raporlama ve dashboard geliştirme</li>
-    </ul>
-    """, unsafe_allow_html=True)
+    # Profil bilgileri üst kısımda
+    col1, col2 = st.columns([1, 3])
+    
+    with col1:
+        # Profil avatarı (TÖ yazılı) - sidebar'dan taşındı
+        st.markdown("""
+        <div style="text-align:center; padding: 1rem 0;">
+            <div style="width: 120px; height: 120px; margin: 0 auto 1rem auto; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 3px; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center;">
+                <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #1E40AF, #7C3AED); display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: bold; font-family: 'Trebuchet MS', sans-serif;">
+                    TÖ
+                </div>
+            </div>
+            <h2 style="margin: 0; font-size: 1.4rem; font-family: 'Trebuchet MS', sans-serif; line-height: 1.2; color: #8B5CF6;">Tolunay ÖZCAN</h2>
+            <p style="color:#757575; margin: 0.3rem 0; font-size: 1rem; font-family: 'Trebuchet MS', sans-serif; font-weight: bold;">Data Analyst</p>
+            
+            <!-- Sosyal medya linkleri -->
+            <div style="text-align:center; padding: 1rem 0;">
+                <a href="https://www.linkedin.com/in/tolunayozcan/" target="_blank" style="text-decoration:none; margin: 0 10px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="30" title="LinkedIn" style="border-radius: 5px; transition: transform 0.3s;">
+                </a>
+                <a href="https://github.com/TolunayOzcan" target="_blank" style="text-decoration:none; margin: 0 10px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" width="30" title="GitHub" style="border-radius: 5px; transition: transform 0.3s;">
+                </a>
+                <a href="mailto:tolunayozcan95@gmail.com" style="text-decoration:none; margin: 0 10px;">
+                    <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png" width="30" title="E-posta" style="border-radius: 5px; transition: transform 0.3s;">
+                </a>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+        <h2 style="color: #8B5CF6 !important; font-weight: bold !important; font-family: 'Trebuchet MS', sans-serif !important; text-shadow: none !important; background: none !important; margin-top: 1rem;">Hakkımda</h2>
+        <p style="font-size: 1.1rem; line-height: 1.6; text-align: justify;">Veri analizi ve görselleştirme alanında 4+ yıllık deneyime sahip Kıdemli Veri Analistiyim. SQL, Python ve VBA 
+        konularında uzman seviyede bilgi sahibi. CRM veri analizi, İK analitik çözümleri, çağrı merkezi ve operasyonel 
+        raporlama konularında kapsamlı deneyim. Veri odaklı karar alma süreçlerini destekleyen analitik çözümler 
+        geliştirme konusunda uzman.</p>
+        
+        <p><strong>🎯 Uzmanlık Alanlarım:</strong></p>
+        <ul style="font-size: 1rem; line-height: 1.5;">
+            <li>📊 SQL ve veritabanı yönetimi</li>
+            <li>🐍 Python ile veri analizi ve görselleştirme</li>
+            <li>⚡ VBA ile otomasyon çözümleri</li>
+            <li>🎨 CRM ve İK veri analizleri</li>
+            <li>📈 Operasyonel raporlama ve dashboard geliştirme</li>
+        </ul>
+        """, unsafe_allow_html=True)
+    
     st.markdown("""</div>""", unsafe_allow_html=True)
     
     # Metrikler ekle

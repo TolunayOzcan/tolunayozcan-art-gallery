@@ -182,7 +182,8 @@ code, pre {
   background: linear-gradient(135deg, var(--card-bg-color-2) 0%, var(--card-bg-color-3) 100%);
 }
 
-/* Sidebar stili - Sabit ve daha kompakt tasarım */
+/* Sidebar kaldırıldı - Profil bilgileri Hakkımda sekmesine taşındı */
+/*
 .sidebar .sidebar-content {
   background-color: var(--sidebar-bg-color) !important;
   border-right: 1px solid rgba(59,130,246,0.3);
@@ -195,7 +196,6 @@ code, pre {
   height: 100vh !important;
 }
 
-/* Streamlit sidebar override - Sabit konumlandırma */
 .css-1544g2n.e1fqkh3o4, section[data-testid="stSidebar"] {
   background-color: var(--sidebar-bg-color) !important;
   background: linear-gradient(135deg, var(--sidebar-bg-color) 0%, var(--card-bg-color-1) 100%) !important;
@@ -216,7 +216,6 @@ code, pre {
   max-width: 140px !important;
 }
 
-/* Ana içerik alanını sidebar genişliği kadar kaydır */
 .main > div {
   margin-left: 160px !important;
   padding-left: 1rem !important;
@@ -224,7 +223,6 @@ code, pre {
   position: relative !important;
 }
 
-/* Sidebar içerik padding */
 section[data-testid="stSidebar"] > div {
   padding-top: 0.8rem !important;
   padding-left: 0.3rem !important;
@@ -232,11 +230,19 @@ section[data-testid="stSidebar"] > div {
   width: 140px !important;
 }
 
-/* Sidebar buton stili */
 section[data-testid="stSidebar"] button {
   width: 100% !important;
   border: none !important;
   background: none !important;
+}
+*/
+
+/* Ana içerik alanı - Sidebar kaldırıldığından margin sıfırlandı */
+.main > div {
+  margin-left: 0 !important;
+  padding-left: 1rem !important;
+  z-index: 150 !important;
+  position: relative !important;
 }
 
 /* Plotly grafik stilleri - Şeffaf arka planlar */
