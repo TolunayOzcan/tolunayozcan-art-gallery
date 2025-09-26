@@ -204,7 +204,7 @@ code, pre {
   min-width: 140px !important;
   position: fixed !important;
   height: 100vh !important;
-  z-index: 999999 !important;
+  z-index: 100 !important;
   left: 0 !important;
   top: 0 !important;
 }
@@ -220,6 +220,8 @@ code, pre {
 .main > div {
   margin-left: 160px !important;
   padding-left: 1rem !important;
+  z-index: 150 !important;
+  position: relative !important;
 }
 
 /* Sidebar içerik padding */
@@ -521,10 +523,16 @@ hr {
 }
 
 /* Tab bar gelişmiş animasyonları */
+.stTabs [data-baseweb="tab-list"] {
+    z-index: 200 !important;
+    position: relative !important;
+}
+
 .stTabs [data-baseweb="tab"] {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
     position: relative;
     overflow: hidden;
+    z-index: 200 !important;
 }
 
 .stTabs [data-baseweb="tab"]:hover {

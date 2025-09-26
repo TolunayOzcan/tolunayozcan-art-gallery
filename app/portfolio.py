@@ -549,7 +549,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Büyük tab menüsü - En üstte
-menu = st.tabs(["👤 Hakkımda", "� Analytics", "�🔄 Api entegrasyon", "🧪 Data science", "👥 HR analytics"])
+menu = st.tabs(["👤 Hakkımda", "📊 Analytics", "🔄 Api entegrasyon", "🧪 Data science", "👥 HR analytics"])
 
 
 
