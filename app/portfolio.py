@@ -529,31 +529,55 @@ menu = st.tabs(["👤 Hakkımda", "📊 Analytics", "🔄 Api entegrasyon", "�
 with menu[0]:
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
     
-    # Profil bilgileri üst kısımda
+    # Profil bölümü
     col1, col2 = st.columns([1, 3])
     
     with col1:
-        # Profil avatarı (TÖ yazılı) - sidebar'dan taşındı
         st.markdown("""
         <div style="text-align:center; padding: 1rem 0;">
-            <div style="width: 120px; height: 120px; margin: 0 auto 1rem auto; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 3px; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center;">
+        """, unsafe_allow_html=True)
+        
+        # Profil fotoğrafı kontrolü
+        try:
+            if os.path.exists("pp.jpg"):
+                image = Image.open("pp.jpg")
+                st.image(image, width=120)
+            elif os.path.exists("app/pp.jpg"):
+                image = Image.open("app/pp.jpg")
+                st.image(image, width=120)
+            else:
+                # TÖ avatarı
+                st.markdown("""
+                <div style="width: 120px; height: 120px; margin: 0 auto; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 3px; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center;">
+                    <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #1E40AF, #7C3AED); display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: bold; font-family: 'Trebuchet MS', sans-serif;">
+                        TÖ
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+        except Exception as e:
+            # Hata durumunda TÖ avatarı
+            st.markdown("""
+            <div style="width: 120px; height: 120px; margin: 0 auto; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 3px; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center;">
                 <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #1E40AF, #7C3AED); display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: bold; font-family: 'Trebuchet MS', sans-serif;">
                     TÖ
                 </div>
             </div>
-            <h2 style="margin: 0; font-size: 1.4rem; font-family: 'Trebuchet MS', sans-serif; line-height: 1.2; color: #8B5CF6;">Tolunay ÖZCAN</h2>
-            <p style="color:#757575; margin: 0.3rem 0; font-size: 1rem; font-family: 'Trebuchet MS', sans-serif; font-weight: bold;">Data Analyst</p>
+            """, unsafe_allow_html=True)
+        
+        # İsim ve sosyal medya
+        st.markdown("""
+            <h2 style="margin: 1rem 0 0.5rem 0; font-size: 1.4rem; font-family: 'Trebuchet MS', sans-serif; line-height: 1.2; color: #8B5CF6;">Tolunay ÖZCAN</h2>
+            <p style="color:#757575; margin: 0.3rem 0 1rem 0; font-size: 1rem; font-family: 'Trebuchet MS', sans-serif; font-weight: bold;">Data Analyst</p>
             
-            <!-- Sosyal medya linkleri -->
-            <div style="text-align:center; padding: 1rem 0;">
-                <a href="https://www.linkedin.com/in/tolunayozcan/" target="_blank" style="text-decoration:none; margin: 0 15px; color: #0077B5; font-size: 2.5rem; transition: all 0.3s; display: inline-block;" onmouseover="this.style.transform='scale(1.2)'; this.style.color='#005885'" onmouseout="this.style.transform='scale(1)'; this.style.color='#0077B5'" title="LinkedIn">
-                    ⚡
+            <div>
+                <a href="https://www.linkedin.com/in/tolunayozcan/" target="_blank" style="text-decoration:none; margin: 0 8px; font-size: 1.8rem;" title="LinkedIn">
+                    �
                 </a>
-                <a href="https://github.com/TolunayOzcan" target="_blank" style="text-decoration:none; margin: 0 15px; color: #333; font-size: 2.5rem; transition: all 0.3s; display: inline-block;" onmouseover="this.style.transform='scale(1.2)'; this.style.color='#000'" onmouseout="this.style.transform='scale(1)'; this.style.color='#333'" title="GitHub">
-                    ⚒️
+                <a href="https://github.com/TolunayOzcan" target="_blank" style="text-decoration:none; margin: 0 8px; font-size: 1.8rem;" title="GitHub">
+                    �
                 </a>
-                <a href="mailto:tolunayozcan95@gmail.com" style="text-decoration:none; margin: 0 15px; color: #EA4335; font-size: 2.5rem; transition: all 0.3s; display: inline-block;" onmouseover="this.style.transform='scale(1.2)'; this.style.color='#C5221F'" onmouseout="this.style.transform='scale(1)'; this.style.color='#EA4335'" title="E-posta">
-                    ✉️
+                <a href="mailto:tolunayozcan95@gmail.com" style="text-decoration:none; margin: 0 8px; font-size: 1.8rem;" title="Gmail">
+                    📬
                 </a>
             </div>
         </div>
