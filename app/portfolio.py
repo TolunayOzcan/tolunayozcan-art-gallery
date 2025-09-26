@@ -575,19 +575,23 @@ with menu[0]:
             <h2 style="margin: 1rem 0 0.5rem 0; font-size: 1.4rem; font-family: 'Trebuchet MS', sans-serif; line-height: 1.2; color: #8B5CF6;">Tolunay ÖZCAN</h2>
             <p style="color:#757575; margin: 0.3rem 0 1rem 0; font-size: 1rem; font-family: 'Trebuchet MS', sans-serif; font-weight: bold;">Data Analyst</p>
             
-            <div>
-                <a href="https://www.linkedin.com/in/tolunayozcan/" target="_blank" style="text-decoration:none; margin: 0 8px; font-size: 1.8rem;" title="LinkedIn">
-                    💼
-                </a>
-                <a href="https://github.com/TolunayOzcan" target="_blank" style="text-decoration:none; margin: 0 8px; font-size: 1.8rem;" title="GitHub">
-                    🐙
-                </a>
-                <a href="mailto:tolunayozcan95@gmail.com" style="text-decoration:none; margin: 0 8px; font-size: 1.8rem;" title="Gmail">
-                    �
-                </a>
-            </div>
         </div>
         """, unsafe_allow_html=True)
+        
+        # Sosyal medya linkleri - Streamlit native
+        st.write(" ")  # Boşluk
+        
+        # 3 kolon halinde sosyal medya linkleri
+        social_col1, social_col2, social_col3 = st.columns(3)
+        
+        with social_col1:
+            st.markdown("💼 [LinkedIn](https://www.linkedin.com/in/tolunayozcan/)")
+            
+        with social_col2:
+            st.markdown("🐙 [GitHub](https://github.com/TolunayOzcan)")
+            
+        with social_col3:
+            st.markdown("📧 [Gmail](mailto:tolunayozcan95@gmail.com)")
     
     with col2:
         st.markdown("""
