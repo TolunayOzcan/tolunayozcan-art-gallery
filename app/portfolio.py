@@ -1679,7 +1679,7 @@ with menu[4]:
         hovertemplate='<b>%{label}</b><br>Sayı: %{value}<br>Oran: %{percent}<extra></extra>'
     )
     
-    st.plotly_chart(fig_reasons, use_container_width=True, key="chart_20")
+    st.plotly_chart(fig_reasons, use_container_width=True, key="chart_reasons_bottom")
     
     # İşten ayrılma nedenleri önerileri
     st.markdown("""
