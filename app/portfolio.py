@@ -520,6 +520,95 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Mouse takip eden karakter - Tab menüsü üstünde
+st.markdown("""
+<div style="position: relative; height: 60px; overflow: hidden; margin-bottom: 10px;">
+    <div id="mouse-follower" style="
+        position: absolute;
+        font-size: 24px;
+        pointer-events: none;
+        z-index: 1000;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        transform: translate(-50%, -50%);
+        filter: drop-shadow(0 2px 8px rgba(139, 92, 246, 0.4));
+    ">✨</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const follower = document.getElementById('mouse-follower');
+    const container = follower.parentElement;
+    
+    // Farklı karakterler dizisi
+    const characters = ['✨', '⭐', '🌟', '💫', '🔮', '🎭', '🎨', '🚀', '💎', '🌈'];
+    let currentChar = 0;
+    
+    function updateMousePosition(e) {
+        const rect = container.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Container sınırları içinde kalması için kontrol
+        if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+            follower.style.left = x + 'px';
+            follower.style.top = y + 'px';
+            follower.style.opacity = '1';
+            follower.style.transform = 'translate(-50%, -50%) scale(1.2)';
+        }
+    }
+    
+    function resetPosition() {
+        follower.style.opacity = '0.6';
+        follower.style.transform = 'translate(-50%, -50%) scale(1)';
+        follower.style.left = '50%';
+        follower.style.top = '50%';
+    }
+    
+    function changeCharacter() {
+        currentChar = (currentChar + 1) % characters.length;
+        follower.textContent = characters[currentChar];
+        follower.style.transform = 'translate(-50%, -50%) scale(1.5)';
+        setTimeout(() => {
+            follower.style.transform = 'translate(-50%, -50%) scale(1)';
+        }, 200);
+    }
+    
+    // Mouse eventi
+    container.addEventListener('mousemove', updateMousePosition);
+    container.addEventListener('mouseleave', resetPosition);
+    container.addEventListener('click', changeCharacter);
+    
+    // Başlangıç pozisyonu
+    resetPosition();
+    
+    // Otomatik karakter değişimi (5 saniyede bir)
+    setInterval(changeCharacter, 5000);
+});
+</script>
+
+<style>
+#mouse-follower {
+    animation: float 3s ease-in-out infinite;
+    cursor: none;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+    50% { transform: translate(-50%, -50%) translateY(-5px); }
+}
+
+#mouse-follower:hover {
+    animation: bounce 0.6s ease-in-out;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translate(-50%, -50%) translateY(0); }
+    40% { transform: translate(-50%, -50%) translateY(-10px); }
+    60% { transform: translate(-50%, -50%) translateY(-5px); }
+}
+</style>
+""", unsafe_allow_html=True)
+
 # Büyük tab menüsü - En üstte
 menu = st.tabs(["👤 Hakkımda", "📊 Analytics", "🔄 Api entegrasyon", "🧪 Data science", "👥 HR analytics"])
 
