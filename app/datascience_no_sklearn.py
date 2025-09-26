@@ -90,9 +90,12 @@ def generate_ab_test_data():
     )
     
     # Harcama miktarları (dönüşüm varsa)
-    data['harcama'] = 0
-    data.loc[(data['grup'] == 'A') & (data['donusum'] == 1), 'harcama'] = np.random.normal(150, 30, size=((data['grup'] == 'A') & (data['donusum'] == 1)).sum())
-    data.loc[(data['grup'] == 'B') & (data['donusum'] == 1), 'harcama'] = np.random.normal(160, 35, size=((data['grup'] == 'B') & (data['donusum'] == 1)).sum())
+    data['harcama'] = 0.0  # float olarak başlat
+    a_mask = (data['grup'] == 'A') & (data['donusum'] == 1)
+    b_mask = (data['grup'] == 'B') & (data['donusum'] == 1)
+    
+    data.loc[a_mask, 'harcama'] = np.random.normal(150, 30, size=a_mask.sum())
+    data.loc[b_mask, 'harcama'] = np.random.normal(160, 35, size=b_mask.sum())
     
     return data
 
