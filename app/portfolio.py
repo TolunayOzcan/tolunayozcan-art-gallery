@@ -1406,30 +1406,11 @@ with menu[4]:
     fig_attrition = create_attrition_department_chart(employee_data)
     st.plotly_chart(fig_attrition, use_container_width=True, key="chart_19")
     
-    # İşten ayrılma nedenleri dağılımı
-    col1, col2 = st.columns([2, 1])
+    # Özet metrikler
+    st.subheader("Özet Metrikler")
+    col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.subheader("İşten Ayrılma Nedenleri")
-        reasons_data = employee_data[employee_data['işten_ayrılma']]['ayrılma_nedeni'].value_counts().reset_index()
-        reasons_data.columns = ['Ayrılma Nedeni', 'Çalışan Sayısı']
-        
-        fig_reasons = px.pie(
-            reasons_data,
-            values='Çalışan Sayısı',
-            names='Ayrılma Nedeni',
-            hole=0.4,
-            color_discrete_sequence=px.colors.qualitative.Set2
-        )
-        fig_reasons.update_layout(
-            height=350,
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)'
-        )
-        st.plotly_chart(fig_reasons, use_container_width=True, key="chart_20")
-        
-    with col2:
-        st.subheader("Özet Metrikler")
         total_attrition_rate = employee_data['işten_ayrılma'].mean() * 100
         st.metric(
             label="Genel İşten Ayrılma Oranı", 
@@ -1438,6 +1419,7 @@ with menu[4]:
             delta_color="inverse"
         )
         
+    with col2:
         high_risk_dept = employee_data.groupby('departman')['işten_ayrılma'].mean().idxmax()
         high_risk_rate = employee_data[employee_data['departman'] == high_risk_dept]['işten_ayrılma'].mean() * 100
         
@@ -1447,6 +1429,7 @@ with menu[4]:
             delta=f"{high_risk_rate:.1f}%"
         )
         
+    with col3:
         avg_satisfaction = employee_data['tatmin_skoru'].mean()
         st.metric(
             label="Ortalama Çalışan Memnuniyeti", 
@@ -1563,4 +1546,150 @@ with menu[4]:
         <li>Departman yöneticilerine çalışan bağlılığını artırma konusunda eğitimler verilmeli</li>
     </ul>
     """, unsafe_allow_html=True)
+    st.markdown("""</div>""", unsafe_allow_html=True)
+    
+    # İşten Ayrılma Nedenleri - En Alta Taşındı
+    st.markdown("""<div class="card">""", unsafe_allow_html=True)
+    st.markdown("<h3>📊 İşten Ayrılma Nedenleri Analizi</h3>", unsafe_allow_html=True)
+    st.markdown("""
+    <p>İşten ayrılma nedenlerinin analizi, şirketin hangi alanlarda iyileştirme yapması gerektiğini belirlemede kritiktir.
+    Bu grafik, en sık karşılaşılan ayrılma nedenlerini göstererek, proaktif önlemler almanıza yardımcı olur.</p>
+    """, unsafe_allow_html=True)
+    
+    # İşten ayrılma nedenleri grafiği - Güzel renkler
+    reasons_data = employee_data[employee_data['işten_ayrılma']]['ayrılma_nedeni'].value_counts().reset_index()
+    reasons_data.columns = ['Ayrılma Nedeni', 'Çalışan Sayısı']
+    
+    # Mor, pudra, somon renk paleti
+    custom_colors = [
+        '#8B5CF6',  # Mor
+        '#F8BBD9',  # Pudra pembe
+        '#FA8072',  # Somon
+        '#DDA0DD',  # Plum
+        '#F0A5A5',  # Açık somon
+        '#C8A2C8',  # Lavanta
+        '#FFB6C1',  # Açık pembe
+        '#D8BFD8'   # Thistle
+    ]
+    
+    fig_reasons = px.pie(
+        reasons_data,
+        values='Çalışan Sayısı',
+        names='Ayrılma Nedeni',
+        hole=0.4,
+        color_discrete_sequence=custom_colors
+    )
+    
+    fig_reasons.update_layout(
+        height=450,
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        font=dict(size=12, color='#E2E8F0'),
+        title={
+            'text': 'İşten Ayrılma Nedenleri Dağılımı',
+            'x': 0.5,
+            'font': {'size': 16, 'color': '#8B5CF6'}
+        },
+        showlegend=True,
+        legend=dict(
+            orientation="v",
+            yanchor="middle",
+            y=0.5,
+            xanchor="left",
+            x=1.05
+        )
+    )
+    
+    fig_reasons.update_traces(
+        textposition='inside',
+        textinfo='percent+label',
+        hovertemplate='<b>%{label}</b><br>Sayı: %{value}<br>Oran: %{percent}<extra></extra>'
+    )
+    
+    st.plotly_chart(fig_reasons, use_container_width=True, key="chart_20")
+    
+    # İşten ayrılma nedenleri önerileri
+    st.markdown("""
+    <div style='background: linear-gradient(135deg, #8B5CF6 0%, #F8BBD9 50%, #FA8072 100%); padding: 15px; border-radius: 10px; margin-top: 15px;'>
+        <h4 style='color: white; margin: 0 0 10px 0;'>🎯 Ayrılma Nedenlerine Yönelik Öneriler</h4>
+        <p style='color: white; margin: 0; font-size: 14px;'>
+            En sık ayrılma nedenlerini analiz ederek, çalışan bağlılığını artırıcı stratejiler geliştirebilir, 
+            proaktif önlemlerle işten ayrılma oranlarını azaltabilirsiniz.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""</div>""", unsafe_allow_html=True)
+    
+    # İşten Ayrılma Nedenleri - En Alta Taşındı
+    st.markdown("""<div class="card">""", unsafe_allow_html=True)
+    st.markdown("<h3>📉 İşten Ayrılma Nedenleri Analizi</h3>", unsafe_allow_html=True)
+    st.markdown("""
+    <p>İşten ayrılma nedenlerinin analizi, şirketin hangi alanlarda iyileştirme yapması gerektiğini belirlemede kritiktir.
+    Bu grafik, en sık karşılaşılan ayrılma nedenlerini göstererek, proaktif önlemler almanıza yardımcı olur.</p>
+    """, unsafe_allow_html=True)
+    
+    # İşten ayrılma nedenleri grafiği - Güzel renkler
+    reasons_data = employee_data[employee_data['işten_ayrılma']]['ayrılma_nedeni'].value_counts().reset_index()
+    reasons_data.columns = ['Ayrılma Nedeni', 'Çalışan Sayısı']
+    
+    # Mor, pudra, somon renk paleti
+    custom_colors = [
+        '#8B5CF6',  # Mor
+        '#F8BBD9',  # Pudra pembe
+        '#FA8072',  # Somon
+        '#DDA0DD',  # Plum
+        '#F0A5A5',  # Açık somon
+        '#C8A2C8',  # Lavanta
+        '#FFB6C1',  # Açık pembe
+        '#D8BFD8'   # Thistle
+    ]
+    
+    fig_reasons = px.pie(
+        reasons_data,
+        values='Çalışan Sayısı',
+        names='Ayrılma Nedeni',
+        hole=0.4,
+        color_discrete_sequence=custom_colors
+    )
+    
+    fig_reasons.update_layout(
+        height=450,
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        font=dict(size=12, color='#E2E8F0'),
+        title={
+            'text': 'İşten Ayrılma Nedenleri Dağılımı',
+            'x': 0.5,
+            'font': {'size': 16, 'color': '#8B5CF6'}
+        },
+        showlegend=True,
+        legend=dict(
+            orientation="v",
+            yanchor="middle",
+            y=0.5,
+            xanchor="left",
+            x=1.05
+        )
+    )
+    
+    fig_reasons.update_traces(
+        textposition='inside',
+        textinfo='percent+label',
+        hovertemplate='<b>%{label}</b><br>Sayı: %{value}<br>Oran: %{percent}<extra></extra>'
+    )
+    
+    st.plotly_chart(fig_reasons, use_container_width=True, key="chart_20")
+    
+    # İşten ayrılma nedenleri önerileri
+    st.markdown("""
+    <div style='background: linear-gradient(135deg, #8B5CF6 0%, #F8BBD9 50%, #FA8072 100%); padding: 15px; border-radius: 10px; margin-top: 15px;'>
+        <h4 style='color: white; margin: 0 0 10px 0;'>🎯 Ayrılma Nedenlerine Yönelik Öneriler</h4>
+        <p style='color: white; margin: 0; font-size: 14px;'>
+            En sık ayrılma nedenlerini analiz ederek, çalışan bağlılığını artırıcı stratejiler geliştirebilir, 
+            proaktif önlemlerle işten ayrılma oranlarını azaltabilirsiniz.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
     st.markdown("""</div>""", unsafe_allow_html=True)
