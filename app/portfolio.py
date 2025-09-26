@@ -580,7 +580,7 @@ with menu[0]:
                     💼
                 </a>
                 <a href="https://github.com/TolunayOzcan" target="_blank" style="text-decoration:none; margin: 0 8px; font-size: 1.8rem;" title="GitHub">
-                    �
+                    🐙
                 </a>
                 <a href="mailto:tolunayozcan95@gmail.com" style="text-decoration:none; margin: 0 8px; font-size: 1.8rem;" title="Gmail">
                     �
