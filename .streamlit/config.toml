@@ -1,6 +1,6 @@
 [server]
 headless = true
-port = 10000
+port = 8501
 address = "0.0.0.0"
 enableCORS = false
 enableXsrfProtection = false
@@ -14,7 +14,3 @@ textColor = "#f0f6fc"
 
 [browser]
 gatherUsageStats = false
-showErrorDetails = false
-
-[logger]
-level = "info"

@@ -9,8 +9,7 @@ import threading
 import time
 from datetime import datetime
 
-# Railway environment optimizations
-st.set_option('deprecation.showPyplotGlobalUse', False)
+# Environment optimizations
 os.environ['MPLBACKEND'] = 'Agg'
 
 # Network Graph imports
@@ -284,11 +283,11 @@ def create_organization_network():
         # Veri tablosu göster
         import pandas as pd
         org_data = pd.DataFrame(edges, columns=['Yönetici', 'Çalışan'])
-        st.dataframe(org_data, use_container_width=True)
+        st.dataframe(org_data, width="stretch")
         
         # İnteraktif Plotly grafiği
         fig = create_networkx_plotly_graph(G, "🏢 Organizasyon Şeması")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch", key="chart_1")
         
         st.success("� İnteraktif organizasyon ağı başarıyla yüklendi!")
         st.info("💡 Düğümlere tıklayarak detayları görebilirsiniz")
@@ -323,11 +322,11 @@ def create_skill_network():
         # Beceri matrisi göster
         import pandas as pd
         skill_data = pd.DataFrame(edges, columns=['Çalışan', 'Beceri'])
-        st.dataframe(skill_data, use_container_width=True)
+        st.dataframe(skill_data, width="stretch")
         
         # İnteraktif Plotly grafiği
         fig = create_networkx_plotly_graph(G, "🎯 Beceri-Çalışan İlişki Ağı")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch", key="chart_2")
         
         st.success("🌐 Beceri ağı yüklendi!")
         
@@ -361,11 +360,11 @@ def create_project_network():
         # Proje-teknoloji matrisi
         import pandas as pd
         project_data = pd.DataFrame(edges, columns=['Proje', 'Teknoloji'])
-        st.dataframe(project_data, use_container_width=True)
+        st.dataframe(project_data, width="stretch")
         
         # İnteraktif Plotly grafiği
         fig = create_networkx_plotly_graph(G, "🚀 Proje-Teknoloji Bağlantı Ağı")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch", key="chart_3")
         
         st.success("🌐 Proje ağı başarıyla yüklendi!")
         
@@ -398,7 +397,7 @@ def create_department_network():
         # Departman işbirliği tablosu
         import pandas as pd
         dept_data = pd.DataFrame(collaborations, columns=['Departman 1', 'Departman 2', 'İşbirliği Seviyesi'])
-        st.dataframe(dept_data, use_container_width=True)
+        st.dataframe(dept_data, width="stretch")
         
         # En yoğun işbirliği
         max_collab = dept_data.loc[dept_data['İşbirliği Seviyesi'].idxmax()]
@@ -410,7 +409,7 @@ def create_department_network():
         
         # İnteraktif Plotly grafiği
         fig = create_networkx_plotly_graph(G, "🏢 Departman İşbirliği Ağı")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch", key="chart_4")
         
         st.success("🌐 Departman ağı aktif!")
         
@@ -619,7 +618,7 @@ with menu[1]:
             margin=dict(t=50, b=50, l=40, r=40),
         )
         fig1 = make_transparent_bg(fig1)
-        st.plotly_chart(fig1, use_container_width=True)
+        st.plotly_chart(fig1, width="stretch", key="chart_5")
         
         # Ek bilgi/açıklama
         st.markdown("""
@@ -637,7 +636,7 @@ with menu[1]:
         
         # Daha profesyonel tablo
         st.markdown("<p>Kategori bazında eser sayıları:</p>", unsafe_allow_html=True)
-        st.dataframe(df2, use_container_width=True)
+        st.dataframe(df2, width="stretch")
         
         # Daha profesyonel çizgi grafik
         fig2 = px.line(df2, x="kategori", y="sayi", 
@@ -651,7 +650,7 @@ with menu[1]:
             margin=dict(t=50, b=50, l=40, r=40),
         )
         fig2 = make_transparent_bg(fig2)
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, width="stretch", key="chart_6")
     st.markdown("""</div>""", unsafe_allow_html=True)
 
     # 3. Sankey Diyagramı
@@ -693,7 +692,7 @@ with menu[1]:
         )
         sankey_fig = make_transparent_bg(sankey_fig)
         
-        st.plotly_chart(sankey_fig, use_container_width=True)
+        st.plotly_chart(sankey_fig, width="stretch", key="chart_7")
     st.markdown("""</div>""", unsafe_allow_html=True)
 
 with menu[2]:
@@ -732,7 +731,7 @@ with menu[2]:
                 crypto_df = api_service.get_crypto_data()
                 
             if not crypto_df.empty:
-                st.dataframe(crypto_df, use_container_width=True)
+                st.dataframe(crypto_df, width="stretch")
                 
                 # Kripto para grafiği
                 if 'Değişim 24h' in crypto_df.columns:
@@ -753,7 +752,7 @@ with menu[2]:
                         margin=dict(t=50, b=20, l=20, r=20)
                     )
                     
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, width="stretch", key="chart_8")
             else:
                 st.warning("Kripto para verileri alınamadı.")
                 
@@ -775,7 +774,7 @@ with menu[2]:
                     exchange_df = api_service.get_exchange_rates()
                     
                 if not exchange_df.empty:
-                    st.dataframe(exchange_df, use_container_width=True)
+                    st.dataframe(exchange_df, width="stretch")
                     
                     # Döviz kurları grafiği
                     exchange_df_chart = exchange_df.copy()
@@ -791,7 +790,7 @@ with menu[2]:
                         margin=dict(t=50, b=80, l=20, r=20)
                     )
                     
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, width="stretch", key="chart_9")
                 else:
                     st.warning("Döviz kuru verileri alınamadı.")
                     
@@ -809,7 +808,7 @@ with menu[2]:
                 stock_df = api_service.get_stock_data()
                 
                 if not stock_df.empty:
-                    st.dataframe(stock_df, use_container_width=True)
+                    st.dataframe(stock_df, width="stretch")
                     
                     # Hisse senedi değişim grafiği
                     stock_df_chart = stock_df.copy()
@@ -825,7 +824,7 @@ with menu[2]:
                         margin=dict(t=50, b=20, l=20, r=20)
                     )
                     
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, width="stretch", key="chart_10")
                 else:
                     st.warning("Hisse senedi verileri alınamadı.")
                     
@@ -906,7 +905,7 @@ with menu[2]:
         
         if not ekonomi_df.empty:
             st.markdown("<p><strong>Demo Ekonomik Veriler</strong></p>", unsafe_allow_html=True)
-            st.dataframe(ekonomi_df, use_container_width=True)
+            st.dataframe(ekonomi_df, width="stretch")
         
         st.markdown("""</div>""", unsafe_allow_html=True)
     try:
@@ -921,7 +920,7 @@ with menu[2]:
             crypto_df = api_service.get_crypto_data()
             
         if not crypto_df.empty:
-            st.dataframe(crypto_df, use_container_width=True)
+            st.dataframe(crypto_df, width="stretch")
             
             # Kripto para grafiği
             if 'Değişim 24h' in crypto_df.columns:
@@ -942,7 +941,7 @@ with menu[2]:
                     margin=dict(t=50, b=20, l=20, r=20)
                 )
                 
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width="stretch", key="chart_11")
         st.markdown("""</div>""", unsafe_allow_html=True)
         
         # Döviz Kurları
@@ -957,7 +956,7 @@ with menu[2]:
                 exchange_df = api_service.get_exchange_rates()
                 
             if not exchange_df.empty:
-                st.dataframe(exchange_df, use_container_width=True)
+                st.dataframe(exchange_df, width="stretch")
                 
                 # Döviz kurları grafiği
                 fig = px.bar(exchange_df, x='Döviz Çifti', y='Kur',
@@ -970,7 +969,7 @@ with menu[2]:
                     margin=dict(t=50, b=80, l=20, r=20)
                 )
                 
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width="stretch", key="chart_12")
             st.markdown("""</div>""", unsafe_allow_html=True)
         
         with col2:
@@ -981,7 +980,7 @@ with menu[2]:
             stock_df = api_service.get_stock_data()
             
             if not stock_df.empty:
-                st.dataframe(stock_df, use_container_width=True)
+                st.dataframe(stock_df, width="stretch")
                 
                 # Hisse senedi değişim grafiği
                 stock_df['degisim_numeric'] = stock_df['Değişim'].str.rstrip('%').astype('float')
@@ -996,7 +995,7 @@ with menu[2]:
                     margin=dict(t=50, b=20, l=20, r=20)
                 )
                 
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width="stretch", key="chart_13")
             st.markdown("""</div>""", unsafe_allow_html=True)
         
         # Hava Durumu API
@@ -1079,7 +1078,7 @@ with menu[3]:
     with st.spinner("Random Forest modeli hazırlanıyor..."):
         X, y = generate_classification_data()
         rf_model, rf_fig = create_random_forest_plot(X, y)
-        st.plotly_chart(rf_fig, use_container_width=True)
+        st.plotly_chart(rf_fig, width="stretch", key="chart_14")
     
     # Model açıklaması ve ek bilgi
     with st.expander("Model Detayları"):
@@ -1113,9 +1112,9 @@ with menu[3]:
         
         col1, col2 = st.columns(2)
         with col1:
-            st.plotly_chart(conversion_fig, use_container_width=True)
+            st.plotly_chart(conversion_fig, width="stretch", key="chart_15")
         with col2:
-            st.plotly_chart(spending_fig, use_container_width=True)
+            st.plotly_chart(spending_fig, width="stretch", key="chart_16")
     
     # Test sonuçları ve anlamı
     with st.expander("Test Sonuçları"):
@@ -1140,7 +1139,7 @@ with menu[3]:
             'Ortalama Harcama (TL)': [ab_data[(ab_data['grup'] == 'A') & (ab_data['donusum'] == 1)]['harcama'].mean(), 
                                     ab_data[(ab_data['grup'] == 'B') & (ab_data['donusum'] == 1)]['harcama'].mean()]
         })
-        st.dataframe(ab_summary.round(2), use_container_width=True)
+        st.dataframe(ab_summary.round(2), width="stretch")
     st.markdown("""</div>""", unsafe_allow_html=True)
     
     # Müşteri Segmentasyonu
@@ -1155,7 +1154,7 @@ with menu[3]:
     with st.spinner("Müşteri segmentasyonu hazırlanıyor..."):
         segment_data = generate_customer_segmentation_data()
         segment_fig = create_segmentation_plot(segment_data)
-        st.plotly_chart(segment_fig, use_container_width=True)
+        st.plotly_chart(segment_fig, width="stretch", key="chart_17")
     
     # Segment özeti ve açıklama
     with st.expander("Segment Detayları"):
@@ -1179,7 +1178,7 @@ with menu[3]:
         segment_summary.columns = ['Segment', 'Müşteri Sayısı', 'Ort. Yıllık Harcama (TL)', 
                                 'Ort. Alışveriş Sıklığı (yıllık)', 'Ort. Müşteri Süresi (yıl)']
         
-        st.dataframe(segment_summary.round(2), use_container_width=True)
+        st.dataframe(segment_summary.round(2), width="stretch")
     st.markdown("""</div>""", unsafe_allow_html=True)
     
     # Regresyon Modeli
@@ -1194,7 +1193,7 @@ with menu[3]:
     with st.spinner("Regresyon modeli hazırlanıyor..."):
         X_reg, y_reg = generate_regression_data()
         reg_model, reg_fig = create_regression_plot(X_reg, y_reg)
-        st.plotly_chart(reg_fig, use_container_width=True)
+        st.plotly_chart(reg_fig, width="stretch", key="chart_18")
     
     # Model performans detayları
     with st.expander("Model Performansı"):
@@ -1221,7 +1220,7 @@ with menu[3]:
         }).sort_values('Önem', ascending=False)
         
         st.write("**En Önemli Özellikler:**")
-        st.dataframe(feature_importance, use_container_width=True)
+        st.dataframe(feature_importance, width="stretch")
     st.markdown("""</div>""", unsafe_allow_html=True)
     
 with menu[4]:
@@ -1249,7 +1248,7 @@ with menu[4]:
     
     # İşten ayrılma grafiği
     fig_attrition = create_attrition_department_chart(employee_data)
-    st.plotly_chart(fig_attrition, use_container_width=True)
+    st.plotly_chart(fig_attrition, width="stretch", key="chart_19")
     
     # İşten ayrılma nedenleri dağılımı
     col1, col2 = st.columns([2, 1])
@@ -1271,7 +1270,7 @@ with menu[4]:
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)'
         )
-        st.plotly_chart(fig_reasons, use_container_width=True)
+        st.plotly_chart(fig_reasons, width="stretch", key="chart_20")
         
     with col2:
         st.subheader("Özet Metrikler")
@@ -1309,7 +1308,7 @@ with menu[4]:
     """, unsafe_allow_html=True)
     
     fig_salary = create_salary_distribution_chart(employee_data)
-    st.plotly_chart(fig_salary, use_container_width=True)
+    st.plotly_chart(fig_salary, width="stretch", key="chart_21")
     
     # Maaş özet istatistikleri
     st.subheader("Maaş Özet İstatistikleri")
@@ -1320,7 +1319,7 @@ with menu[4]:
     for col in ['Ortalama', 'Medyan', 'Minimum', 'Maksimum']:
         salary_stats[col] = salary_stats[col].apply(lambda x: f"{x:,.0f} TL")
     
-    st.dataframe(salary_stats, use_container_width=True)
+    st.dataframe(salary_stats, width="stretch")
     st.markdown("""</div>""", unsafe_allow_html=True)
     
     # Performans Dağılımı
@@ -1332,7 +1331,7 @@ with menu[4]:
     """, unsafe_allow_html=True)
     
     fig_performance = create_performance_distribution_chart(employee_data)
-    st.plotly_chart(fig_performance, use_container_width=True)
+    st.plotly_chart(fig_performance, width="stretch", key="chart_22")
     
     # Performans ve maaş ilişkisi
     st.subheader("Performans ve Maaş İlişkisi")
@@ -1355,7 +1354,7 @@ with menu[4]:
         paper_bgcolor='rgba(0,0,0,0)'
     )
     
-    st.plotly_chart(fig_perf_salary, use_container_width=True)
+    st.plotly_chart(fig_perf_salary, width="stretch", key="chart_23")
     st.markdown("""</div>""", unsafe_allow_html=True)
     
     # İşe Alım Trendleri ve Departman Demografisi
@@ -1370,7 +1369,7 @@ with menu[4]:
         """, unsafe_allow_html=True)
         
         fig_hiring = create_hiring_trends_chart(employee_data)
-        st.plotly_chart(fig_hiring, use_container_width=True)
+        st.plotly_chart(fig_hiring, width="stretch", key="chart_24")
         st.markdown("""</div>""", unsafe_allow_html=True)
     
     with col2:
@@ -1382,7 +1381,7 @@ with menu[4]:
         """, unsafe_allow_html=True)
         
         fig_demographics = create_department_demographics_chart(employee_data)
-        st.plotly_chart(fig_demographics, use_container_width=True)
+        st.plotly_chart(fig_demographics, width="stretch", key="chart_25")
         st.markdown("""</div>""", unsafe_allow_html=True)
     
     # Tatmin Skoru ve İşten Ayrılma İlişkisi
@@ -1394,7 +1393,7 @@ with menu[4]:
     """, unsafe_allow_html=True)
     
     fig_satisfaction = create_satisfaction_vs_attrition_chart(employee_data)
-    st.plotly_chart(fig_satisfaction, use_container_width=True)
+    st.plotly_chart(fig_satisfaction, width="stretch", key="chart_26")
     
     st.markdown("""
     <p><strong>Analiz Sonucu:</strong> Çalışanların tatmin skorları düştükçe, işten ayrılma olasılıklarının 
