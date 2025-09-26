@@ -22,9 +22,9 @@
   --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   
   /* Typography değişkenleri */
-  --heading-font: 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;
-  --body-font: 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;
-  --mono-font: 'Trebuchet MS', 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+  --heading-font: 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+  --body-font: 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+  --mono-font: 'Roboto Mono', 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
 }
 
 /* Ana stil */
@@ -54,6 +54,7 @@ code, pre, .stCodeBlock {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--heading-font);
+  font-style: italic;
   color: var(--primary-color);
   font-weight: 800;
   margin-bottom: 1.2rem;
@@ -581,4 +582,29 @@ h1, h2, h3 {
 /* Kart hover animasyonları */
 .stMetric:hover {
     animation: bounceIn 0.3s ease-out;
+}
+
+/* Streamlit özel font override'ları */
+.stMarkdown, .stMarkdown p, .stMarkdown div, .stText, .stSelectbox, .stTextInput, .stTextArea, .stNumberInput,
+.stSlider, .stMultiSelect, .stRadio, .stCheckbox, .stButton, .stDataFrame, .stTable, .stMetric,
+.css-1d391kg, .css-12oz5g7, .css-145kmo2, .css-1cpxqw2, .css-1kyxreq, .css-18e3th9 {
+    font-family: 'Roboto', 'Helvetica Neue', 'Arial', sans-serif !important;
+}
+
+/* Streamlit başlık override'ları */
+.stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5, .stMarkdown h6,
+.css-10trblm, .css-1629p8f, .css-1v0mbdj {
+    font-family: 'Roboto', 'Helvetica Neue', 'Arial', sans-serif !important;
+    font-style: italic !important;
+}
+
+/* Streamlit tab başlıkları */
+.stTabs [data-baseweb="tab-list"] {
+    font-family: 'Roboto', 'Helvetica Neue', 'Arial', sans-serif !important;
+    font-style: italic !important;
+}
+
+/* Streamlit sidebar override (eğer kullanılıyorsa) */
+.css-1d391kg, .css-1l02zno, .css-17eq0hr {
+    font-family: 'Roboto', 'Helvetica Neue', 'Arial', sans-serif !important;
 }

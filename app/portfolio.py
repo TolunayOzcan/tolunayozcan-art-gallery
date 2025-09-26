@@ -134,7 +134,7 @@ def local_css():
     st.markdown("""
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;700;800;900&family=Exo+2:wght@300;400;500;600;700;800;900&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Mono:wght@300;400;500;600;700&display=swap">
     """, unsafe_allow_html=True)
 
 # CSS'i yükle
@@ -467,7 +467,7 @@ st.markdown("""
         border-radius: 15px;
         font-size: 1rem;
         font-weight: 600;
-        font-family: 'Trebuchet MS', sans-serif;
+        font-family: 'Roboto', sans-serif;
         background: transparent;
         border: none;
         color: #94A3B8;
@@ -555,7 +555,7 @@ with menu[0]:
                 # TÖ avatarı
                 st.markdown("""
                 <div style="width: 120px; height: 120px; margin: 0 auto; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 3px; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center;">
-                    <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #1E40AF, #7C3AED); display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: bold; font-family: 'Trebuchet MS', sans-serif;">
+                    <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #1E40AF, #7C3AED); display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: bold; font-family: 'Roboto', sans-serif;">
                         TÖ
                     </div>
                 </div>
@@ -564,7 +564,7 @@ with menu[0]:
             # Hata durumunda TÖ avatarı
             st.markdown("""
             <div style="width: 120px; height: 120px; margin: 0 auto; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 3px; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center;">
-                <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #1E40AF, #7C3AED); display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: bold; font-family: 'Trebuchet MS', sans-serif;">
+                <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #1E40AF, #7C3AED); display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: bold; font-family: 'Roboto', sans-serif;">
                     TÖ
                 </div>
             </div>
@@ -572,8 +572,8 @@ with menu[0]:
         
         # İsim ve sosyal medya
         st.markdown("""
-            <h2 style="margin: 1rem 0 0.5rem 0; font-size: 1.4rem; font-family: 'Trebuchet MS', sans-serif; line-height: 1.2; color: #8B5CF6;">Tolunay ÖZCAN</h2>
-            <p style="color:#757575; margin: 0.3rem 0 1rem 0; font-size: 1rem; font-family: 'Trebuchet MS', sans-serif; font-weight: bold;">Data Analyst</p>
+            <h2 style="margin: 1rem 0 0.5rem 0; font-size: 1.4rem; font-family: 'Roboto', sans-serif; font-style: italic; line-height: 1.2; color: #8B5CF6;">Tolunay ÖZCAN</h2>
+            <p style="color:#757575; margin: 0.3rem 0 1rem 0; font-size: 1rem; font-family: 'Roboto', sans-serif; font-weight: bold;">Data Analyst</p>
             
         </div>
         """, unsafe_allow_html=True)
@@ -595,7 +595,7 @@ with menu[0]:
     
     with col2:
         st.markdown("""
-        <h2 style="color: #8B5CF6 !important; font-weight: bold !important; font-family: 'Trebuchet MS', sans-serif !important; text-shadow: none !important; background: none !important; margin-top: 1rem;">Hakkımda</h2>
+        <h2 style="color: #8B5CF6 !important; font-weight: bold !important; font-family: 'Roboto', sans-serif !important; font-style: italic !important; text-shadow: none !important; background: none !important; margin-top: 1rem;">Hakkımda</h2>
         <p style="font-size: 1.1rem; line-height: 1.6; text-align: justify;">Veri analizi ve görselleştirme alanında 4+ yıllık deneyime sahip Kıdemli Veri Analistiyim. SQL, Python ve VBA 
         konularında uzman seviyede bilgi sahibi. CRM veri analizi, İK analitik çözümleri, çağrı merkezi ve operasyonel 
         raporlama konularında kapsamlı deneyim. Veri odaklı karar alma süreçlerini destekleyen analitik çözümler 
@@ -615,7 +615,7 @@ with menu[0]:
     
     # Site Mapping Diagramı
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
-    st.markdown("<h3 style='color: #8B5CF6; font-family: Trebuchet MS;'>📍 Site Haritası</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #8B5CF6; font-family: Roboto; font-style: italic;'>📍 Site Haritası</h3>", unsafe_allow_html=True)
     
     # Site yapısını tanımlayalım
     import plotly.graph_objects as go
@@ -631,7 +631,7 @@ with menu[0]:
         marker=dict(size=80, color='#8B5CF6', line=dict(width=3, color='white')),
         text=['🏠 Ana Sayfa'],
         textposition="middle center",
-        textfont=dict(size=14, color='white', family='Trebuchet MS'),
+        textfont=dict(size=14, color='white', family='Roboto'),
         name='Ana Sayfa',
         hovertemplate='<b>Ana Sayfa</b><br>Portfolio giriş sayfası<extra></extra>'
     ))
@@ -651,7 +651,7 @@ with menu[0]:
             marker=dict(size=60, color=cat['color'], line=dict(width=2, color='white')),
             text=[cat['name']],
             textposition="middle center",
-            textfont=dict(size=11, color='white', family='Trebuchet MS'),
+            textfont=dict(size=11, color='white', family='Roboto'),
             name=cat['name'].split(' ')[1],
             hovertemplate=f'<b>{cat["name"]}</b><br>Ana kategori<extra></extra>'
         ))
@@ -691,7 +691,7 @@ with menu[0]:
             marker=dict(size=40, color=sub['color'], line=dict(width=2, color='white')),
             text=[sub['name']],
             textposition="middle center",
-            textfont=dict(size=9, color='white', family='Trebuchet MS'),
+            textfont=dict(size=9, color='white', family='Roboto'),
             name=sub['name'].split(' ')[1],
             hovertemplate=f'<b>{sub["name"]}</b><br>Alt kategori<extra></extra>'
         ))
@@ -710,7 +710,7 @@ with menu[0]:
         title={
             'text': 'Portfolio Site Yapısı',
             'x': 0.5,
-            'font': {'size': 18, 'color': '#8B5CF6', 'family': 'Trebuchet MS'}
+            'font': {'size': 18, 'color': '#8B5CF6', 'family': 'Roboto'}
         },
         xaxis=dict(
             showgrid=False,
