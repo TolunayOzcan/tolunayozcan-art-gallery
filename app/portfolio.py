@@ -289,12 +289,12 @@ def create_organization_network():
         fig = create_networkx_plotly_graph(G, "🏢 Organizasyon Şeması")
         st.plotly_chart(fig, width="stretch", key="chart_1")
         
-        st.success("� İnteraktif organizasyon ağı başarıyla yüklendi!")
+        st.success("💼 İnteraktif organizasyon ağı başarıyla yüklendi!")
         st.info("💡 Düğümlere tıklayarak detayları görebilirsiniz")
         
     except Exception as e:
         st.error(f"Organizasyon ağı hatası: {str(e)}")
-        st.info("� Veri yeniden işleniyor...")
+        st.info("💼 Veri yeniden işleniyor...")
 
 def create_skill_network():
     """NetworkX ile beceri ağ grafiği"""
@@ -577,13 +577,13 @@ with menu[0]:
             
             <div>
                 <a href="https://www.linkedin.com/in/tolunayozcan/" target="_blank" style="text-decoration:none; margin: 0 8px; font-size: 1.8rem;" title="LinkedIn">
-                    �
+                    💼
                 </a>
                 <a href="https://github.com/TolunayOzcan" target="_blank" style="text-decoration:none; margin: 0 8px; font-size: 1.8rem;" title="GitHub">
                     �
                 </a>
                 <a href="mailto:tolunayozcan95@gmail.com" style="text-decoration:none; margin: 0 8px; font-size: 1.8rem;" title="Gmail">
-                    📬
+                    �
                 </a>
             </div>
         </div>
