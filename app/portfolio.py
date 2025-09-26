@@ -539,7 +539,13 @@ with menu[0]:
         
         # Profil fotoğrafı kontrolü
         try:
-            if os.path.exists("pp.jpg"):
+            if os.path.exists("pp2.jpeg"):
+                image = Image.open("pp2.jpeg")
+                st.image(image, width=120)
+            elif os.path.exists("app/pp2.jpeg"):
+                image = Image.open("app/pp2.jpeg")
+                st.image(image, width=120)
+            elif os.path.exists("pp.jpg"):
                 image = Image.open("pp.jpg")
                 st.image(image, width=120)
             elif os.path.exists("app/pp.jpg"):
