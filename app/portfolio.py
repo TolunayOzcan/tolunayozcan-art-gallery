@@ -546,14 +546,14 @@ with menu[0]:
             
             <!-- Sosyal medya linkleri -->
             <div style="text-align:center; padding: 1rem 0;">
-                <a href="https://www.linkedin.com/in/tolunayozcan/" target="_blank" style="text-decoration:none; margin: 0 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="30" title="LinkedIn" style="border-radius: 5px; transition: transform 0.3s;">
+                <a href="https://www.linkedin.com/in/tolunayozcan/" target="_blank" style="text-decoration:none; margin: 0 15px; color: #0077B5; font-size: 2.5rem; transition: all 0.3s; display: inline-block;" onmouseover="this.style.transform='scale(1.2)'; this.style.color='#005885'" onmouseout="this.style.transform='scale(1)'; this.style.color='#0077B5'" title="LinkedIn">
+                    ⚡
                 </a>
-                <a href="https://github.com/TolunayOzcan" target="_blank" style="text-decoration:none; margin: 0 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" width="30" title="GitHub" style="border-radius: 5px; transition: transform 0.3s;">
+                <a href="https://github.com/TolunayOzcan" target="_blank" style="text-decoration:none; margin: 0 15px; color: #333; font-size: 2.5rem; transition: all 0.3s; display: inline-block;" onmouseover="this.style.transform='scale(1.2)'; this.style.color='#000'" onmouseout="this.style.transform='scale(1)'; this.style.color='#333'" title="GitHub">
+                    ⚒️
                 </a>
-                <a href="mailto:tolunayozcan95@gmail.com" style="text-decoration:none; margin: 0 10px;">
-                    <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png" width="30" title="E-posta" style="border-radius: 5px; transition: transform 0.3s;">
+                <a href="mailto:tolunayozcan95@gmail.com" style="text-decoration:none; margin: 0 15px; color: #EA4335; font-size: 2.5rem; transition: all 0.3s; display: inline-block;" onmouseover="this.style.transform='scale(1.2)'; this.style.color='#C5221F'" onmouseout="this.style.transform='scale(1)'; this.style.color='#EA4335'" title="E-posta">
+                    ✉️
                 </a>
             </div>
         </div>
