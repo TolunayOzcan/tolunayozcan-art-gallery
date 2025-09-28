@@ -547,7 +547,20 @@ st.markdown("""
 
 
 # Header bölümü - En üstte
-st.markdown("""
+# Lark fotoğrafını base64 encode et
+import base64
+lark_base64 = ""
+try:
+    if os.path.exists("lark.jpg"):
+        with open("lark.jpg", "rb") as img_file:
+            lark_base64 = base64.b64encode(img_file.read()).decode()
+    elif os.path.exists("app/lark.jpg"):
+        with open("app/lark.jpg", "rb") as img_file:
+            lark_base64 = base64.b64encode(img_file.read()).decode()
+except Exception as e:
+    st.warning(f"Lark fotoğrafı yüklenemedi: {e}")
+
+st.markdown(f"""
 <div class="header-section" style="
     width: 100%;
     height: 80px;
@@ -564,6 +577,23 @@ st.markdown("""
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(59, 130, 246, 0.2);
 ">
+    <div class="header-left" style="
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+    ">
+        <img src="data:image/jpeg;base64,{lark_base64}" 
+             style="
+                 width: 50px;
+                 height: 50px;
+                 border-radius: 50%;
+                 object-fit: cover;
+                 border: 2px solid rgba(59, 130, 246, 0.5);
+                 box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+             " />
+    </div>
     <div class="header-content" style="
         text-align: center;
         z-index: 2;
