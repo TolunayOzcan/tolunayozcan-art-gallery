@@ -564,7 +564,12 @@ st.markdown(f"""
 <div class="header-section" style="
     width: 100%;
     height: 80px;
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(59, 130, 246, 0.1) 50%, rgba(139, 92, 246, 0.1) 100%);
+    background: 
+        linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(59, 130, 246, 0.3) 50%, rgba(139, 92, 246, 0.3) 100%),
+        url('data:image/jpeg;base64,{lark_base64}');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     border-radius: 0 0 20px 20px;
     margin: -1rem -1rem 2rem -1rem;
     padding: 20px;
@@ -577,23 +582,6 @@ st.markdown(f"""
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(59, 130, 246, 0.2);
 ">
-    <div class="header-left" style="
-        position: absolute;
-        left: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 2;
-    ">
-        <img src="data:image/jpeg;base64,{lark_base64}" 
-             style="
-                 width: 50px;
-                 height: 50px;
-                 border-radius: 50%;
-                 object-fit: cover;
-                 border: 2px solid rgba(59, 130, 246, 0.5);
-                 box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
-             " />
-    </div>
     <div class="header-content" style="
         text-align: center;
         z-index: 2;
@@ -629,26 +617,31 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Header hover stillarini ayri olarak ekle
-st.markdown("""
+st.markdown(f"""
 <style>
-.header-section:hover {
+.header-section:hover {{
     transform: translateY(-2px) scale(1.01);
     box-shadow: 0 0 25px rgba(59,130,246,0.4), 0 0 40px rgba(139,92,246,0.2);
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(59, 130, 246, 0.15) 50%, rgba(139, 92, 246, 0.15) 100%);
-}
+    background: 
+        linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(59, 130, 246, 0.4) 50%, rgba(139, 92, 246, 0.4) 100%),
+        url('data:image/jpeg;base64,{lark_base64}');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}}
 
-.header-section:hover .header-bar {
+.header-section:hover .header-bar {{
     width: 90%;
     box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
-}
+}}
 
-.header-section:hover h1 {
+.header-section:hover h1 {{
     filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.6));
     background: linear-gradient(135deg, #60A5FA 0%, #A78BFA 50%, #C084FC 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-}
+}}
 </style>
 """, unsafe_allow_html=True)
 
