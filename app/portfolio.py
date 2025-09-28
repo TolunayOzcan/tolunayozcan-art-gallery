@@ -774,110 +774,159 @@ with menu[0]:
     
     st.markdown("""</div>""", unsafe_allow_html=True)
     
-    # Site Mapping Diagramı
+    # UML Site Haritası Diagramı
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
-    st.markdown("<h3 style='color: #8B5CF6; font-family: Roboto; font-style: italic;'>📍 Site Haritası</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #8B5CF6; font-family: Roboto; font-style: italic;'>🏗️ Site Mimarisi - UML Diagramı</h3>", unsafe_allow_html=True)
     
-    # Site yapısını tanımlayalım
-    import plotly.graph_objects as go
-    import plotly.express as px
-    
-    # Hierarchical site structure
-    fig = go.Figure()
-    
-    # Ana sayfa (merkez)
-    fig.add_trace(go.Scatter(
-        x=[0], y=[0],
-        mode='markers+text',
-        marker=dict(size=80, color='#8B5CF6', line=dict(width=3, color='white')),
-        text=['🏠 Ana Sayfa'],
-        textposition="middle center",
-        textfont=dict(size=14, color='white', family='Roboto'),
-        name='Ana Sayfa',
-        hovertemplate='<b>Ana Sayfa</b><br>Portfolio giriş sayfası<extra></extra>'
-    ))
-    
-    # Ana kategoriler (ilk seviye)
-    categories = [
-        {'name': '👤 Hakkımda', 'x': -2, 'y': 1.5, 'color': '#3B82F6'},
-        {'name': '📊 Analytics', 'x': 2, 'y': 1.5, 'color': '#10B981'},
-        {'name': '🧠 Data Science', 'x': -2, 'y': -1.5, 'color': '#F59E0B'},
-        {'name': '👥 HR Analytics', 'x': 2, 'y': -1.5, 'color': '#EF4444'}
-    ]
-    
-    for cat in categories:
-        fig.add_trace(go.Scatter(
-            x=[cat['x']], y=[cat['y']],
-            mode='markers+text',
-            marker=dict(size=60, color=cat['color'], line=dict(width=2, color='white')),
-            text=[cat['name']],
-            textposition="middle center",
-            textfont=dict(size=11, color='white', family='Roboto'),
-            name=cat['name'].split(' ')[1],
-            hovertemplate=f'<b>{cat["name"]}</b><br>Ana kategori<extra></extra>'
-        ))
+        # UML tarzı site mimarisi oluştur
         
-        # Ana sayfadan kategorilere bağlantı çizgileri
+        # Ana modül (MainPortfolio class)
+        G.add_node("MainPortfolio", 
+                  node_type="class",
+                  methods=["__init__()", "render_header()", "load_styles()"],
+                  attributes=["title", "theme", "config"])
+        
+        # Ana sekme modülleri (concrete classes)
+        tabs = [
+            ("AnasayfaModule", ["show_profile()", "show_skills()", "show_contact()"], ["profile_data", "skills_list"]),
+            ("IstatistikModule", ["create_charts()", "load_data()", "display_metrics()"], ["chart_config", "data_source"]),
+            ("ApiModule", ["fetch_data()", "process_response()", "update_display()"], ["api_endpoints", "cache"]),
+            ("VeriBilimiModule", ["run_models()", "analyze_data()", "predict()"], ["ml_models", "datasets"]),
+            ("IkAnalitikModule", ["generate_reports()", "analyze_performance()", "track_metrics()"], ["hr_data", "reports"])
+        ]
+        
+        for tab_name, methods, attributes in tabs:
+            G.add_node(tab_name,
+                      node_type="class", 
+                      methods=methods,
+                      attributes=attributes)
+            G.add_edge("MainPortfolio", tab_name, relationship="composes")
+        
+        # Alt modüller ve bileşenler
+        components = [
+            # Anasayfa bileşenleri
+            ("ProfileComponent", "AnasayfaModule", ["render_photo()", "show_info()"], ["photo_path", "user_info"]),
+            ("ContactComponent", "AnasayfaModule", ["show_links()", "send_message()"], ["social_links", "email"]),
+            
+            # İstatistik bileşenleri
+            ("ChartEngine", "IstatistikModule", ["create_plotly_chart()", "apply_theme()"], ["plot_config", "theme_settings"]),
+            ("DataProcessor", "IstatistikModule", ["clean_data()", "transform()"], ["raw_data", "filters"]),
+            
+            # Api bileşenleri
+            ("ApiConnector", "ApiModule", ["connect()", "authenticate()"], ["credentials", "session"]),
+            ("DataScraper", "ApiModule", ["scrape_ekonomi()", "scrape_borsa()"], ["scraped_data", "endpoints"]),
+            
+            # Veri bilimi bileşenleri
+            ("MLPipeline", "VeriBilimiModule", ["train_model()", "evaluate()"], ["model", "metrics"]),
+            ("Visualizer", "VeriBilimiModule", ["plot_results()", "show_confusion_matrix()"], ["plots", "results"]),
+            
+            # İK analitik bileşenleri
+            ("ReportGenerator", "IkAnalitikModule", ["create_pdf()", "export_excel()"], ["reports", "templates"]),
+            ("PerformanceTracker", "IkAnalitikModule", ["track_employee()", "calculate_kpi()"], ["employee_data", "kpis"])
+        ]
+        
+        for comp_name, parent, methods, attributes in components:
+            G.add_node(comp_name,
+                      node_type="component",
+                      methods=methods,
+                      attributes=attributes)
+            G.add_edge(parent, comp_name, relationship="uses")
+        
+        # UML diyagramını Plotly ile görselleştir
+        pos = nx.spring_layout(G, k=3, iterations=50, seed=42)
+        
+        # Node'ları kategorilerine göre renklendirmek için
+        node_colors = []
+        node_sizes = []
+        node_texts = []
+        
+        for node in G.nodes():
+            node_data = G.nodes[node]
+            if node == "MainPortfolio":
+                node_colors.append('#8B5CF6')  # Ana modül - Mor
+                node_sizes.append(80)
+            elif "Module" in node:
+                node_colors.append('#3B82F6')  # Modüller - Mavi
+                node_sizes.append(60)
+            else:
+                node_colors.append('#10B981')  # Bileşenler - Yeşil
+                node_sizes.append(40)
+            
+            # UML tarzı text oluştur
+            methods = node_data.get('methods', [])
+            attributes = node_data.get('attributes', [])
+            
+            uml_text = f"� {node}<br>"
+            if attributes:
+                uml_text += "<br>".join([f"• {attr}" for attr in attributes[:2]]) + "<br>---<br>"
+            if methods:
+                uml_text += "<br>".join([f"+ {method}" for method in methods[:2]])
+                if len(methods) > 2:
+                    uml_text += f"<br>... +{len(methods)-2} more"
+            
+            node_texts.append(uml_text)
+        
+        # Plotly figürü oluştur
+        fig = go.Figure()
+        
+        # Kenarları çiz (ilişkiler)
+        edge_x, edge_y = [], []
+        for edge in G.edges():
+            x0, y0 = pos[edge[0]]
+            x1, y1 = pos[edge[1]]
+            edge_x.extend([x0, x1, None])
+            edge_y.extend([y0, y1, None])
+        
         fig.add_trace(go.Scatter(
-            x=[0, cat['x']], y=[0, cat['y']],
+            x=edge_x, y=edge_y,
+            line=dict(width=2, color='rgba(59, 130, 246, 0.4)'),
+            hoverinfo='none',
             mode='lines',
-            line=dict(color='rgba(139, 92, 246, 0.3)', width=2),
-            showlegend=False,
-            hoverinfo='skip'
+            showlegend=False
         ))
-    
-    # Alt kategoriler (ikinci seviye)
-    subcategories = [
-        # Hakkımda alt kategorileri
-        {'name': '📝 Özgeçmiş', 'x': -3.5, 'y': 2.8, 'parent_x': -2, 'parent_y': 1.5, 'color': '#60A5FA'},
-        {'name': '🎯 Yetenekler', 'x': -0.5, 'y': 2.8, 'parent_x': -2, 'parent_y': 1.5, 'color': '#60A5FA'},
         
-        # Analytics alt kategorileri
-        {'name': '📈 Grafikler', 'x': 3.5, 'y': 2.8, 'parent_x': 2, 'parent_y': 1.5, 'color': '#34D399'},
-        {'name': '📊 Tablolar', 'x': 0.5, 'y': 2.8, 'parent_x': 2, 'parent_y': 1.5, 'color': '#34D399'},
+        # Node'ları çiz (sınıflar/bileşenler)
+        node_x = [pos[node][0] for node in G.nodes()]
+        node_y = [pos[node][1] for node in G.nodes()]
         
-        # Data Science alt kategorileri
-        {'name': '🤖 ML Modeller', 'x': -3.5, 'y': -2.8, 'parent_x': -2, 'parent_y': -1.5, 'color': '#FBBF24'},
-        {'name': '📉 Tahminler', 'x': -0.5, 'y': -2.8, 'parent_x': -2, 'parent_y': -1.5, 'color': '#FBBF24'},
-        
-        # HR Analytics alt kategorileri
-        {'name': '👔 Performans', 'x': 3.5, 'y': -2.8, 'parent_x': 2, 'parent_y': -1.5, 'color': '#F87171'},
-        {'name': '📋 Raporlar', 'x': 0.5, 'y': -2.8, 'parent_x': 2, 'parent_y': -1.5, 'color': '#F87171'}
-    ]
-    
-    for sub in subcategories:
         fig.add_trace(go.Scatter(
-            x=[sub['x']], y=[sub['y']],
+            x=node_x, y=node_y,
             mode='markers+text',
-            marker=dict(size=40, color=sub['color'], line=dict(width=2, color='white')),
-            text=[sub['name']],
+            marker=dict(
+                size=node_sizes,
+                color=node_colors,
+                line=dict(width=3, color='white'),
+                opacity=0.9
+            ),
+            text=[node for node in G.nodes()],
             textposition="middle center",
-            textfont=dict(size=9, color='white', family='Roboto'),
-            name=sub['name'].split(' ')[1],
-            hovertemplate=f'<b>{sub["name"]}</b><br>Alt kategori<extra></extra>'
+            textfont=dict(size=10, color='white', family='Roboto', weight='bold'),
+            hovertext=node_texts,
+            hoverinfo='text',
+            showlegend=False
         ))
         
-        # Ana kategorilerden alt kategorilere bağlantı çizgileri
-        fig.add_trace(go.Scatter(
-            x=[sub['parent_x'], sub['x']], y=[sub['parent_y'], sub['y']],
-            mode='lines',
-            line=dict(color='rgba(107, 114, 128, 0.3)', width=1.5),
+        # Layout ayarları
+        fig.update_layout(
+            title={
+                'text': '🏗️ Portfolio Site Mimarisi - UML Class Diagram',
+                'x': 0.5,
+                'font': {'size': 18, 'color': '#8B5CF6', 'family': 'Roboto'}
+            },
+            xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
+            yaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            height=600,
             showlegend=False,
-            hoverinfo='skip'
-        ))
-    
-    # Layout ayarları
-    fig.update_layout(
-        title={
-            'text': 'Portfolio Site Yapısı',
-            'x': 0.5,
-            'font': {'size': 18, 'color': '#8B5CF6', 'family': 'Roboto'}
-        },
-        xaxis=dict(
-            showgrid=False,
-            showticklabels=False,
-            zeroline=False,
-            range=[-4.5, 4.5]
+            margin=dict(t=60, l=20, r=20, b=20)
+        )
+        
+        fig = make_transparent_bg(fig)
+        st.plotly_chart(fig, use_container_width=True)
+        
+    else:
+        st.error("❌ NetworkX kütüphanesi yüklenemedi - UML diagramı gösterilemiyor")
         ),
         yaxis=dict(
             showgrid=False,
@@ -895,13 +944,16 @@ with menu[0]:
     fig = make_transparent_bg(fig)
     st.plotly_chart(fig, use_container_width=True)
     
-    # Site yapısı açıklaması
+    # UML Diagram açıklaması
     st.markdown("""
     <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px; border-radius: 10px; margin-top: 15px;'>
-        <h4 style='color: white; margin: 0 0 10px 0;'>🗺️ Site Navigasyonu</h4>
+        <h4 style='color: white; margin: 0 0 10px 0;'>🏗️ UML Class Diagram Açıklaması</h4>
         <p style='color: white; margin: 0; font-size: 14px;'>
-            Bu diyagram, portfolio sitesinin yapısını ve bölümler arası ilişkileri göstermektedir. 
-            Her kategori altında ilgili alt konular organize edilmiştir.
+            <strong>📦 Mor:</strong> Ana Portfolio Sınıfı (MainPortfolio)<br>
+            <strong>🔵 Mavi:</strong> Modül Sınıfları (AnasayfaModule, İstatistikModule, vb.)<br>
+            <strong>🟢 Yeşil:</strong> Bileşen Sınıfları (ChartEngine, DataProcessor, vb.)<br><br>
+            Bu UML diyagramı, portfolio sitesinin nesne yönelimli mimarisini ve sınıflar arası ilişkileri gösterir.
+            Her sınıfın metodları ve öznitelikleri hover ile görülebilir.
         </p>
     </div>
     """, unsafe_allow_html=True)
