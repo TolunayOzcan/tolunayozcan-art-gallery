@@ -930,22 +930,6 @@ with menu[0]:
         
     else:
         st.error("❌ NetworkX kütüphanesi yüklenemedi - UML diagramı gösterilemiyor")
-        ),
-        yaxis=dict(
-            showgrid=False,
-            showticklabels=False,
-            zeroline=False,
-            range=[-3.5, 3.5]
-        ),
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
-        height=500,
-        margin=dict(l=20, r=20, t=60, b=20),
-        showlegend=False
-    )
-    
-    fig = make_transparent_bg(fig)
-    st.plotly_chart(fig, use_container_width=True)
     
     # UML Diagram açıklaması
     st.markdown("""
