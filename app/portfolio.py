@@ -650,7 +650,7 @@ with menu[0]:
                 margin: 1rem 0 0.3rem 0; 
                 font-size: 1.4rem; 
                 font-family: 'Roboto', sans-serif; 
-                font-style: italic; 
+                font-style: none; 
                 line-height: 1.2; 
                 background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 50%, #7C3AED 100%);
                 -webkit-background-clip: text;
@@ -658,16 +658,19 @@ with menu[0]:
                 background-clip: text;
                 text-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
             ">Tolunay ÖZCAN</h2>
-            <p style="
-                background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%);
+            <h2 style="
+                margin: 0.5rem 0 1rem 0; 
+                font-size: 1.4rem; 
+                font-family: 'Roboto', sans-serif; 
+                font-style: none; 
+                line-height: 1.2; 
+                background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 50%, #7C3AED 100%);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;
-                margin: 0.2rem 0 1rem 0; 
-                font-size: 1rem; 
-                font-family: 'Roboto', sans-serif; 
+                text-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
                 font-weight: bold;
-            ">Data Analyst</p>
+            ">Data Analyst</h2>
             
         </div>
         """, unsafe_allow_html=True)
