@@ -847,13 +847,13 @@ with menu[0]:
             node_data = G.nodes[node]
             if node == "MainPortfolio":
                 node_colors.append('#8B5CF6')  # Ana modül - Mor
-                node_sizes.append(80)
+                node_sizes.append(120)  # Daha büyük
             elif "Module" in node:
                 node_colors.append('#3B82F6')  # Modüller - Mavi
-                node_sizes.append(60)
+                node_sizes.append(100)  # Daha büyük
             else:
                 node_colors.append('#10B981')  # Bileşenler - Yeşil
-                node_sizes.append(40)
+                node_sizes.append(80)  # Daha büyük
             
             # UML tarzı text oluştur
             methods = node_data.get('methods', [])
@@ -867,7 +867,7 @@ with menu[0]:
                 if len(methods) > 2:
                     uml_text += f"<br>... +{len(methods)-2} more"
             
-            node_texts.append(uml_text)
+            node_texts.append(node)
         
         # Plotly figürü oluştur
         fig = go.Figure()
@@ -901,10 +901,9 @@ with menu[0]:
                 line=dict(width=3, color='white'),
                 opacity=0.9
             ),
-            text=[node for node in G.nodes()],
+            text=node_texts,
             textposition="middle center",
-            textfont=dict(size=10, color='white', family='Roboto', weight='bold'),
-            hovertext=node_texts,
+            textfont=dict(size=12, color='white', family='Roboto', weight='bold'),
             hoverinfo='text',
             showlegend=False
         ))
