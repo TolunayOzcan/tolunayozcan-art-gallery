@@ -581,7 +581,7 @@ st.markdown("""
             font-family: 'Roboto', sans-serif;
             letter-spacing: 1px;
         ">
-            ✨ Tolunay Özcan | Veri Sanatı Atölyesi ✨
+            Tolunay Özcan'ın Veri Sanatı Atölyesi
         </h1>
     </div>
     <div class="header-bar" style="
