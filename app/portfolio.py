@@ -682,7 +682,7 @@ with menu[0]:
     
     with col2:
         st.markdown("""
-        <h2 style="color: #8B5CF6 !important; font-weight: bold !important; font-family: 'Roboto', sans-serif !important; font-style: italic !important; text-shadow: none !important; background: none !important; margin-top: 1rem;">Hakkımda</h2>
+        <h2 style="color: #8B5CF6 !important; font-weight: bold !important; font-family: 'Roboto', sans-serif !important; text-shadow: none !important; background: none !important; margin-top: 1rem;">Hakkımda</h2>
         <p style="font-size: 1.1rem; line-height: 1.6; text-align: justify;">Veri analizi ve görselleştirme alanında 4+ yıllık deneyime sahip Kıdemli Veri Analistiyim. SQL, Python ve VBA 
         konularında uzman seviyede bilgi sahibi. CRM veri analizi, İK analitik çözümleri, çağrı merkezi ve operasyonel 
         raporlama konularında kapsamlı deneyim. Veri odaklı karar alma süreçlerini destekleyen analitik çözümler 
