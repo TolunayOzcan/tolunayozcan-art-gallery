@@ -141,6 +141,84 @@ def local_css():
 load_css("app/style.css")
 local_css()
 
+# Streamlit animasyonlarını tamamen gizle
+st.markdown("""
+<style>
+/* Streamlit loading animasyonlarını tamamen gizle */
+.stSpinner,
+.stProgress,
+.stAlert,
+.stToast,
+div[data-testid="stNotificationContentInfo"],
+div[data-testid="stNotificationContentWarning"],
+div[data-testid="stNotificationContentError"],
+div[data-testid="stNotificationContentSuccess"],
+.element-container div[data-stale="true"],
+.stApp > div[data-testid="stHeader"],
+.stDeployButton,
+.stDecoration,
+div[data-testid="stStatusWidget"],
+div[data-testid="stSpinner"],
+div[class*="spinner"],
+div[class*="loading"],
+div[class*="progress"],
+.loading-spinner,
+.stApp div[data-testid="stSpinner"] * {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    animation: none !important;
+    -webkit-animation: none !important;
+    -moz-animation: none !important;
+    -o-animation: none !important;
+    -ms-animation: none !important;
+}
+
+/* Tüm animasyonları global olarak devre dışı bırak */
+*, *::before, *::after {
+    -webkit-animation-duration: 0s !important;
+    -webkit-animation-delay: 0s !important;
+    -webkit-transition-duration: 0s !important;
+    -webkit-transition-delay: 0s !important;
+    -moz-animation-duration: 0s !important;
+    -moz-animation-delay: 0s !important;
+    -moz-transition-duration: 0s !important;
+    -moz-transition-delay: 0s !important;
+    -o-animation-duration: 0s !important;
+    -o-animation-delay: 0s !important;
+    -o-transition-duration: 0s !important;
+    -o-transition-delay: 0s !important;
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+}
+
+/* Sayfa yeniden yüklenme animasyonunu gizle */
+.stAppViewContainer div[data-testid="stHeader"] {
+    display: none !important;
+}
+
+/* Streamlit menü ve footer'ı gizle */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+
+/* Sarı renk içeren herhangi bir elementi gizle */
+*[style*="yellow"], 
+*[style*="#FFFF"], 
+*[style*="#FFF0"], 
+*[style*="rgb(255, 255"], 
+*[class*="yellow"] {
+    display: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+
+
+
 # Global grafik arka plan şeffaflık fonksiyonu
 def make_transparent_bg(fig):
     """Plotly grafiklerinin arka planını şeffaf yapar"""
@@ -419,98 +497,44 @@ def create_department_network():
 
 # Sidebar kaldırıldı - Profil bilgileri Hakkımda kısmına taşındı
 
-# Büyük ve animasyonlu tab bar tasarımı - En üstte ortalanmış
+# Basit tab tasarımı
 st.markdown("""
 <style>
-    /* Tab bar büyük ve animasyonlu tasarım - Ortalanmış */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 12px;
-        background: rgba(30, 41, 59, 0.4);
-        border-radius: 20px;
-        padding: 8px;
-        margin: 0 auto 1.5rem auto;
-        box-shadow: 
-            0 4px 20px rgba(59, 130, 246, 0.15),
-            0 0 0 1px rgba(139, 92, 246, 0.3),
-            0 0 10px rgba(139, 92, 246, 0.2),
-            inset 0 0 0 1px rgba(139, 92, 246, 0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(139, 92, 246, 0.4);
+        gap: 8px;
+        background: rgba(30, 41, 59, 0.3);
+        border-radius: 15px;
+        padding: 6px;
+        margin: 0 auto 1rem auto;
         display: flex;
         justify-content: center;
         width: fit-content;
         max-width: 100%;
-        position: relative;
-        animation: neonGlow 2s ease-in-out infinite alternate;
     }
     
-    @keyframes neonGlow {
-        0% {
-            box-shadow: 
-                0 4px 20px rgba(59, 130, 246, 0.15),
-                0 0 0 1px rgba(139, 92, 246, 0.3),
-                0 0 10px rgba(139, 92, 246, 0.2),
-                inset 0 0 0 1px rgba(139, 92, 246, 0.1);
-        }
-        100% {
-            box-shadow: 
-                0 4px 20px rgba(59, 130, 246, 0.25),
-                0 0 0 1px rgba(139, 92, 246, 0.5),
-                0 0 20px rgba(139, 92, 246, 0.4),
-                0 0 40px rgba(139, 92, 246, 0.1),
-                inset 0 0 0 1px rgba(139, 92, 246, 0.2);
-        }
-    }
     .stTabs [data-baseweb="tab"] {
-        height: 50px;
-        padding: 0 20px;
-        border-radius: 15px;
-        font-size: 1rem;
-        font-weight: 600;
+        height: 45px;
+        padding: 0 18px;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 500;
         font-family: 'Roboto', sans-serif;
         background: transparent;
         border: none;
         color: #94A3B8;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
+        transition: all 0.2s ease;
     }
-    .stTabs [data-baseweb="tab"]:before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-        transition: left 0.6s;
-    }
+    
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #3B82F6, #8B5CF6) !important;
         color: white !important;
-        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-        transform: translateY(-2px) scale(1.05);
-    }
-    .stTabs [data-baseweb="tab"]:hover {
-        background: rgba(59, 130, 246, 0.15);
-        color: #E2E8F0;
-        transform: translateY(-1px);
-        box-shadow: 0 2px 10px rgba(59, 130, 246, 0.2);
-    }
-    .stTabs [data-baseweb="tab"]:hover:before {
-        left: 100%;
-    }
-    .stTabs [aria-selected="true"]:before {
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-        animation: shimmer 2s infinite;
-    }
-    @keyframes shimmer {
-        0% { left: -100%; }
-        50% { left: 100%; }
-        100% { left: 100%; }
     }
     
-    /* Tab container'ı ortala */
+    .stTabs [data-baseweb="tab"]:hover {
+        background: rgba(59, 130, 246, 0.1);
+        color: #E2E8F0;
+    }
+    
     .stTabs {
         display: flex;
         flex-direction: column;
@@ -520,94 +544,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Mouse takip eden karakter - Tab menüsü üstünde
-st.markdown("""
-<div style="position: relative; height: 60px; overflow: hidden; margin-bottom: 10px;">
-    <div id="mouse-follower" style="
-        position: absolute;
-        font-size: 24px;
-        pointer-events: none;
-        z-index: 1000;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        transform: translate(-50%, -50%);
-        filter: drop-shadow(0 2px 8px rgba(139, 92, 246, 0.4));
-    ">✨</div>
-</div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const follower = document.getElementById('mouse-follower');
-    const container = follower.parentElement;
-    
-    // Farklı karakterler dizisi
-    const characters = ['✨', '⭐', '🌟', '💫', '🔮', '🎭', '🎨', '🚀', '💎', '🌈'];
-    let currentChar = 0;
-    
-    function updateMousePosition(e) {
-        const rect = container.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        // Container sınırları içinde kalması için kontrol
-        if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
-            follower.style.left = x + 'px';
-            follower.style.top = y + 'px';
-            follower.style.opacity = '1';
-            follower.style.transform = 'translate(-50%, -50%) scale(1.2)';
-        }
-    }
-    
-    function resetPosition() {
-        follower.style.opacity = '0.6';
-        follower.style.transform = 'translate(-50%, -50%) scale(1)';
-        follower.style.left = '50%';
-        follower.style.top = '50%';
-    }
-    
-    function changeCharacter() {
-        currentChar = (currentChar + 1) % characters.length;
-        follower.textContent = characters[currentChar];
-        follower.style.transform = 'translate(-50%, -50%) scale(1.5)';
-        setTimeout(() => {
-            follower.style.transform = 'translate(-50%, -50%) scale(1)';
-        }, 200);
-    }
-    
-    // Mouse eventi
-    container.addEventListener('mousemove', updateMousePosition);
-    container.addEventListener('mouseleave', resetPosition);
-    container.addEventListener('click', changeCharacter);
-    
-    // Başlangıç pozisyonu
-    resetPosition();
-    
-    // Otomatik karakter değişimi (5 saniyede bir)
-    setInterval(changeCharacter, 5000);
-});
-</script>
-
-<style>
-#mouse-follower {
-    animation: float 3s ease-in-out infinite;
-    cursor: none;
-}
-
-@keyframes float {
-    0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
-    50% { transform: translate(-50%, -50%) translateY(-5px); }
-}
-
-#mouse-follower:hover {
-    animation: bounce 0.6s ease-in-out;
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% { transform: translate(-50%, -50%) translateY(0); }
-    40% { transform: translate(-50%, -50%) translateY(-10px); }
-    60% { transform: translate(-50%, -50%) translateY(-5px); }
-}
-</style>
-""", unsafe_allow_html=True)
 
 # Büyük tab menüsü - En üstte
 menu = st.tabs(["👤 Hakkımda", "📊 Analytics", "🔄 Api entegrasyon", "🧪 Data science", "👥 HR analytics"])
@@ -628,7 +565,13 @@ with menu[0]:
         
         # Profil fotoğrafı kontrolü
         try:
-            if os.path.exists("pp2.jpeg"):
+            if os.path.exists("lpp.jpeg"):
+                image = Image.open("lpp.jpeg")
+                st.image(image, width=120)
+            elif os.path.exists("app/lpp.jpeg"):
+                image = Image.open("app/lpp.jpeg")
+                st.image(image, width=120)
+            elif os.path.exists("pp2.jpeg"):
                 image = Image.open("pp2.jpeg")
                 st.image(image, width=120)
             elif os.path.exists("app/pp2.jpeg"):

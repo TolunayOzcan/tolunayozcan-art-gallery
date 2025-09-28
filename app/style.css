@@ -59,7 +59,6 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 800;
   margin-bottom: 1.2rem;
   letter-spacing: 0.05em;
-  text-shadow: 0 0 12px rgba(59,130,246,0.4), 0 0 24px rgba(59,130,246,0.2), 0 2px 4px rgba(0,0,0,0.3);
   line-height: 1.1;
   text-transform: uppercase;
 }
@@ -68,26 +67,8 @@ h1 {
   font-size: 2.8rem;
   font-weight: 900;
   margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 50%, #FFD700 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 20px rgba(59,130,246,0.6), 0 0 40px rgba(139,92,246,0.4);
+  color: var(--accent-color);
   letter-spacing: 0.08em;
-  position: relative;
-}
-
-h1::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-  border-radius: 2px;
-  box-shadow: 0 0 12px rgba(59,130,246,0.5);
 }
 
 h2 {
@@ -495,6 +476,7 @@ hr {
 /* ===== GELİŞMİŞ ANİMASYONLAR ===== */
 
 /* Keyframe animasyonları */
+/* All keyframe animations disabled
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -528,6 +510,7 @@ hr {
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
+*/
 
 /* Tab bar gelişmiş animasyonları */
 .stTabs [data-baseweb="tab-list"] {
@@ -548,22 +531,21 @@ hr {
 
 .stTabs [aria-selected="true"] {
     transform: translateY(-2px) scale(1.05) !important;
-    animation: pulse 2s infinite;
 }
 
-/* İçerik fade-in animasyonu */
+/* İçerik fade-in animasyonu - disabled */
 .main .block-container {
-    animation: fadeIn 0.6s ease-out;
+    /* animation: fadeIn 0.6s ease-out; */
 }
 
-/* Sidebar slide-in animasyonu */
+/* Sidebar slide-in animasyonu - disabled */
 .css-1d391kg {
-    animation: slideIn 0.5s ease-out;
+    /* animation: slideIn 0.5s ease-out; */
 }
 
-/* Grafik konteynerleri için animasyon */
+/* Grafik konteynerleri için animasyon - disabled */
 .js-plotly-plot {
-    animation: bounceIn 0.8s ease-out;
+    /* animation: bounceIn 0.8s ease-out; */
 }
 
 /* Başlıklar için net görünüm - gradient animasyonu kaldırıldı */
@@ -576,12 +558,12 @@ h1, h2, h3 {
 
 /* Hover efektleri */
 .stButton > button:hover {
-    animation: pulse 0.6s ease-in-out;
+    /* Animation removed */
 }
 
 /* Kart hover animasyonları */
 .stMetric:hover {
-    animation: bounceIn 0.3s ease-out;
+    /* Animation removed */
 }
 
 /* Streamlit özel font override'ları */
