@@ -650,7 +650,8 @@ with menu[0]:
                 margin: 1rem 0 0.3rem 0; 
                 font-size: 1.4rem; 
                 font-family: 'Roboto', sans-serif; 
-                font-style: none; 
+                font-style: normal; 
+                font-weight: normal;
                 line-height: 1.2; 
                 background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 50%, #7C3AED 100%);
                 -webkit-background-clip: text;
@@ -662,14 +663,14 @@ with menu[0]:
                 margin: 0.5rem 0 1rem 0; 
                 font-size: 1.4rem; 
                 font-family: 'Roboto', sans-serif; 
-                font-style: none; 
+                font-style: normal; 
+                font-weight: normal;
                 line-height: 1.2; 
                 background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 50%, #7C3AED 100%);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;
                 text-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
-                font-weight: bold;
             ">Data Analyst</h2>
             
         </div>
