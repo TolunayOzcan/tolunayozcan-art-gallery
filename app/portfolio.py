@@ -204,21 +204,7 @@ div[class*="progress"],
 footer {visibility: hidden;}
 header {visibility: hidden;}
 
-/* Site geneli arka plan - lark fotoğrafı */
-.stApp {
-    background-size: cover;
-    background-position: center top;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-}
 
-/* Ana container arka planını şeffaf yap */
-.main .block-container {
-    background: rgba(15, 23, 42, 0.2);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    border: 1px solid rgba(59, 130, 246, 0.1);
-}
 
 /* Sarı renk içeren herhangi bir elementi gizle */
 *[style*="yellow"], 
@@ -563,31 +549,6 @@ st.markdown("""
 
 
 # Header bölümü - En üstte
-# Website background fotoğrafını base64 encode et
-import base64
-website_bg_base64 = ""
-try:
-    if os.path.exists("websitebackground.jpg"):
-        with open("websitebackground.jpg", "rb") as img_file:
-            website_bg_base64 = base64.b64encode(img_file.read()).decode()
-    elif os.path.exists("app/websitebackground.jpg"):
-        with open("app/websitebackground.jpg", "rb") as img_file:
-            website_bg_base64 = base64.b64encode(img_file.read()).decode()
-except Exception as e:
-    st.warning(f"Website background fotoğrafı yüklenemedi: {e}")
-
-# Site arka planı için dinamik CSS enjekte et
-if website_bg_base64:
-    st.markdown(f"""
-    <style>
-    .stApp {{
-        background-image: 
-            linear-gradient(135deg, rgba(15, 23, 42, 0.7) 0%, rgba(30, 41, 59, 0.6) 50%, rgba(15, 23, 42, 0.8) 100%),
-            url('data:image/jpeg;base64,{website_bg_base64}');
-    }}
-    </style>
-    """, unsafe_allow_html=True)
-
 st.markdown("""
 <div class="header-section" style="
     width: 100%;
