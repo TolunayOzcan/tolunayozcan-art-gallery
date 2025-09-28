@@ -774,159 +774,273 @@ with menu[0]:
     
     st.markdown("""</div>""", unsafe_allow_html=True)
     
-    # Site İlişki Haritası
+    # Site İlişki Haritası - TEK KAPSAMLI DİAGRAM
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
-    st.markdown("<h3 style='color: #8B5CF6; font-family: Roboto; font-style: italic;'>🗺️ Site İlişki Haritası</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #8B5CF6; font-family: Roboto; font-style: italic;'>🗺️ Tüm Site Yapısı - Tek Büyük Diagram</h3>", unsafe_allow_html=True)
     
-    # NetworkX ile güzel bir ilişki haritası
-    if NETWORK_AVAILABLE:
-        # NetworkX graf oluştur
-        G = nx.Graph()  # Undirected graph (ilişki haritası)
+    # Plotly ile tek kapsamlı site diagramı
+    fig = go.Figure()
+    
+    # MERKEZ - Ana Portal (Marker ayrı)
+    fig.add_trace(go.Scatter(
+        x=[0], y=[0],
+        mode='markers',
+        marker=dict(size=140, color='#8B5CF6', 
+                   line=dict(width=6, color='white'),
+                   symbol='star'),
+        showlegend=False,
+        name='Ana Portal',
+        hovertemplate='<b>🏠 Ana Portal</b><br>Tüm özelliklerin merkezi<br>• Profil & İletişim<br>• Site navigasyonu<br>• Hub\'lara giriş<extra></extra>'
+    ))
+    
+    # MERKEZ - Text ayrı trace (KESINLIKLE GÖRÜNÜR)
+    fig.add_trace(go.Scatter(
+        x=[0], y=[-2],
+        mode='text',
+        text=['🏠 MERKEZ PORTAL'],
+        textfont=dict(size=18, color='white', family='Inter, sans-serif'),
+        showlegend=False,
+        hoverinfo='none',
+        name='Merkez Text'
+    ))
+    
+    # Tüm site yapısı tek diagramda
+    site_data = [
+        # KUZEY - İstatistik Hub
+        {
+            'hub': {'name': '📊<br><b>İSTATİSTİK</b><br>Hub', 'x': 0, 'y': 5.5, 'color': '#3B82F6'},
+            'features': [
+                {'name': '🎨 Sanatçı<br>Değerleri', 'x': -3, 'y': 7.5, 'color': '#60A5FA'},
+                {'name': '📊 Sankey<br>Diyagram', 'x': 3, 'y': 7.5, 'color': '#60A5FA'},
+                {'name': '📈 Korelasyon<br>Analizi', 'x': 0, 'y': 8.5, 'color': '#60A5FA'},
+                {'name': '📋 Veri<br>Tabloları', 'x': -1.5, 'y': 7, 'color': '#60A5FA'},
+                {'name': '🎯 Trend<br>Analizi', 'x': 1.5, 'y': 7, 'color': '#60A5FA'}
+            ]
+        },
+        # DOĞU - API Hub  
+        {
+            'hub': {'name': '🌐<br><b>API VERİLERİ</b><br>Hub', 'x': 5.5, 'y': 0, 'color': '#10B981'},
+            'features': [
+                {'name': '� Ekonomi<br>API', 'x': 7.5, 'y': 3, 'color': '#34D399'},
+                {'name': '📈 Borsa<br>API', 'x': 7.5, 'y': -3, 'color': '#34D399'},
+                {'name': '🌤️ Hava<br>API', 'x': 8.5, 'y': 0, 'color': '#34D399'},
+                {'name': '🌐 Web<br>Scraping', 'x': 7, 'y': 1.5, 'color': '#34D399'},
+                {'name': '💾 Cache<br>Sistemi', 'x': 7, 'y': -1.5, 'color': '#34D399'}
+            ]
+        },
+        # GÜNEY - Veri Bilimi Hub
+        {
+            'hub': {'name': '🔬<br><b>VERİ BİLİMİ</b><br>Hub', 'x': 0, 'y': -5.5, 'color': '#F59E0B'},
+            'features': [
+                {'name': '🤖 ML<br>Modelleri', 'x': -3, 'y': -7.5, 'color': '#FBBF24'},
+                {'name': '📊 Regresyon<br>Analizi', 'x': 3, 'y': -7.5, 'color': '#FBBF24'},
+                {'name': '🧹 Veri<br>Temizleme', 'x': 0, 'y': -8.5, 'color': '#FBBF24'},
+                {'name': '🎯 Tahmin<br>Modelleri', 'x': -1.5, 'y': -7, 'color': '#FBBF24'},
+                {'name': '📈 Sınıflandırma<br>Algoritmaları', 'x': 1.5, 'y': -7, 'color': '#FBBF24'}
+            ]
+        },
+        # BATI - İK Hub
+        {
+            'hub': {'name': '👥<br><b>İK ANALİTİK</b><br>Hub', 'x': -5.5, 'y': 0, 'color': '#EF4444'},
+            'features': [
+                {'name': '📋 Performans<br>Raporu', 'x': -7.5, 'y': 3, 'color': '#F87171'},
+                {'name': '🎯 İK<br>Dashboard', 'x': -7.5, 'y': -3, 'color': '#F87171'},
+                {'name': '📊 İşgören<br>İstatistik', 'x': -8.5, 'y': 0, 'color': '#F87171'},
+                {'name': '📈 Attrition<br>Analizi', 'x': -7, 'y': 1.5, 'color': '#F87171'},
+                {'name': '💼 HR<br>Metrikleri', 'x': -7, 'y': -1.5, 'color': '#F87171'}
+            ]
+        }
+    ]
+    
+    # Tüm hub'ları ve özelliklerini tek diagramda çiz
+    for section in site_data:
+        hub = section['hub']
         
-        # Ana sayfa (merkez)
-        G.add_node("🏠 Anasayfa", 
-                  category="main",
-                  description="Portfolio ana sayfası")
+        # Hub kısa ismini al (HTML etiketlerini kaldır)
+        hub_short_name = hub['name'].replace('<br>', ' ').replace('<b>', '').replace('</b>', '').replace('👥', '').replace('📊', '').replace('🔗', '').replace('🧠', '').strip()
         
-        # Ana kategoriler
-        sections = [
-            ("📊 İstatistik", "Veri analizleri ve görselleştirmeler"),
-            ("🔄 API Entegrasyon", "Gerçek zamanlı veri işleme"),
-            ("🧪 Veri Bilimi", "ML modelleri ve tahminler"),
-            ("👥 İK Analitik", "İnsan kaynakları analizleri")
-        ]
-        
-        for section_name, description in sections:
-            G.add_node(section_name,
-                      category="section",
-                      description=description)
-            G.add_edge("🏠 Anasayfa", section_name)
-        
-        # Alt özellikler
-        features = [
-            ("👤 Profil", "🏠 Anasayfa"),
-            ("📱 İletişim", "🏠 Anasayfa"),
-            ("📈 Grafikler", "📊 İstatistik"),
-            ("📊 Tablolar", "📊 İstatistik"),
-            ("🌐 Web Scraping", "🔄 API Entegrasyon"),
-            ("💾 Cache", "🔄 API Entegrasyon"),
-            ("🤖 ML Modeller", "🧪 Veri Bilimi"),
-            ("🎯 Tahminler", "🧪 Veri Bilimi"),
-            ("📋 Raporlar", "👥 İK Analitik"),
-            ("📊 Dashboard", "👥 İK Analitik")
-        ]
-        
-        for feature_name, parent in features:
-            G.add_node(feature_name, category="feature")
-            G.add_edge(parent, feature_name)
-        
-        # İlişki haritasını Plotly ile görselleştir
-        pos = nx.spring_layout(G, k=2, iterations=100, seed=42)
-        
-        # Node'ları kategorilerine göre renklendirmek için
-        node_colors = []
-        node_sizes = []
-        node_texts = []
-        
-        for node in G.nodes():
-            node_data = G.nodes[node]
-            category = node_data.get('category', 'feature')
-            
-            if category == "main":
-                node_colors.append('#8B5CF6')  # Ana sayfa - Mor
-                node_sizes.append(100)
-            elif category == "section":
-                node_colors.append('#3B82F6')  # Ana bölümler - Mavi
-                node_sizes.append(80)
-            else:
-                node_colors.append('#10B981')  # Özellikler - Yeşil
-                node_sizes.append(80)  # Daha büyük
-            
-            # UML tarzı text oluştur
-            methods = node_data.get('methods', [])
-            attributes = node_data.get('attributes', [])
-            
-            uml_text = f"� {node}<br>"
-            if attributes:
-                uml_text += "<br>".join([f"• {attr}" for attr in attributes[:2]]) + "<br>---<br>"
-            if methods:
-                uml_text += "<br>".join([f"+ {method}" for method in methods[:2]])
-                if len(methods) > 2:
-                    uml_text += f"<br>... +{len(methods)-2} more"
-            
-            node_texts.append(node)
-        
-        # Plotly figürü oluştur
-        fig = go.Figure()
-        
-        # Kenarları çiz (ilişkiler)
-        edge_x, edge_y = [], []
-        for edge in G.edges():
-            x0, y0 = pos[edge[0]]
-            x1, y1 = pos[edge[1]]
-            edge_x.extend([x0, x1, None])
-            edge_y.extend([y0, y1, None])
-        
-        fig.add_trace(go.Scatter(
-            x=edge_x, y=edge_y,
-            line=dict(width=2, color='rgba(59, 130, 246, 0.4)'),
-            hoverinfo='none',
-            mode='lines',
-            showlegend=False
-        ))
-        
-        # Node'ları çiz (sınıflar/bileşenler)
-        node_x = [pos[node][0] for node in G.nodes()]
-        node_y = [pos[node][1] for node in G.nodes()]
-        
-        fig.add_trace(go.Scatter(
-            x=node_x, y=node_y,
-            mode='markers+text',
-            marker=dict(
-                size=node_sizes,
-                color=node_colors,
-                line=dict(width=3, color='white'),
-                opacity=0.9
-            ),
-            text=node_texts,
-            textposition="middle center",
-            textfont=dict(size=12, color='white', family='Roboto', weight='bold'),
-            hoverinfo='text',
-            showlegend=False
-        ))
-        
-        # Layout ayarları
-        fig.update_layout(
-            title={
-                'text': '🏗️ Portfolio Site Mimarisi - UML Class Diagram',
-                'x': 0.5,
-                'font': {'size': 18, 'color': '#8B5CF6', 'family': 'Roboto'}
-            },
-            xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
-            yaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            height=600,
-            showlegend=False,
-            margin=dict(t=60, l=20, r=20, b=20)
+        # Merkezden hub'a ana bağlantı
+        fig.add_shape(
+            type="line",
+            x0=0, y0=0, x1=hub['x'], y1=hub['y'],
+            line=dict(color='rgba(139, 92, 246, 0.7)', width=8),
         )
         
-        fig = make_transparent_bg(fig)
-        st.plotly_chart(fig, use_container_width=True)
+        # İlişki çizgisinin orta noktasına modern etiket kutusu
+        mid_x = (0 + hub['x']) / 2
+        mid_y = (0 + hub['y']) / 2
+        connection_label = f"{hub_short_name}"
         
-    else:
-        st.error("❌ NetworkX kütüphanesi yüklenemedi - UML diagramı gösterilemiyor")
+        # Gradient arka plan kutusu
+        fig.add_trace(go.Scatter(
+            x=[mid_x], y=[mid_y],
+            mode='markers',
+            marker=dict(size=60, color='rgba(255,255,255,0.95)', 
+                       line=dict(width=2, color='rgba(139, 92, 246, 0.7)'),
+                       symbol='square'),
+            showlegend=False,
+            hoverinfo='none',
+            name=f'Connection Box {connection_label}'
+        ))
+        
+        # Şık etiket metni
+        fig.add_trace(go.Scatter(
+            x=[mid_x], y=[mid_y],
+            mode='text',
+            text=[connection_label],
+            textfont=dict(size=9, color='#6366F1', family='Inter, sans-serif'),
+            showlegend=False,
+            hoverinfo='none',
+            name=f'Connection {connection_label}'
+        ))
+        
+        # Etiket kutusunun arka planı için küçük marker
+        fig.add_trace(go.Scatter(
+            x=[mid_x], y=[mid_y],
+            mode='markers',
+            marker=dict(size=60, color='white', 
+                       line=dict(width=2, color='#8B5CF6'),
+                       symbol='square'),
+            showlegend=False,
+            hoverinfo='none',
+            name=f'Connection Box {connection_label}'
+        ))
+        
+        # Ana hub (Marker ayrı)
+        hub_short_name = hub['name'].replace('<br><b>', ' ').replace('</b><br>Hub', '').replace('<b>', '').replace('</b>', '')
+        fig.add_trace(go.Scatter(
+            x=[hub['x']], y=[hub['y']],
+            mode='markers',
+            marker=dict(size=110, color=hub['color'], 
+                       line=dict(width=5, color='white'),
+                       symbol='hexagon'),
+            showlegend=False,
+            name=hub_short_name,
+            hovertemplate=f'<b>{hub_short_name}</b><br>Ana kategori hub\'ı<br>Tüm alt özelliklerin merkezi<extra></extra>'
+        ))
+        
+        # Hub text ayrı trace (KESINLIKLE GÖRÜNÜR)
+        fig.add_trace(go.Scatter(
+            x=[hub['x']], y=[hub['y']-1.8],
+            mode='text',
+            text=[hub_short_name],
+            textfont=dict(size=16, color='white', family='Inter, sans-serif'),
+            showlegend=False,
+            hoverinfo='none',
+            name=f'Hub Text {hub_short_name}'
+        ))
+        
+        # Alt özellikler
+        for feature in section['features']:
+            # Hub'dan özelliğe bağlantı
+            fig.add_shape(
+                type="line",
+                x0=hub['x'], y0=hub['y'], 
+                x1=feature['x'], y1=feature['y'],
+                line=dict(color='rgba(107, 114, 128, 0.5)', width=3),
+            )
+            
+            # Hub-Feature bağlantısının orta noktasına minimal etiket
+            mid_x = (hub['x'] + feature['x']) / 2
+            mid_y = (hub['y'] + feature['y']) / 2
+            feature_short_name = feature['name'].replace('<br>', ' ').replace('📋', '').replace('🎯', '').replace('📊', '').replace('📈', '').replace('💼', '').replace('🔗', '').replace('💰', '').replace('🌍', '').replace('🧠', '').replace('📉', '').replace('🎨', '').replace('👨‍💼', '').replace('🎭', '').strip()
+            
+            # Sadece kısa isim göster (daha temiz görünüm)
+            display_name = feature_short_name.split()[0] if feature_short_name else ''
+            
+            # Minimal pill-shaped arka plan
+            fig.add_trace(go.Scatter(
+                x=[mid_x], y=[mid_y],
+                mode='markers',
+                marker=dict(size=35, color='rgba(248,250,252,0.9)', 
+                           line=dict(width=1.5, color=hub['color']),
+                           symbol='circle'),
+                showlegend=False,
+                hoverinfo='none',
+                name=f'Feature Connection Box {display_name}'
+            ))
+            
+            # Minimal etiket metni
+            fig.add_trace(go.Scatter(
+                x=[mid_x], y=[mid_y],
+                mode='text',
+                text=[display_name],
+                textfont=dict(size=7, color=hub['color'], family='Inter, sans-serif'),
+                showlegend=False,
+                hoverinfo='none',
+                name=f'Feature Connection {display_name}'
+            ))
+            
+            # Özellik node'u (Marker ayrı)
+            feature_short_name = feature['name'].replace('<br>', ' ')
+            fig.add_trace(go.Scatter(
+                x=[feature['x']], y=[feature['y']],
+                mode='markers',
+                marker=dict(size=70, color=feature['color'], 
+                           line=dict(width=3, color='white'),
+                           symbol='circle'),
+                showlegend=False,
+                name=feature_short_name,
+                hovertemplate=f'<b>{feature_short_name}</b><br>Özel özellik ve işlev<br>Detaylı analizler<extra></extra>'
+            ))
+            
+            # Özellik text ayrı trace (KESINLIKLE GÖRÜNÜR)
+            fig.add_trace(go.Scatter(
+                x=[feature['x']], y=[feature['y']-1.2],
+                mode='text',
+                text=[feature_short_name],
+                textfont=dict(size=12, color='white', family='Inter, sans-serif'),
+                showlegend=False,
+                hoverinfo='none',
+                name=f'Feature Text {feature_short_name}'
+            ))
     
-    # UML Diagram açıklaması
+    # Layout ayarları - TEXT'LER KEİİNLİKLE SÜREKLI GÖRÜNÜR
+    fig.update_layout(
+        title={
+            'text': '🗺️ Modern Portfolio Site Yapısı',
+            'x': 0.5,
+            'font': {'size': 20, 'color': 'white', 'family': 'Inter, sans-serif'}
+        },
+        xaxis=dict(
+            showgrid=False, 
+            showticklabels=False, 
+            zeroline=False,
+            range=[-14, 14],
+            fixedrange=True
+        ),
+        yaxis=dict(
+            showgrid=False, 
+            showticklabels=False, 
+            zeroline=False,
+            range=[-14, 14],
+            fixedrange=True
+        ),
+        plot_bgcolor='rgba(30,39,46,0.95)',
+        paper_bgcolor='rgba(20,25,31,0.95)',
+        height=950,  # Daha yüksek
+        showlegend=False,
+        margin=dict(t=100, l=80, r=80, b=80),  # Daha geniş margin
+        font=dict(family='Roboto', size=14, color='white'),  # Genel font büyük
+        hovermode='closest',
+        dragmode=False,
+        modebar=dict(remove=['select2d', 'lasso2d', 'autoScale2d', 'pan2d', 'zoom2d']),
+        uniformtext=dict(minsize=12, mode='show')  # Text'ler kesinlikle görünsün
+    )
+    
+    fig = make_transparent_bg(fig)
+    st.plotly_chart(fig, use_container_width=True)
+    
+    # Tek Diagram Açıklaması
     st.markdown("""
     <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px; border-radius: 10px; margin-top: 15px;'>
-        <h4 style='color: white; margin: 0 0 10px 0;'>🏗️ UML Class Diagram Açıklaması</h4>
+        <h4 style='color: white; margin: 0 0 10px 0;'>🗺️ Site Yapısı Tek Diagram Açıklaması</h4>
         <p style='color: white; margin: 0; font-size: 14px;'>
-            <strong>📦 Mor:</strong> Ana Portfolio Sınıfı (MainPortfolio)<br>
-            <strong>🔵 Mavi:</strong> Modül Sınıfları (AnasayfaModule, İstatistikModule, vb.)<br>
-            <strong>🟢 Yeşil:</strong> Bileşen Sınıfları (ChartEngine, DataProcessor, vb.)<br><br>
-            Bu UML diyagramı, portfolio sitesinin nesne yönelimli mimarisini ve sınıflar arası ilişkileri gösterir.
-            Her sınıfın metodları ve öznitelikleri hover ile görülebilir.
+            <strong>⭐ Mor Merkez:</strong> Ana Portfolio Hub - Tüm özelliklerin başlangıç noktası<br>
+            <strong>� Ana Hub'lar:</strong> 4 ana kategori - İstatistik, API, Veri Bilimi, İK Analitik<br>
+            <strong>⚪ Alt Özellikler:</strong> Her hub'ın altındaki özel işlevler ve sayfalar<br><br>
+            Bu tek diagram, tüm site yapısını ve tab'ların içindeki tüm özellikleri bir arada gösterir.
+            Her öğeyi hover'layarak detaylarını görebilirsiniz. 🎯
         </p>
     </div>
     """, unsafe_allow_html=True)
