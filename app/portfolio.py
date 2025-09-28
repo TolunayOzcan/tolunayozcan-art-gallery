@@ -563,27 +563,27 @@ st.markdown("""
 
 
 # Header bölümü - En üstte
-# Lark fotoğrafını base64 encode et
+# Website background fotoğrafını base64 encode et
 import base64
-lark_base64 = ""
+website_bg_base64 = ""
 try:
-    if os.path.exists("lark.jpg"):
-        with open("lark.jpg", "rb") as img_file:
-            lark_base64 = base64.b64encode(img_file.read()).decode()
-    elif os.path.exists("app/lark.jpg"):
-        with open("app/lark.jpg", "rb") as img_file:
-            lark_base64 = base64.b64encode(img_file.read()).decode()
+    if os.path.exists("websitebackground.jpg"):
+        with open("websitebackground.jpg", "rb") as img_file:
+            website_bg_base64 = base64.b64encode(img_file.read()).decode()
+    elif os.path.exists("app/websitebackground.jpg"):
+        with open("app/websitebackground.jpg", "rb") as img_file:
+            website_bg_base64 = base64.b64encode(img_file.read()).decode()
 except Exception as e:
-    st.warning(f"Lark fotoğrafı yüklenemedi: {e}")
+    st.warning(f"Website background fotoğrafı yüklenemedi: {e}")
 
 # Site arka planı için dinamik CSS enjekte et
-if lark_base64:
+if website_bg_base64:
     st.markdown(f"""
     <style>
     .stApp {{
         background-image: 
             linear-gradient(135deg, rgba(15, 23, 42, 0.7) 0%, rgba(30, 41, 59, 0.6) 50%, rgba(15, 23, 42, 0.8) 100%),
-            url('data:image/jpeg;base64,{lark_base64}');
+            url('data:image/jpeg;base64,{website_bg_base64}');
     }}
     </style>
     """, unsafe_allow_html=True)
