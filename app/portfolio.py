@@ -778,7 +778,10 @@ with menu[0]:
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
     st.markdown("<h3 style='color: #8B5CF6; font-family: Roboto; font-style: italic;'>🏗️ Site Mimarisi - UML Diagramı</h3>", unsafe_allow_html=True)
     
-        # UML tarzı site mimarisi oluştur
+    # NetworkX ile UML tarzı site haritası
+    if NETWORK_AVAILABLE:
+        # NetworkX graf oluştur
+        G = nx.DiGraph()  # Directed graph (UML tarzı)
         
         # Ana modül (MainPortfolio class)
         G.add_node("MainPortfolio", 
