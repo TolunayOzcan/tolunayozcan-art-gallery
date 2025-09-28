@@ -546,7 +546,80 @@ st.markdown("""
 
 
 
-# Büyük tab menüsü - En üstte
+# Header bölümü - En üstte
+st.markdown("""
+<div class="header-section" style="
+    width: 100%;
+    height: 80px;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(59, 130, 246, 0.1) 50%, rgba(139, 92, 246, 0.1) 100%);
+    border-radius: 0 0 20px 20px;
+    margin: -1rem -1rem 2rem -1rem;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+">
+    <div class="header-content" style="
+        text-align: center;
+        z-index: 2;
+        position: relative;
+    ">
+        <h1 style="
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #A855F7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.4));
+            font-family: 'Roboto', sans-serif;
+            letter-spacing: 1px;
+        ">
+            ✨ Tolunay Özcan | Veri Sanatı Atölyesi ✨
+        </h1>
+    </div>
+    <div class="header-bar" style="
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 3px;
+        background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #A855F7 100%);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateX(-50%);
+        border-radius: 2px;
+    "></div>
+</div>
+
+<style>
+.header-section:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 0 25px rgba(59,130,246,0.4), 0 0 40px rgba(139,92,246,0.2);
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(59, 130, 246, 0.15) 50%, rgba(139, 92, 246, 0.15) 100%);
+}
+
+.header-section:hover .header-bar {
+    width: 90%;
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
+}
+
+.header-section:hover h1 {
+    filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.6));
+    background: linear-gradient(135deg, #60A5FA 0%, #A78BFA 50%, #C084FC 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# Büyük tab menüsü - Header altında
 menu = st.tabs(["👤 Hakkımda", "📊 Analytics", "🔄 Api entegrasyon", "🧪 Data science", "👥 HR analytics"])
 
 
