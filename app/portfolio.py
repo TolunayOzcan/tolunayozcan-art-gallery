@@ -561,33 +561,72 @@ with menu[0]:
     with col1:
         st.markdown("""
         <div style="text-align:center; padding: 1rem 0;">
+        <style>
+        .profile-frame {
+            width: 220px !important;
+            height: 220px !important;
+            margin: 0 auto !important;
+            border-radius: 50% !important;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #A855F7 100%) !important;
+            padding: 10px !important;
+            box-shadow: 
+                0 0 25px rgba(59, 130, 246, 0.5),
+                0 0 50px rgba(139, 92, 246, 0.4),
+                0 12px 40px rgba(59, 130, 246, 0.3),
+                inset 0 0 0 2px rgba(255, 255, 255, 0.1) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            position: relative !important;
+        }
+        
+        .profile-frame img {
+            width: 200px !important;
+            height: 200px !important;
+            border-radius: 50% !important;
+            object-fit: cover !important;
+            border: 3px solid rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        /* Streamlit image override için */
+        div[data-testid="stImage"] > img {
+            border-radius: 50% !important;
+            border: 10px solid transparent !important;
+            background: linear-gradient(white, white) padding-box, 
+                        linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #A855F7 100%) border-box !important;
+            box-shadow: 
+                0 0 25px rgba(59, 130, 246, 0.5),
+                0 0 50px rgba(139, 92, 246, 0.4),
+                0 12px 40px rgba(59, 130, 246, 0.3) !important;
+        }
+        </style>
         """, unsafe_allow_html=True)
         
         # Profil fotoğrafı kontrolü
         try:
             if os.path.exists("lpp.jpeg"):
                 image = Image.open("lpp.jpeg")
-                st.image(image, width=120)
+                st.image(image, width=200)
             elif os.path.exists("app/lpp.jpeg"):
                 image = Image.open("app/lpp.jpeg")
-                st.image(image, width=120)
+                st.image(image, width=200)
             elif os.path.exists("pp2.jpeg"):
                 image = Image.open("pp2.jpeg")
-                st.image(image, width=120)
+                st.image(image, width=200)
             elif os.path.exists("app/pp2.jpeg"):
                 image = Image.open("app/pp2.jpeg")
-                st.image(image, width=120)
+                st.image(image, width=200)
             elif os.path.exists("pp.jpg"):
                 image = Image.open("pp.jpg")
-                st.image(image, width=120)
+                st.image(image, width=200)
             elif os.path.exists("app/pp.jpg"):
                 image = Image.open("app/pp.jpg")
-                st.image(image, width=120)
+                st.image(image, width=200)
             else:
                 # TÖ avatarı
                 st.markdown("""
-                <div style="width: 120px; height: 120px; margin: 0 auto; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 3px; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center;">
-                    <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #1E40AF, #7C3AED); display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: bold; font-family: 'Roboto', sans-serif;">
+                <div style="width: 200px; height: 200px; margin: 0 auto; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 3px; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center;">
+                    <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #1E40AF, #7C3AED); display: flex; align-items: center; justify-content: center; color: white; font-size: 60px; font-weight: bold; font-family: 'Roboto', sans-serif;">
                         TÖ
                     </div>
                 </div>
@@ -595,8 +634,8 @@ with menu[0]:
         except Exception as e:
             # Hata durumunda TÖ avatarı
             st.markdown("""
-            <div style="width: 120px; height: 120px; margin: 0 auto; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 3px; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center;">
-                <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #1E40AF, #7C3AED); display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: bold; font-family: 'Roboto', sans-serif;">
+            <div style="width: 200px; height: 200px; margin: 0 auto; border-radius: 50%; background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 3px; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center;">
+                <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #1E40AF, #7C3AED); display: flex; align-items: center; justify-content: center; color: white; font-size: 60px; font-weight: bold; font-family: 'Roboto', sans-serif;">
                     TÖ
                 </div>
             </div>
