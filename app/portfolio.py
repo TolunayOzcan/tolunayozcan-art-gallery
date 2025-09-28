@@ -515,11 +515,11 @@ st.markdown("""
     }
     
     .stTabs [data-baseweb="tab"] {
-        height: 45px;
-        padding: 0 18px;
-        border-radius: 12px;
-        font-size: 0.95rem;
-        font-weight: 500;
+        height: 55px;
+        padding: 0 24px;
+        border-radius: 15px;
+        font-size: 1.1rem;
+        font-weight: 600;
         font-family: 'Roboto', sans-serif;
         background: transparent;
         border: none;
@@ -625,7 +625,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Büyük tab menüsü - Header altında
-menu = st.tabs(["👤 Hakkımda", "📊 Analytics", "🔄 Api entegrasyon", "🧪 Data science", "👥 HR analytics"])
+menu = st.tabs(["🏠 Anasayfa", "📊 İstatistik", "🔄 Api entegrasyon", "🧪 Veri Bilimi", "👥 İK Analitik"])
 
 
 
