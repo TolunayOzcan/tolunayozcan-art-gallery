@@ -204,6 +204,22 @@ div[class*="progress"],
 footer {visibility: hidden;}
 header {visibility: hidden;}
 
+/* Site geneli arka plan - lark fotoğrafı */
+.stApp {
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* Ana container arka planını şeffaf yap */
+.main .block-container {
+    background: rgba(15, 23, 42, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
 /* Sarı renk içeren herhangi bir elementi gizle */
 *[style*="yellow"], 
 *[style*="#FFFF"], 
@@ -560,16 +576,23 @@ try:
 except Exception as e:
     st.warning(f"Lark fotoğrafı yüklenemedi: {e}")
 
-st.markdown(f"""
+# Site arka planı için dinamik CSS enjekte et
+if lark_base64:
+    st.markdown(f"""
+    <style>
+    .stApp {{
+        background-image: 
+            linear-gradient(135deg, rgba(15, 23, 42, 0.7) 0%, rgba(30, 41, 59, 0.6) 50%, rgba(15, 23, 42, 0.8) 100%),
+            url('data:image/jpeg;base64,{lark_base64}');
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
+st.markdown("""
 <div class="header-section" style="
     width: 100%;
     height: 80px;
-    background: 
-        linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(59, 130, 246, 0.3) 50%, rgba(139, 92, 246, 0.3) 100%),
-        url('data:image/jpeg;base64,{lark_base64}');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(59, 130, 246, 0.1) 50%, rgba(139, 92, 246, 0.1) 100%);
     border-radius: 0 0 20px 20px;
     margin: -1rem -1rem 2rem -1rem;
     padding: 20px;
@@ -617,31 +640,26 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Header hover stillarini ayri olarak ekle
-st.markdown(f"""
+st.markdown("""
 <style>
-.header-section:hover {{
+.header-section:hover {
     transform: translateY(-2px) scale(1.01);
     box-shadow: 0 0 25px rgba(59,130,246,0.4), 0 0 40px rgba(139,92,246,0.2);
-    background: 
-        linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(59, 130, 246, 0.4) 50%, rgba(139, 92, 246, 0.4) 100%),
-        url('data:image/jpeg;base64,{lark_base64}');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}}
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(59, 130, 246, 0.15) 50%, rgba(139, 92, 246, 0.15) 100%);
+}
 
-.header-section:hover .header-bar {{
+.header-section:hover .header-bar {
     width: 90%;
     box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
-}}
+}
 
-.header-section:hover h1 {{
+.header-section:hover h1 {
     filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.6));
     background: linear-gradient(135deg, #60A5FA 0%, #A78BFA 50%, #C084FC 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-}}
+}
 </style>
 """, unsafe_allow_html=True)
 
