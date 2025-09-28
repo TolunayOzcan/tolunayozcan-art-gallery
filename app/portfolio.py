@@ -552,11 +552,11 @@ st.markdown("""
 st.markdown("""
 <div class="header-section" style="
     width: 100%;
-    height: 80px;
+    height: 120px;
     background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(59, 130, 246, 0.1) 50%, rgba(139, 92, 246, 0.1) 100%);
     border-radius: 0 0 20px 20px;
-    margin: -1rem -1rem 2rem -1rem;
-    padding: 20px;
+    margin: -2rem -1rem 2rem -1rem;
+    padding: 30px 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -573,15 +573,15 @@ st.markdown("""
     ">
         <h1 style="
             margin: 0;
-            font-size: 1.8rem;
+            font-size: 2.2rem;
             font-weight: 700;
             background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #A855F7 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.4));
+            filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.5));
             font-family: 'Roboto', sans-serif;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
         ">
             Tolunay Özcan'ın Veri Sanatı Atölyesi
         </h1>
