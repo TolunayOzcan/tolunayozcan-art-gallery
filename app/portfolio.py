@@ -626,7 +626,10 @@ st.markdown(f"""
         border-radius: 2px;
     "></div>
 </div>
+""", unsafe_allow_html=True)
 
+# Header hover stillarini ayri olarak ekle
+st.markdown("""
 <style>
 .header-section:hover {
     transform: translateY(-2px) scale(1.01);
