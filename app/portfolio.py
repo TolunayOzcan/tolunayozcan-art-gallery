@@ -774,69 +774,54 @@ with menu[0]:
     
     st.markdown("""</div>""", unsafe_allow_html=True)
     
-    # UML Site Haritası Diagramı
+    # Site İlişki Haritası
     st.markdown("""<div class="card">""", unsafe_allow_html=True)
-    st.markdown("<h3 style='color: #8B5CF6; font-family: Roboto; font-style: italic;'>🏗️ Site Mimarisi - UML Diagramı</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #8B5CF6; font-family: Roboto; font-style: italic;'>🗺️ Site İlişki Haritası</h3>", unsafe_allow_html=True)
     
-    # NetworkX ile UML tarzı site haritası
+    # NetworkX ile güzel bir ilişki haritası
     if NETWORK_AVAILABLE:
         # NetworkX graf oluştur
-        G = nx.DiGraph()  # Directed graph (UML tarzı)
+        G = nx.Graph()  # Undirected graph (ilişki haritası)
         
-        # Ana modül (MainPortfolio class)
-        G.add_node("MainPortfolio", 
-                  node_type="class",
-                  methods=["__init__()", "render_header()", "load_styles()"],
-                  attributes=["title", "theme", "config"])
+        # Ana sayfa (merkez)
+        G.add_node("🏠 Anasayfa", 
+                  category="main",
+                  description="Portfolio ana sayfası")
         
-        # Ana sekme modülleri (concrete classes)
-        tabs = [
-            ("AnasayfaModule", ["show_profile()", "show_skills()", "show_contact()"], ["profile_data", "skills_list"]),
-            ("IstatistikModule", ["create_charts()", "load_data()", "display_metrics()"], ["chart_config", "data_source"]),
-            ("ApiModule", ["fetch_data()", "process_response()", "update_display()"], ["api_endpoints", "cache"]),
-            ("VeriBilimiModule", ["run_models()", "analyze_data()", "predict()"], ["ml_models", "datasets"]),
-            ("IkAnalitikModule", ["generate_reports()", "analyze_performance()", "track_metrics()"], ["hr_data", "reports"])
+        # Ana kategoriler
+        sections = [
+            ("📊 İstatistik", "Veri analizleri ve görselleştirmeler"),
+            ("🔄 API Entegrasyon", "Gerçek zamanlı veri işleme"),
+            ("🧪 Veri Bilimi", "ML modelleri ve tahminler"),
+            ("👥 İK Analitik", "İnsan kaynakları analizleri")
         ]
         
-        for tab_name, methods, attributes in tabs:
-            G.add_node(tab_name,
-                      node_type="class", 
-                      methods=methods,
-                      attributes=attributes)
-            G.add_edge("MainPortfolio", tab_name, relationship="composes")
+        for section_name, description in sections:
+            G.add_node(section_name,
+                      category="section",
+                      description=description)
+            G.add_edge("🏠 Anasayfa", section_name)
         
-        # Alt modüller ve bileşenler
-        components = [
-            # Anasayfa bileşenleri
-            ("ProfileComponent", "AnasayfaModule", ["render_photo()", "show_info()"], ["photo_path", "user_info"]),
-            ("ContactComponent", "AnasayfaModule", ["show_links()", "send_message()"], ["social_links", "email"]),
-            
-            # İstatistik bileşenleri
-            ("ChartEngine", "IstatistikModule", ["create_plotly_chart()", "apply_theme()"], ["plot_config", "theme_settings"]),
-            ("DataProcessor", "IstatistikModule", ["clean_data()", "transform()"], ["raw_data", "filters"]),
-            
-            # Api bileşenleri
-            ("ApiConnector", "ApiModule", ["connect()", "authenticate()"], ["credentials", "session"]),
-            ("DataScraper", "ApiModule", ["scrape_ekonomi()", "scrape_borsa()"], ["scraped_data", "endpoints"]),
-            
-            # Veri bilimi bileşenleri
-            ("MLPipeline", "VeriBilimiModule", ["train_model()", "evaluate()"], ["model", "metrics"]),
-            ("Visualizer", "VeriBilimiModule", ["plot_results()", "show_confusion_matrix()"], ["plots", "results"]),
-            
-            # İK analitik bileşenleri
-            ("ReportGenerator", "IkAnalitikModule", ["create_pdf()", "export_excel()"], ["reports", "templates"]),
-            ("PerformanceTracker", "IkAnalitikModule", ["track_employee()", "calculate_kpi()"], ["employee_data", "kpis"])
+        # Alt özellikler
+        features = [
+            ("👤 Profil", "🏠 Anasayfa"),
+            ("📱 İletişim", "🏠 Anasayfa"),
+            ("📈 Grafikler", "📊 İstatistik"),
+            ("📊 Tablolar", "📊 İstatistik"),
+            ("🌐 Web Scraping", "🔄 API Entegrasyon"),
+            ("💾 Cache", "🔄 API Entegrasyon"),
+            ("🤖 ML Modeller", "🧪 Veri Bilimi"),
+            ("🎯 Tahminler", "🧪 Veri Bilimi"),
+            ("📋 Raporlar", "👥 İK Analitik"),
+            ("📊 Dashboard", "👥 İK Analitik")
         ]
         
-        for comp_name, parent, methods, attributes in components:
-            G.add_node(comp_name,
-                      node_type="component",
-                      methods=methods,
-                      attributes=attributes)
-            G.add_edge(parent, comp_name, relationship="uses")
+        for feature_name, parent in features:
+            G.add_node(feature_name, category="feature")
+            G.add_edge(parent, feature_name)
         
-        # UML diyagramını Plotly ile görselleştir
-        pos = nx.spring_layout(G, k=3, iterations=50, seed=42)
+        # İlişki haritasını Plotly ile görselleştir
+        pos = nx.spring_layout(G, k=2, iterations=100, seed=42)
         
         # Node'ları kategorilerine göre renklendirmek için
         node_colors = []
@@ -845,14 +830,16 @@ with menu[0]:
         
         for node in G.nodes():
             node_data = G.nodes[node]
-            if node == "MainPortfolio":
-                node_colors.append('#8B5CF6')  # Ana modül - Mor
-                node_sizes.append(120)  # Daha büyük
-            elif "Module" in node:
-                node_colors.append('#3B82F6')  # Modüller - Mavi
-                node_sizes.append(100)  # Daha büyük
+            category = node_data.get('category', 'feature')
+            
+            if category == "main":
+                node_colors.append('#8B5CF6')  # Ana sayfa - Mor
+                node_sizes.append(100)
+            elif category == "section":
+                node_colors.append('#3B82F6')  # Ana bölümler - Mavi
+                node_sizes.append(80)
             else:
-                node_colors.append('#10B981')  # Bileşenler - Yeşil
+                node_colors.append('#10B981')  # Özellikler - Yeşil
                 node_sizes.append(80)  # Daha büyük
             
             # UML tarzı text oluştur
