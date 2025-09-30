@@ -846,6 +846,18 @@ with menu[0]:
             hoverinfo='none',
             name=f'Connection Box {connection_label}'
         ))
+        # Ek: Etiketin sürekli görünmesi için ayrı text trace (üstte gösterilir)
+        fig.add_trace(go.Scatter(
+            x=[mid_x], y=[mid_y],
+            mode='text',
+            text=[connection_label],
+            textfont=dict(size=10, color='white', family='Inter, sans-serif'),
+            textposition='middle center',
+            cliponaxis=False,
+            showlegend=False,
+            hoverinfo='none',
+            name=f'Connection Label {connection_label}'
+        ))
         
         # Ana hub (Marker ayrı)
         hub_short_name = hub['name'].replace('<br><b>', ' ').replace('</b><br>Hub', '').replace('<b>', '').replace('</b>', '')
@@ -904,6 +916,18 @@ with menu[0]:
                 showlegend=False,
                 hoverinfo='none',
                 name=f'Feature Connection Box {display_name}'
+            ))
+            # Ek: Hub->feature etiketinin sürekli görünmesi için ayrı text trace
+            fig.add_trace(go.Scatter(
+                x=[mid_x], y=[mid_y],
+                mode='text',
+                text=[display_name],
+                textfont=dict(size=9, color='white', family='Inter, sans-serif'),
+                textposition='middle center',
+                cliponaxis=False,
+                showlegend=False,
+                hoverinfo='none',
+                name=f'Feature Connection Label {display_name}'
             ))
             
             # Özellik node'u (Marker ayrı)
