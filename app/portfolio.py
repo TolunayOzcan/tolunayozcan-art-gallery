@@ -743,7 +743,7 @@ with menu[0]:
     fig.add_trace(go.Scatter(
         x=[0], y=[0],
         mode='markers',
-        marker=dict(size=140, color='#8B5CF6', 
+        marker=dict(size=180, color='#8B5CF6', opacity=0.6,
                    line=dict(width=6, color='white'),
                    symbol='star'),
         showlegend=False,
@@ -756,7 +756,7 @@ with menu[0]:
         x=[0], y=[-2],
         mode='text',
         text=['🏠 MERKEZ PORTAL'],
-        textfont=dict(size=18, color='white', family='Inter, sans-serif'),
+        textfont=dict(size=20, color='white', family='Inter, sans-serif'),
         showlegend=False,
         hoverinfo='none',
         name='Merkez Text'
@@ -830,35 +830,16 @@ with menu[0]:
         connection_label = f"{hub_short_name}"
         
         # Gradient arka plan kutusu
+        # Modern etiket kutusu (şeffaf arka plan)
         fig.add_trace(go.Scatter(
             x=[mid_x], y=[mid_y],
-            mode='markers',
-            marker=dict(size=60, color='rgba(255,255,255,0.95)', 
-                       line=dict(width=2, color='rgba(139, 92, 246, 0.7)'),
+            mode='markers+text',
+            marker=dict(size=62, color='rgba(255,255,255,0.22)', 
+                       line=dict(width=1.5, color='rgba(139,92,246,0.55)'),
                        symbol='square'),
-            showlegend=False,
-            hoverinfo='none',
-            name=f'Connection Box {connection_label}'
-        ))
-        
-        # Şık etiket metni
-        fig.add_trace(go.Scatter(
-            x=[mid_x], y=[mid_y],
-            mode='text',
             text=[connection_label],
-            textfont=dict(size=9, color='#6366F1', family='Inter, sans-serif'),
-            showlegend=False,
-            hoverinfo='none',
-            name=f'Connection {connection_label}'
-        ))
-        
-        # Etiket kutusunun arka planı için küçük marker
-        fig.add_trace(go.Scatter(
-            x=[mid_x], y=[mid_y],
-            mode='markers',
-            marker=dict(size=60, color='white', 
-                       line=dict(width=2, color='#8B5CF6'),
-                       symbol='square'),
+            textfont=dict(size=10, color='white', family='Inter, sans-serif'),
+            textposition='middle center',
             showlegend=False,
             hoverinfo='none',
             name=f'Connection Box {connection_label}'
@@ -869,7 +850,7 @@ with menu[0]:
         fig.add_trace(go.Scatter(
             x=[hub['x']], y=[hub['y']],
             mode='markers',
-            marker=dict(size=110, color=hub['color'], 
+            marker=dict(size=150, color=hub['color'], opacity=0.45,
                        line=dict(width=5, color='white'),
                        symbol='hexagon'),
             showlegend=False,
@@ -879,10 +860,10 @@ with menu[0]:
         
         # Hub text ayrı trace (KESINLIKLE GÖRÜNÜR)
         fig.add_trace(go.Scatter(
-            x=[hub['x']], y=[hub['y']-1.8],
+            x=[hub['x']], y=[hub['y']-2.0],
             mode='text',
             text=[hub_short_name],
-            textfont=dict(size=16, color='white', family='Inter, sans-serif'),
+            textfont=dict(size=18, color='white', family='Inter, sans-serif'),
             showlegend=False,
             hoverinfo='none',
             name=f'Hub Text {hub_short_name}'
@@ -909,24 +890,16 @@ with menu[0]:
             # Minimal pill-shaped arka plan
             fig.add_trace(go.Scatter(
                 x=[mid_x], y=[mid_y],
-                mode='markers',
-                marker=dict(size=35, color='rgba(248,250,252,0.9)', 
-                           line=dict(width=1.5, color=hub['color']),
-                           symbol='circle'),
+                mode='markers+text',
+                marker=dict(size=46, color='rgba(255,255,255,0.18)', 
+                           line=dict(width=1.2, color=hub['color']),
+                           symbol='circle', opacity=0.8),
+                text=[display_name],
+                textfont=dict(size=9, color='white', family='Inter, sans-serif'),
+                textposition='middle center',
                 showlegend=False,
                 hoverinfo='none',
                 name=f'Feature Connection Box {display_name}'
-            ))
-            
-            # Minimal etiket metni
-            fig.add_trace(go.Scatter(
-                x=[mid_x], y=[mid_y],
-                mode='text',
-                text=[display_name],
-                textfont=dict(size=7, color=hub['color'], family='Inter, sans-serif'),
-                showlegend=False,
-                hoverinfo='none',
-                name=f'Feature Connection {display_name}'
             ))
             
             # Özellik node'u (Marker ayrı)
@@ -934,7 +907,7 @@ with menu[0]:
             fig.add_trace(go.Scatter(
                 x=[feature['x']], y=[feature['y']],
                 mode='markers',
-                marker=dict(size=70, color=feature['color'], 
+                marker=dict(size=100, color=feature['color'], opacity=0.45,
                            line=dict(width=3, color='white'),
                            symbol='circle'),
                 showlegend=False,
@@ -944,10 +917,10 @@ with menu[0]:
             
             # Özellik text ayrı trace (KESINLIKLE GÖRÜNÜR)
             fig.add_trace(go.Scatter(
-                x=[feature['x']], y=[feature['y']-1.2],
+                x=[feature['x']], y=[feature['y']-1.4],
                 mode='text',
                 text=[feature_short_name],
-                textfont=dict(size=12, color='white', family='Inter, sans-serif'),
+                textfont=dict(size=13, color='white', family='Inter, sans-serif'),
                 showlegend=False,
                 hoverinfo='none',
                 name=f'Feature Text {feature_short_name}'
@@ -964,19 +937,19 @@ with menu[0]:
             showgrid=False, 
             showticklabels=False, 
             zeroline=False,
-            range=[-14, 14],
+            range=[-18, 18],
             fixedrange=True
         ),
         yaxis=dict(
             showgrid=False, 
             showticklabels=False, 
             zeroline=False,
-            range=[-14, 14],
+            range=[-18, 18],
             fixedrange=True
         ),
         plot_bgcolor='rgba(30,39,46,0.95)',
         paper_bgcolor='rgba(20,25,31,0.95)',
-        height=950,  # Daha yüksek
+    height=1150,  # Daha yüksek
         showlegend=False,
         margin=dict(t=100, l=80, r=80, b=80),  # Daha geniş margin
         font=dict(family='Roboto', size=14, color='white'),  # Genel font büyük
