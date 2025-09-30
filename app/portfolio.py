@@ -840,6 +840,8 @@ with menu[0]:
             text=[connection_label],
             textfont=dict(size=10, color='white', family='Inter, sans-serif'),
             textposition='middle center',
+            cliponaxis=False,
+            opacity=1.0,
             showlegend=False,
             hoverinfo='none',
             name=f'Connection Box {connection_label}'
@@ -897,6 +899,8 @@ with menu[0]:
                 text=[display_name],
                 textfont=dict(size=9, color='white', family='Inter, sans-serif'),
                 textposition='middle center',
+                cliponaxis=False,
+                opacity=1.0,
                 showlegend=False,
                 hoverinfo='none',
                 name=f'Feature Connection Box {display_name}'
