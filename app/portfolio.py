@@ -743,9 +743,9 @@ with menu[0]:
     fig.add_trace(go.Scatter(
         x=[0], y=[0],
         mode='markers',
-        marker=dict(size=180, color='#8B5CF6', opacity=0.6,
+        marker=dict(size=180, color='#8B5CF6', opacity=0.85,
                    line=dict(width=6, color='white'),
-                   symbol='star'),
+                    symbol='star'),
         showlegend=False,
         name='Ana Portal',
         hovertemplate='<b>🏠 Ana Portal</b><br>Tüm özelliklerin merkezi<br>• Profil & İletişim<br>• Site navigasyonu<br>• Hub\'lara giriş<extra></extra>'
@@ -834,8 +834,8 @@ with menu[0]:
         fig.add_trace(go.Scatter(
             x=[mid_x], y=[mid_y],
             mode='markers+text',
-            marker=dict(size=62, color='rgba(255,255,255,0.22)', 
-                       line=dict(width=1.5, color='rgba(139,92,246,0.55)'),
+            marker=dict(size=52, color='rgba(255,255,255,0.12)', 
+                       line=dict(width=1.2, color='rgba(139,92,246,0.45)'),
                        symbol='square'),
             text=[connection_label],
             textfont=dict(size=10, color='white', family='Inter, sans-serif'),
@@ -850,7 +850,7 @@ with menu[0]:
         fig.add_trace(go.Scatter(
             x=[hub['x']], y=[hub['y']],
             mode='markers',
-            marker=dict(size=150, color=hub['color'], opacity=0.45,
+            marker=dict(size=150, color=hub['color'], opacity=0.9,
                        line=dict(width=5, color='white'),
                        symbol='hexagon'),
             showlegend=False,
@@ -891,9 +891,9 @@ with menu[0]:
             fig.add_trace(go.Scatter(
                 x=[mid_x], y=[mid_y],
                 mode='markers+text',
-                marker=dict(size=46, color='rgba(255,255,255,0.18)', 
-                           line=dict(width=1.2, color=hub['color']),
-                           symbol='circle', opacity=0.8),
+                marker=dict(size=36, color='rgba(255,255,255,0.12)', 
+                           line=dict(width=1.0, color=hub['color']),
+                           symbol='circle'),
                 text=[display_name],
                 textfont=dict(size=9, color='white', family='Inter, sans-serif'),
                 textposition='middle center',
@@ -907,7 +907,7 @@ with menu[0]:
             fig.add_trace(go.Scatter(
                 x=[feature['x']], y=[feature['y']],
                 mode='markers',
-                marker=dict(size=100, color=feature['color'], opacity=0.45,
+                marker=dict(size=100, color=feature['color'], opacity=0.9,
                            line=dict(width=3, color='white'),
                            symbol='circle'),
                 showlegend=False,
