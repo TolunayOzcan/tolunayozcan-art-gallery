@@ -1,3 +1,21 @@
+        # Ek: Etiketin etrafında sabit açık kutu (arka plan marker)
+        fig.add_trace(go.Scatter(
+            x=[mid_x], y=[mid_y],
+            mode='markers',
+            marker=dict(size=32, color='rgba(255,255,255,0.25)', symbol='circle', line=dict(width=1, color='#8B5CF6')),
+            showlegend=False,
+            hoverinfo='none',
+            name=f'Connection Label BG {connection_label}'
+        ))
+            # Ek: Hub->feature etiketinin etrafında sabit açık kutu (arka plan marker)
+            fig.add_trace(go.Scatter(
+                x=[mid_x], y=[mid_y],
+                mode='markers',
+                marker=dict(size=26, color='rgba(255,255,255,0.22)', symbol='circle', line=dict(width=1, color=hub['color'])),
+                showlegend=False,
+                hoverinfo='none',
+                name=f'Feature Connection Label BG {display_name}'
+            ))
 import streamlit as st
 from PIL import Image
 import os
