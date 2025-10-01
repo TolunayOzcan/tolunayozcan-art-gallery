@@ -2274,6 +2274,7 @@ with menu[6]:
     <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem; border-radius: 15px; margin-bottom: 2rem; text-align: center;'>
         <h1 style='color: white; margin: 0; font-size: 2.5rem;'>🔄 Cohort Retention Analizi</h1>
         <p style='color: white; margin: 0.5rem 0; font-size: 1.2rem; opacity: 0.9;'>Müşteri Edinme Cohortlarını Takip Ederek Retention Oranlarını Analiz Etme</p>
+        <p style='color: white; margin: 0; font-size: 0.9rem; opacity: 0.8;'>📅 Updated: October 2025</p>
     </div>
     """, unsafe_allow_html=True)
     
