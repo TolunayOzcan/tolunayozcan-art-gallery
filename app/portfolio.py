@@ -2151,7 +2151,7 @@ with menu[5]:  # RFM Analizi sekmesi
     # 6. En İyi 10 Müşteri
     ax6 = plt.subplot(2, 3, 6)
     top_customers = rfm.nlargest(10, 'Parasal')[['MusteriID', 'Parasal', 'Segment']]
-    bars = ax6.barh(range(len(top_customers)), top_customers['Monetary'].values)
+    bars = ax6.barh(range(len(top_customers)), top_customers['Parasal'].values)
     ax6.set_yticks(range(len(top_customers)))
     ax6.set_yticklabels([f"{cid}\n({seg})" for cid, seg in zip(top_customers['MusteriID'], top_customers['Segment'])], fontsize=8)
     ax6.set_xlabel('Toplam Harcama (TL)', fontsize=10)
@@ -2185,7 +2185,7 @@ with menu[5]:  # RFM Analizi sekmesi
     
     for segment in rfm['Segment'].unique():
         count = len(rfm[rfm['Segment'] == segment])
-        revenue = rfm[rfm['Segment'] == segment]['Monetary'].sum()
+        revenue = rfm[rfm['Segment'] == segment]['Parasal'].sum()
         
         with st.expander(f"{segment} ({count} müşteri, {revenue:,.0f} TL gelir)"):
             st.write(f"**Strateji:** {strategies.get(segment, 'Özel strateji gerekli')}")
