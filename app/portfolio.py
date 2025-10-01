@@ -1958,30 +1958,32 @@ with menu[5]:  # RFM Analizi sekmesi
         current_date = datetime(2024, 10, 1)
         
         for cid in customer_ids:
-        # Müşteri tipi belirleme
-        customer_type = np.random.choice(['şampiyon', 'sadık', 'risk_altında', 'kayıp', 'yeni'], 
-                                         p=[0.15, 0.25, 0.20, 0.25, 0.15])
-        
-        if customer_type == 'şampiyon':
-            n_orders = np.random.randint(15, 40)
-            last_order_days = np.random.randint(1, 30)
-            avg_order_value = np.random.uniform(500, 2000)
-        elif customer_type == 'sadık':
-            n_orders = np.random.randint(8, 20)
-            last_order_days = np.random.randint(20, 60)
-            avg_order_value = np.random.uniform(300, 1000)
-        elif customer_type == 'risk_altında':
-            n_orders = np.random.randint(5, 15)
-            last_order_days = np.random.randint(90, 180)
-            avg_order_value = np.random.uniform(200, 800)
-        elif customer_type == 'kayıp':
-            n_orders = np.random.randint(2, 8)
-            last_order_days = np.random.randint(180, 365)
-            avg_order_value = np.random.uniform(100, 500)
-        else:  # yeni
-            n_orders = np.random.randint(1, 3)
-            last_order_days = np.random.randint(1, 45)
-            avg_order_value = np.random.uniform(150, 600)            for _ in range(n_orders):
+            # Müşteri tipi belirleme
+            customer_type = np.random.choice(['şampiyon', 'sadık', 'risk_altında', 'kayıp', 'yeni'], 
+                                             p=[0.15, 0.25, 0.20, 0.25, 0.15])
+            
+            if customer_type == 'şampiyon':
+                n_orders = np.random.randint(15, 40)
+                last_order_days = np.random.randint(1, 30)
+                avg_order_value = np.random.uniform(500, 2000)
+            elif customer_type == 'sadık':
+                n_orders = np.random.randint(8, 20)
+                last_order_days = np.random.randint(20, 60)
+                avg_order_value = np.random.uniform(300, 1000)
+            elif customer_type == 'risk_altında':
+                n_orders = np.random.randint(5, 15)
+                last_order_days = np.random.randint(90, 180)
+                avg_order_value = np.random.uniform(200, 800)
+            elif customer_type == 'kayıp':
+                n_orders = np.random.randint(2, 8)
+                last_order_days = np.random.randint(180, 365)
+                avg_order_value = np.random.uniform(100, 500)
+            else:  # yeni
+                n_orders = np.random.randint(1, 3)
+                last_order_days = np.random.randint(1, 45)
+                avg_order_value = np.random.uniform(150, 600)
+            
+            for _ in range(n_orders):
                 order_date = current_date - timedelta(days=np.random.randint(last_order_days, last_order_days + 200))
                 order_value = avg_order_value * np.random.uniform(0.7, 1.3)
                 
@@ -2198,12 +2200,39 @@ with menu[5]:  # RFM Analizi sekmesi
             with col3:
                 st.metric("Ort. Parasal", f"{segment_data['Parasal'].mean():.0f} TL")
     
-    # 7. EXCEL ÇIKTISI ve CSV İNDİRME
-    st.markdown("### 📥 Veri İndirme")
+    # 7. DOKÜMANTASYON ve CSV İNDİRME
+    st.markdown("### 📥 Belge ve Veri İndirme")
     
-    col1, col2 = st.columns(2)
+    st.markdown("""
+    <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px; border-radius: 10px; margin-bottom: 1rem;'>
+        <h4 style='color: white; margin: 0 0 10px 0;'>📚 RFM Analizi Kapsamlı Belgesi</h4>
+        <p style='color: white; margin: 0; font-size: 14px;'>
+            Bu analizin detaylı açıklaması, metodolojisi, segment tanımları ve stratejik önerileri içeren 
+            kapsamlı belgeyi indirebilirsiniz. Belge RFM analizinin tüm teknik detaylarını ve iş faydalarını içerir.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
     
     with col1:
+        # RFM Dokümantasyon
+        try:
+            with open('RFM_Analizi_Belgesi.md', 'r', encoding='utf-8') as f:
+                doc_content = f.read()
+            
+            st.download_button(
+                label="📚 RFM Analizi Belgesi (.md)",
+                data=doc_content,
+                file_name="RFM_Analizi_Kapsamli_Belge.md",
+                mime="text/markdown",
+                help="RFM Analizinin detaylı açıklaması ve metodolojisi",
+                use_container_width=True
+            )
+        except FileNotFoundError:
+            st.info("📚 RFM Belge dosyası bulunamadı")
+    
+    with col2:
         # CSV indirme
         csv = rfm.to_csv(index=False)
         st.download_button(
@@ -2213,7 +2242,7 @@ with menu[5]:  # RFM Analizi sekmesi
             mime="text/csv"
         )
     
-    with col2:
+    with col3:
         # Segment özet CSV indirme
         segment_csv = segment_summary.to_csv()
         st.download_button(
