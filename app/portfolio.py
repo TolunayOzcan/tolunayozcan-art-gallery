@@ -7,7 +7,20 @@ import sys
 import numpy as np
 import threading
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Sklearn imports (for Churn Prediction)
+try:
+    from sklearn.model_selection import train_test_split
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score, roc_curve
+    from sklearn.preprocessing import StandardScaler
+    SKLEARN_AVAILABLE = True
+except ImportError:
+    SKLEARN_AVAILABLE = False
+    st.warning("⚠️ Sklearn kurulu değil - Churn Prediction özelliği sınırlı olacak")
 
 # Environment optimizations
 os.environ['MPLBACKEND'] = 'Agg'
@@ -551,7 +564,7 @@ st.markdown("""
 # Direkt tab menüsü ile başla
 
 # Büyük tab menüsü - Header altında
-menu = st.tabs(["🏠 Anasayfa", "📊 İstatistik", "🔄 Api entegrasyon", "🧪 Veri Bilimi", "👥 İK Analitik", "📊 RFM Analizi", "🔄 Cohort"])
+menu = st.tabs(["🏠 Anasayfa", "📊 İstatistik", "🔄 Api entegrasyon", "🧪 Veri Bilimi", "👥 İK Analitik", "📊 RFM Analizi", "🔄 Cohort", "⚠️ Churn"])
 
 
 
@@ -2649,5 +2662,443 @@ with menu[6]:
         st.metric("Toplam Müşteri", df_cohort['CustomerID'].nunique())
     with col4:
         st.metric("Toplam Gelir", f"{df_cohort['OrderValue'].sum():,.0f} TL")
+    
+    st.markdown("""</div>""", unsafe_allow_html=True)
+
+# 8. CHURN PREDICTION ANALİZİ SEKMESİ
+with menu[7]:
+    st.markdown("""<div class="card">""", unsafe_allow_html=True)
+    
+    # Header
+    st.markdown("""
+    <div style='background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); padding: 2rem; border-radius: 15px; margin-bottom: 2rem; text-align: center;'>
+        <h1 style='color: white; margin: 0; font-size: 2.5rem;'>⚠️ Churn Prediction & Analizi</h1>
+        <p style='color: white; margin: 0.5rem 0; font-size: 1.2rem; opacity: 0.9;'>Müşteri Kaybı Riskini Tahmin Etme ve Önleme Stratejileri</p>
+        <p style='color: white; margin: 0; font-size: 0.9rem; opacity: 0.8;'>🤖 Machine Learning Powered</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("<p style='font-size: 1.1rem; color: #6B7280; margin-bottom: 2rem;'>Müşteri kaybı riskini tahmin etme ve önleme stratejileri</p>", unsafe_allow_html=True)
+    
+    # Churn veri seti oluşturma
+    st.markdown("### 🎯 Churn Verisi Oluşturma")
+    
+    with st.spinner("🤖 Churn prediction verisi oluşturuluyor..."):
+        # 1. VERİ SETİ OLUŞTURMA
+        np.random.seed(42)
+        
+        n_customers = 2000
+        current_date = datetime(2024, 10, 1)
+        
+        data = []
+        
+        for i in range(n_customers):
+            customer_id = f'C{str(i).zfill(5)}'
+            
+            # Müşteri profili belirleme
+            if np.random.random() < 0.30:  # %30 churn olmuş müşteri
+                is_churned = 1
+                days_since_last = np.random.randint(90, 365)
+                total_orders = np.random.randint(1, 8)
+                avg_order_value = np.random.uniform(50, 300)
+                total_spent = total_orders * avg_order_value
+                customer_lifetime_days = np.random.randint(60, 400)
+                complaints = np.random.randint(0, 4)
+                support_tickets = np.random.randint(0, 5)
+                discount_usage = np.random.randint(0, 3)
+                email_open_rate = np.random.uniform(0, 0.4)
+                last_nps_score = np.random.randint(1, 6)
+            else:  # %70 aktif müşteri
+                is_churned = 0
+                days_since_last = np.random.randint(1, 89)
+                total_orders = np.random.randint(3, 50)
+                avg_order_value = np.random.uniform(100, 1000)
+                total_spent = total_orders * avg_order_value
+                customer_lifetime_days = np.random.randint(90, 800)
+                complaints = np.random.randint(0, 2)
+                support_tickets = np.random.randint(0, 3)
+                discount_usage = np.random.randint(1, 8)
+                email_open_rate = np.random.uniform(0.3, 0.9)
+                last_nps_score = np.random.randint(6, 11)
+            
+            # Türkiye'ye özgü kategoriler
+            product_categories = ['Elektronik', 'Giyim', 'Ev & Yaşam', 'Kitap', 'Spor', 'Kozmetik']
+            preferred_category = np.random.choice(product_categories)
+            
+            payment_methods = ['Kredi Kartı', 'Havale', 'Kapıda Ödeme', 'Mobil Ödeme']
+            preferred_payment = np.random.choice(payment_methods, p=[0.5, 0.2, 0.2, 0.1])
+            
+            cities = ['İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya', 'Adana', 'Konya']
+            city = np.random.choice(cities, p=[0.35, 0.15, 0.12, 0.1, 0.08, 0.1, 0.1])
+            
+            data.append({
+                'CustomerID': customer_id,
+                'DaysSinceLastOrder': days_since_last,
+                'TotalOrders': total_orders,
+                'AvgOrderValue': round(avg_order_value, 2),
+                'TotalSpent': round(total_spent, 2),
+                'CustomerLifetimeDays': customer_lifetime_days,
+                'OrderFrequency': round(total_orders / (customer_lifetime_days / 30), 2),
+                'Complaints': complaints,
+                'SupportTickets': support_tickets,
+                'DiscountUsage': discount_usage,
+                'EmailOpenRate': round(email_open_rate, 2),
+                'LastNPSScore': last_nps_score,
+                'PreferredCategory': preferred_category,
+                'PreferredPayment': preferred_payment,
+                'City': city,
+                'IsChurned': is_churned
+            })
+        
+        df_churn = pd.DataFrame(data)
+    
+    st.success(f"✓ {len(df_churn)} müşteri verisi oluşturuldu")
+    churn_rate = df_churn['IsChurned'].mean() * 100
+    st.success(f"✓ Churn Oranı: {churn_rate:.1f}%")
+    
+    # Veri özeti
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("Toplam Müşteri", len(df_churn))
+    with col2:
+        st.metric("Aktif Müşteri", len(df_churn[df_churn['IsChurned']==0]))
+    with col3:
+        st.metric("Churn Olmuş", len(df_churn[df_churn['IsChurned']==1]))
+    with col4:
+        st.metric("Churn Oranı", f"{churn_rate:.1f}%")
+    
+    # Ham veri önizleme
+    st.markdown("### 📋 Ham Veri Önizleme")
+    st.dataframe(df_churn.head(10), width='stretch')
+    
+    with st.spinner("🤖 Machine Learning modeli eğitiliyor..."):
+        # 2. MAKİNE ÖĞRENMESİ MODELİ
+        from sklearn.model_selection import train_test_split
+        from sklearn.ensemble import RandomForestClassifier
+        from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score, roc_curve
+        from sklearn.preprocessing import StandardScaler
+        
+        # Kategorik değişkenleri encode et
+        df_encoded = df_churn.copy()
+        df_encoded['PreferredCategory_Encoded'] = pd.Categorical(df_churn['PreferredCategory']).codes
+        df_encoded['PreferredPayment_Encoded'] = pd.Categorical(df_churn['PreferredPayment']).codes
+        df_encoded['City_Encoded'] = pd.Categorical(df_churn['City']).codes
+        
+        # Feature seçimi
+        numeric_features = ['DaysSinceLastOrder', 'TotalOrders', 'AvgOrderValue', 'TotalSpent',
+                           'CustomerLifetimeDays', 'OrderFrequency', 'Complaints', 'SupportTickets',
+                           'DiscountUsage', 'EmailOpenRate', 'LastNPSScore']
+        
+        features = numeric_features + ['PreferredCategory_Encoded', 'PreferredPayment_Encoded', 'City_Encoded']
+        X = df_encoded[features]
+        y = df_encoded['IsChurned']
+        
+        # Train-test split
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42, stratify=y)
+        
+        # Scaling
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train)
+        X_test_scaled = scaler.transform(X_test)
+        
+        # Random Forest Model
+        model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=42, class_weight='balanced')
+        model.fit(X_train_scaled, y_train)
+        
+        # Tahminler
+        y_pred = model.predict(X_test_scaled)
+        y_pred_proba = model.predict_proba(X_test_scaled)[:, 1]
+        
+        # Model performansı
+        roc_auc = roc_auc_score(y_test, y_pred_proba)
+        accuracy = (y_pred == y_test).mean()
+        
+        # Feature importance
+        feature_importance = pd.DataFrame({
+            'Feature': features,
+            'Importance': model.feature_importances_
+        }).sort_values('Importance', ascending=False)
+        
+        # Tüm müşteriler için risk skoru
+        X_all_scaled = scaler.transform(df_encoded[features])
+        df_churn['ChurnRiskScore'] = model.predict_proba(X_all_scaled)[:, 1] * 100
+        
+        # Risk segmentleri
+        df_churn['RiskSegment'] = pd.cut(df_churn['ChurnRiskScore'], 
+                                        bins=[0, 25, 50, 75, 100],
+                                        labels=['Düşük Risk', 'Orta Risk', 'Yüksek Risk', 'Kritik Risk'])
+    
+    st.success("✓ Model eğitimi tamamlandı")
+    
+    # Model performans metrikleri
+    st.markdown("### 🤖 Model Performansı")
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Model Accuracy", f"{accuracy*100:.1f}%")
+    with col2:
+        st.metric("ROC-AUC Score", f"{roc_auc:.3f}")
+    with col3:
+        st.metric("En Önemli Faktör", feature_importance.iloc[0]['Feature'][:15] + "...")
+    
+    # 3. GÖRSELLEŞTİRMELER
+    st.markdown("### 📈 Churn Prediction Dashboard")
+    
+    # Grafikleri oluştur
+    fig = plt.figure(figsize=(20, 16))
+    
+    # 1. Churn Dağılımı
+    ax1 = plt.subplot(3, 3, 1)
+    churn_dist = df_churn['IsChurned'].value_counts()
+    colors_churn = ['#2ecc71', '#e74c3c']
+    wedges, texts, autotexts = ax1.pie(churn_dist.values, labels=['Aktif', 'Churn'], 
+                                         autopct='%1.1f%%', colors=colors_churn, startangle=90,
+                                         explode=(0, 0.1))
+    ax1.set_title('Churn Dağılımı', fontsize=14, fontweight='bold', pad=20)
+    
+    # 2. Risk Segment Dağılımı
+    ax2 = plt.subplot(3, 3, 2)
+    risk_counts = df_churn['RiskSegment'].value_counts().sort_index()
+    colors_risk = ['#2ecc71', '#f39c12', '#e67e22', '#e74c3c']
+    bars = ax2.bar(range(len(risk_counts)), risk_counts.values, color=colors_risk, edgecolor='black')
+    ax2.set_xticks(range(len(risk_counts)))
+    ax2.set_xticklabels(risk_counts.index, rotation=45, ha='right')
+    ax2.set_ylabel('Müşteri Sayısı', fontsize=10)
+    ax2.set_title('Risk Segment Dağılımı', fontsize=14, fontweight='bold', pad=20)
+    for bar in bars:
+        height = bar.get_height()
+        ax2.text(bar.get_x() + bar.get_width()/2., height,
+                f'{int(height)}', ha='center', va='bottom', fontsize=10, fontweight='bold')
+    
+    # 3. Feature Importance
+    ax3 = plt.subplot(3, 3, 3)
+    top_features = feature_importance.head(8)
+    bars = ax3.barh(range(len(top_features)), top_features['Importance'].values, 
+                    color=plt.cm.viridis(np.linspace(0, 1, len(top_features))))
+    ax3.set_yticks(range(len(top_features)))
+    ax3.set_yticklabels(top_features['Feature'].values, fontsize=9)
+    ax3.set_xlabel('Importance', fontsize=10)
+    ax3.set_title('En Önemli Özellikler', fontsize=14, fontweight='bold', pad=20)
+    ax3.invert_yaxis()
+    
+    # 4. Confusion Matrix
+    ax4 = plt.subplot(3, 3, 4)
+    cm = confusion_matrix(y_test, y_pred)
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax4, 
+                xticklabels=['Aktif', 'Churn'], yticklabels=['Aktif', 'Churn'])
+    ax4.set_ylabel('Gerçek', fontsize=10)
+    ax4.set_xlabel('Tahmin', fontsize=10)
+    ax4.set_title('Confusion Matrix', fontsize=14, fontweight='bold', pad=20)
+    
+    # 5. ROC Curve
+    ax5 = plt.subplot(3, 3, 5)
+    fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
+    ax5.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (AUC = {roc_auc:.2f})')
+    ax5.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--', label='Random')
+    ax5.set_xlim([0.0, 1.0])
+    ax5.set_ylim([0.0, 1.05])
+    ax5.set_xlabel('False Positive Rate', fontsize=10)
+    ax5.set_ylabel('True Positive Rate', fontsize=10)
+    ax5.set_title('ROC Curve', fontsize=14, fontweight='bold', pad=20)
+    ax5.legend(loc="lower right")
+    ax5.grid(True, alpha=0.3)
+    
+    # 6. Churn vs Aktif - Ortalama Metrikler
+    ax6 = plt.subplot(3, 3, 6)
+    comparison_metrics = ['TotalOrders', 'AvgOrderValue', 'EmailOpenRate', 'LastNPSScore']
+    churn_means = df_churn[df_churn['IsChurned']==1][comparison_metrics].mean()
+    active_means = df_churn[df_churn['IsChurned']==0][comparison_metrics].mean()
+    
+    x = np.arange(len(comparison_metrics))
+    width = 0.35
+    
+    bars1 = ax6.bar(x - width/2, active_means.values, width, label='Aktif', color='#2ecc71', alpha=0.8)
+    bars2 = ax6.bar(x + width/2, churn_means.values, width, label='Churn', color='#e74c3c', alpha=0.8)
+    
+    ax6.set_ylabel('Ortalama Değer', fontsize=10)
+    ax6.set_title('Churn vs Aktif Müşteri Karşılaştırması', fontsize=14, fontweight='bold', pad=20)
+    ax6.set_xticks(x)
+    ax6.set_xticklabels(['Sipariş\nSayısı', 'Sipariş\nDeğeri', 'Email\nAçma', 'NPS\nSkoru'], fontsize=9)
+    ax6.legend()
+    
+    # 7. Days Since Last Order Dağılımı
+    ax7 = plt.subplot(3, 3, 7)
+    ax7.hist(df_churn[df_churn['IsChurned']==0]['DaysSinceLastOrder'], bins=30, alpha=0.6, label='Aktif', color='#2ecc71', edgecolor='black')
+    ax7.hist(df_churn[df_churn['IsChurned']==1]['DaysSinceLastOrder'], bins=30, alpha=0.6, label='Churn', color='#e74c3c', edgecolor='black')
+    ax7.set_xlabel('Son Siparişten Bu Yana Geçen Gün', fontsize=10)
+    ax7.set_ylabel('Müşteri Sayısı', fontsize=10)
+    ax7.set_title('Son Sipariş Tarihi Dağılımı', fontsize=14, fontweight='bold', pad=20)
+    ax7.legend()
+    ax7.axvline(90, color='red', linestyle='--', linewidth=2)
+    
+    # 8. Churn Risk Score Dağılımı
+    ax8 = plt.subplot(3, 3, 8)
+    ax8.hist(df_churn['ChurnRiskScore'], bins=50, color='coral', edgecolor='black', alpha=0.7)
+    ax8.set_xlabel('Churn Risk Skoru (%)', fontsize=10)
+    ax8.set_ylabel('Müşteri Sayısı', fontsize=10)
+    ax8.set_title('Churn Risk Skoru Dağılımı', fontsize=14, fontweight='bold', pad=20)
+    ax8.axvline(df_churn['ChurnRiskScore'].mean(), color='red', linestyle='--', linewidth=2, 
+               label=f'Ortalama: {df_churn["ChurnRiskScore"].mean():.1f}%')
+    ax8.legend()
+    
+    # 9. Şehir Bazında Churn Oranı
+    ax9 = plt.subplot(3, 3, 9)
+    city_churn = df_churn.groupby('City')['IsChurned'].mean().sort_values(ascending=False) * 100
+    bars = ax9.bar(range(len(city_churn)), city_churn.values, 
+                   color=plt.cm.RdYlGn_r(city_churn.values / 100))
+    ax9.set_xticks(range(len(city_churn)))
+    ax9.set_xticklabels(city_churn.index, rotation=45, ha='right')
+    ax9.set_ylabel('Churn Oranı (%)', fontsize=10)
+    ax9.set_title('Şehir Bazında Churn Oranı', fontsize=14, fontweight='bold', pad=20)
+    for i, bar in enumerate(bars):
+        height = bar.get_height()
+        ax9.text(bar.get_x() + bar.get_width()/2., height,
+                f'{height:.1f}%', ha='center', va='bottom', fontsize=9, fontweight='bold')
+    
+    plt.tight_layout()
+    
+    # Streamlit'te grafikleri göster
+    st.pyplot(fig, use_container_width=True)
+    
+    # 4. YÜKSEK RİSKLİ MÜŞTERİLER
+    st.markdown("### ⚠️ Yüksek Riskli Müşteriler (Top 20)")
+    
+    high_risk = df_churn[df_churn['ChurnRiskScore'] >= 75].sort_values('ChurnRiskScore', ascending=False).head(20)
+    
+    if len(high_risk) > 0:
+        st.dataframe(high_risk[['CustomerID', 'ChurnRiskScore', 'DaysSinceLastOrder', 'TotalOrders', 
+                               'TotalSpent', 'LastNPSScore', 'RiskSegment']].round(2), width='stretch')
+        
+        st.warning(f"⚠️ {len(high_risk)} müşteri kritik risk seviyesinde!")
+    else:
+        st.success("✅ Kritik risk seviyesinde müşteri bulunmuyor.")
+    
+    # 5. STRATEJİK ÖNERİLER
+    st.markdown("### 💡 Risk Segmentine Göre Aksiyon Planı")
+    
+    # Risk segment özeti
+    segment_summary = df_churn.groupby('RiskSegment').agg({
+        'CustomerID': 'count',
+        'TotalSpent': 'sum',
+        'ChurnRiskScore': 'mean'
+    }).round(2)
+    segment_summary.columns = ['Müşteri Sayısı', 'Toplam Gelir (TL)', 'Ort. Risk Skoru (%)']
+    
+    st.dataframe(segment_summary, width='stretch')
+    
+    # Aksiyon planları
+    strategies = [
+        {
+            'segment': '🟢 DÜŞÜK RİSK (0-25%)',
+            'actions': [
+                'Otomatik teşekkür emailleri',
+                'Referans programı davetleri',
+                'Yeni ürün lansmanları hakkında bilgilendirme'
+            ]
+        },
+        {
+            'segment': '🟡 ORTA RİSK (25-50%)',
+            'actions': [
+                'Kişiselleştirilmiş ürün önerileri',
+                'Özel indirim kuponları (%10-15)',
+                'Engagement artırma kampanyaları'
+            ]
+        },
+        {
+            'segment': '🟠 YÜKSEK RİSK (50-75%)',
+            'actions': [
+                'Acil müdahale ekibi ataması',
+                'Özel indirimler (%20-30)',
+                'Telefon ile müşteri memnuniyeti görüşmesi',
+                'Ücretsiz kargo avantajı'
+            ]
+        },
+        {
+            'segment': '🔴 KRİTİK RİSK (75-100%)',
+            'actions': [
+                'VIP müşteri temsilcisi ataması',
+                'Agresif geri kazanma kampanyası',
+                'Özel hediye veya bonuslar',
+                'Bireysel sorun çözme görüşmesi'
+            ]
+        }
+    ]
+    
+    for strategy in strategies:
+        with st.expander(strategy['segment']):
+            for action in strategy['actions']:
+                st.write(f"• {action}")
+    
+    # 6. ÖNEMLİ BULGULAR
+    st.markdown("### 📊 Önemli Bulgular")
+    
+    findings = [
+        f"**En kritik faktör:** {feature_importance.iloc[0]['Feature']}",
+        f"**90+ gün sipariş vermeyen:** {len(df_churn[df_churn['DaysSinceLastOrder'] >= 90])} müşteri",
+        f"**Düşük NPS skoru (<6):** {len(df_churn[df_churn['LastNPSScore'] < 6])} müşteri",
+        f"**Yüksek şikayet (>2):** {len(df_churn[df_churn['Complaints'] > 2])} müşteri",
+        f"**En yüksek churn şehri:** {city_churn.index[0]} ({city_churn.iloc[0]:.1f}%)"
+    ]
+    
+    for finding in findings:
+        st.write(f"• {finding}")
+    
+    # 7. VERI İNDİRME
+    st.markdown("### 📥 Churn Prediction Veri İndirme")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        # Tüm müşteri risk skorları
+        risk_data = df_churn[['CustomerID', 'ChurnRiskScore', 'RiskSegment', 'DaysSinceLastOrder', 
+                             'TotalOrders', 'TotalSpent', 'LastNPSScore', 'EmailOpenRate', 
+                             'Complaints', 'City', 'IsChurned']]
+        risk_csv = risk_data.to_csv(index=False)
+        st.download_button(
+            label="📊 Müşteri Risk Skorları CSV",
+            data=risk_csv,
+            file_name=f"churn_risk_scores_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+    
+    with col2:
+        # Yüksek riskli müşteriler
+        if len(high_risk) > 0:
+            high_risk_csv = high_risk.to_csv(index=False)
+            st.download_button(
+                label="⚠️ Yüksek Riskli Müşteriler CSV",
+                data=high_risk_csv,
+                file_name=f"high_risk_customers_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                mime="text/csv",
+                use_container_width=True
+            )
+        else:
+            st.info("Yüksek riskli müşteri yok")
+    
+    with col3:
+        # Feature importance
+        importance_csv = feature_importance.to_csv(index=False)
+        st.download_button(
+            label="🎯 Feature Importance CSV",
+            data=importance_csv,
+            file_name=f"feature_importance_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+    
+    # Analiz özeti
+    st.markdown("### ✅ Churn Prediction Analizi Tamamlandı!")
+    
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("Analiz Edilen Müşteri", len(df_churn))
+    with col2:
+        st.metric("Model Accuracy", f"{accuracy*100:.1f}%")
+    with col3:
+        st.metric("ROC-AUC Score", f"{roc_auc:.3f}")
+    with col4:
+        high_risk_count = len(df_churn[df_churn['ChurnRiskScore'] >= 75])
+        st.metric("Kritik Risk Müşteri", high_risk_count)
     
     st.markdown("""</div>""", unsafe_allow_html=True)
