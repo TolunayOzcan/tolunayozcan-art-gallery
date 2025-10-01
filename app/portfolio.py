@@ -551,7 +551,7 @@ st.markdown("""
 # Direkt tab menüsü ile başla
 
 # Büyük tab menüsü - Header altında
-menu = st.tabs(["🏠 Anasayfa", "📊 İstatistik", "🔄 Api entegrasyon", "🧪 Veri Bilimi", "👥 İK Analitik", "📊 RFM Analizi"])
+menu = st.tabs(["🏠 Anasayfa", "📊 İstatistik", "🔄 Api entegrasyon", "🧪 Veri Bilimi", "👥 İK Analitik", "📊 RFM Analizi", "🔄 Cohort"])
 
 
 
@@ -2262,5 +2262,391 @@ with menu[5]:  # RFM Analizi sekmesi
         st.metric("Oluşturulan Segment", len(rfm['Segment'].unique()))
     with col3:
         st.metric("Toplam Gelir", f"{rfm['Parasal'].sum():,.0f} TL")
+    
+    st.markdown("""</div>""", unsafe_allow_html=True)
+
+# 7. COHORT RETENTION ANALİZİ SEKMESİ
+with menu[6]:
+    st.markdown("""<div class="card">""", unsafe_allow_html=True)
+    
+    # Header
+    st.markdown("""
+    <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem; border-radius: 15px; margin-bottom: 2rem; text-align: center;'>
+        <h1 style='color: white; margin: 0; font-size: 2.5rem;'>🔄 Cohort Retention Analizi</h1>
+        <p style='color: white; margin: 0.5rem 0; font-size: 1.2rem; opacity: 0.9;'>Müşteri Edinme Cohortlarını Takip Ederek Retention Oranlarını Analiz Etme</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("<p style='font-size: 1.1rem; color: #6B7280; margin-bottom: 2rem;'>Müşteri edinme cohortlarını takip ederek retention oranlarını analiz etme</p>", unsafe_allow_html=True)
+    
+    # Veri oluşturma
+    st.markdown("### 🎯 Cohort Verisi Oluşturma")
+    
+    with st.spinner("📊 Cohort verisi oluşturuluyor..."):
+        # 1. VERİ SETİ OLUŞTURMA
+        np.random.seed(42)
+        
+        # 12 aylık cohort verisi oluştur
+        start_date = datetime(2024, 1, 1)
+        n_customers_per_cohort = np.random.randint(150, 300, 12)  # Her ay için farklı müşteri sayısı
+        
+        data = []
+        
+        for cohort_month in range(12):
+            cohort_date = start_date + timedelta(days=cohort_month * 30)
+            n_customers = n_customers_per_cohort[cohort_month]
+            
+            # Her cohort için müşteriler
+            for customer_idx in range(n_customers):
+                customer_id = f'C{cohort_month:02d}{customer_idx:04d}'
+                
+                # İlk alışveriş (cohort ayı)
+                first_purchase = cohort_date + timedelta(days=np.random.randint(0, 30))
+                data.append({
+                    'CustomerID': customer_id,
+                    'OrderDate': first_purchase,
+                    'OrderValue': np.random.uniform(50, 500),
+                    'CohortMonth': cohort_date
+                })
+                
+                # Retention simülasyonu (azalan olasılıkla tekrar alışveriş)
+                retention_probability = 0.7  # İlk ay %70 retention
+                
+                for month in range(1, 12):
+                    if np.random.random() < retention_probability:
+                        # Bu müşteri bu ayda da alışveriş yaptı
+                        purchase_date = cohort_date + timedelta(days=month * 30 + np.random.randint(0, 30))
+                        
+                        # Sadece analiz tarihinden önce olan siparişleri ekle
+                        if purchase_date <= datetime(2024, 10, 1):
+                            data.append({
+                                'CustomerID': customer_id,
+                                'OrderDate': purchase_date,
+                                'OrderValue': np.random.uniform(50, 500),
+                                'CohortMonth': cohort_date
+                            })
+                    
+                    # Her ay retention olasılığı azalır
+                    retention_probability *= 0.85
+        
+        df_cohort = pd.DataFrame(data)
+    
+    st.success(f"✓ Toplam {len(df_cohort)} sipariş")
+    st.success(f"✓ {df_cohort['CustomerID'].nunique()} benzersiz müşteri")
+    st.success(f"✓ Tarih Aralığı: {df_cohort['OrderDate'].min().date()} - {df_cohort['OrderDate'].max().date()}")
+    
+    # Ham veri önizleme
+    st.markdown("### 📋 Ham Veri Önizleme")
+    st.dataframe(df_cohort.head(10), width='stretch')
+    
+    with st.spinner("🔄 Cohort analizleri hesaplanıyor..."):
+        # 2. COHORT TANIMLAMA
+        # Her müşterinin ilk alışveriş tarihi (cohort)
+        df_cohort['OrderMonth'] = df_cohort['OrderDate'].dt.to_period('M')
+        df_cohort['CohortMonth'] = df_cohort['CohortMonth'].dt.to_period('M')
+        
+        # Her müşteri için cohort tanımla
+        customer_cohort = df_cohort.groupby('CustomerID')['OrderMonth'].min().reset_index()
+        customer_cohort.columns = ['CustomerID', 'CohortMonth']
+        
+        # Ana dataframe'e cohort bilgisini ekle
+        df_cohort = df_cohort.merge(customer_cohort, on='CustomerID', how='left', suffixes=('', '_First'))
+        
+        # Cohort index hesapla (müşterinin ilk alışverişinden kaç ay geçti)
+        df_cohort['CohortIndex'] = (df_cohort['OrderMonth'] - df_cohort['CohortMonth']).apply(lambda x: x.n)
+        
+        # 3. COHORT ANALİZİ - MÜŞTERİ SAYISI
+        # Her cohort ve index için benzersiz müşteri sayısı
+        cohort_data = df_cohort.groupby(['CohortMonth', 'CohortIndex'])['CustomerID'].nunique().reset_index()
+        cohort_data.columns = ['CohortMonth', 'CohortIndex', 'CustomerCount']
+        
+        # Pivot tablo oluştur
+        cohort_counts = cohort_data.pivot(index='CohortMonth', columns='CohortIndex', values='CustomerCount')
+        
+        # Retention oranları hesapla (ilk aya göre %)
+        cohort_retention = cohort_counts.divide(cohort_counts[0], axis=0) * 100
+        
+        # 4. COHORT ANALİZİ - GELİR
+        cohort_revenue = df_cohort.groupby(['CohortMonth', 'CohortIndex'])['OrderValue'].sum().reset_index()
+        cohort_revenue_pivot = cohort_revenue.pivot(index='CohortMonth', columns='CohortIndex', values='OrderValue')
+    
+    # Cohort bilgileri gösterimi
+    st.markdown("### 📊 Cohort Retention Tablosu")
+    st.markdown("**Retention Oranları (%):**")
+    st.dataframe(cohort_retention.round(1), width='stretch')
+    
+    # 5. GÖRSELLEŞTİRMELER
+    st.markdown("### 📈 Cohort Retention Dashboard")
+    
+    # Grafikleri oluştur
+    fig = plt.figure(figsize=(20, 14))
+    
+    # 1. Retention Heatmap
+    ax1 = plt.subplot(3, 2, 1)
+    sns.heatmap(cohort_retention, annot=True, fmt='.0f', cmap='RdYlGn', 
+                cbar_kws={'label': 'Retention %'}, vmin=0, vmax=100, ax=ax1,
+                linewidths=0.5, linecolor='gray')
+    ax1.set_title('Cohort Retention Heatmap (%)', fontsize=16, fontweight='bold', pad=20)
+    ax1.set_xlabel('Ay (Cohort\'tan itibaren)', fontsize=11)
+    ax1.set_ylabel('Cohort Ayı', fontsize=11)
+    
+    # 2. Retention Eğrileri
+    ax2 = plt.subplot(3, 2, 2)
+    for cohort in cohort_retention.index[:6]:  # İlk 6 cohort
+        ax2.plot(cohort_retention.columns, cohort_retention.loc[cohort], 
+                 marker='o', label=f'{cohort}', linewidth=2, markersize=6)
+    ax2.set_xlabel('Ay', fontsize=11)
+    ax2.set_ylabel('Retention Oranı (%)', fontsize=11)
+    ax2.set_title('Cohort Retention Eğrileri', fontsize=16, fontweight='bold', pad=20)
+    ax2.legend(title='Cohort', bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=9)
+    ax2.grid(True, alpha=0.3)
+    ax2.set_ylim(0, 105)
+    
+    # 3. Ortalama Retention Trendi
+    ax3 = plt.subplot(3, 2, 3)
+    avg_retention = cohort_retention.mean()
+    ax3.plot(avg_retention.index, avg_retention.values, marker='o', color='darkblue', 
+             linewidth=3, markersize=8, label='Ortalama Retention')
+    ax3.fill_between(avg_retention.index, avg_retention.values, alpha=0.3, color='skyblue')
+    ax3.set_xlabel('Ay', fontsize=11)
+    ax3.set_ylabel('Ortalama Retention (%)', fontsize=11)
+    ax3.set_title('Tüm Cohortlar İçin Ortalama Retention Trendi', fontsize=16, fontweight='bold', pad=20)
+    ax3.grid(True, alpha=0.3)
+    ax3.set_ylim(0, 105)
+    
+    # Kritik retention noktaları ekle
+    for i, val in enumerate(avg_retention.values):
+        if i in [0, 1, 3, 6]:  # 0, 1, 3, 6. aylar
+            ax3.annotate(f'{val:.1f}%', xy=(i, val), xytext=(5, 5), 
+                        textcoords='offset points', fontsize=9, fontweight='bold',
+                        bbox=dict(boxstyle='round,pad=0.3', facecolor='yellow', alpha=0.7))
+    
+    # 4. Cohort Boyutları (İlk müşteri sayısı)
+    ax4 = plt.subplot(3, 2, 4)
+    cohort_sizes = cohort_counts[0].sort_index()
+    bars = ax4.bar(range(len(cohort_sizes)), cohort_sizes.values, color='teal', alpha=0.7, edgecolor='black')
+    ax4.set_xticks(range(len(cohort_sizes)))
+    ax4.set_xticklabels([str(c) for c in cohort_sizes.index], rotation=45, ha='right')
+    ax4.set_xlabel('Cohort Ayı', fontsize=11)
+    ax4.set_ylabel('İlk Müşteri Sayısı', fontsize=11)
+    ax4.set_title('Cohort Büyüklükleri (İlk Ay)', fontsize=16, fontweight='bold', pad=20)
+    
+    for i, bar in enumerate(bars):
+        height = bar.get_height()
+        ax4.text(bar.get_x() + bar.get_width()/2., height,
+                f'{int(height)}', ha='center', va='bottom', fontsize=9, fontweight='bold')
+    
+    # 5. Kümülatif Retention
+    ax5 = plt.subplot(3, 2, 5)
+    cumulative_customers = cohort_counts.sum(axis=0)
+    ax5.plot(cumulative_customers.index, cumulative_customers.values, 
+             marker='s', color='crimson', linewidth=3, markersize=8)
+    ax5.fill_between(cumulative_customers.index, cumulative_customers.values, 
+                     alpha=0.3, color='pink')
+    ax5.set_xlabel('Ay', fontsize=11)
+    ax5.set_ylabel('Toplam Aktif Müşteri', fontsize=11)
+    ax5.set_title('Tüm Cohortlarda Aylık Toplam Aktif Müşteri', fontsize=16, fontweight='bold', pad=20)
+    ax5.grid(True, alpha=0.3)
+    
+    # 6. Revenue Heatmap
+    ax6 = plt.subplot(3, 2, 6)
+    sns.heatmap(cohort_revenue_pivot, annot=True, fmt='.0f', cmap='YlOrRd', 
+                cbar_kws={'label': 'Toplam Gelir (TL)'}, ax=ax6,
+                linewidths=0.5, linecolor='gray')
+    ax6.set_title('Cohort Gelir Heatmap (TL)', fontsize=16, fontweight='bold', pad=20)
+    ax6.set_xlabel('Ay (Cohort\'tan itibaren)', fontsize=11)
+    ax6.set_ylabel('Cohort Ayı', fontsize=11)
+    
+    plt.tight_layout()
+    
+    # Streamlit'te grafikleri göster
+    st.pyplot(fig, use_container_width=True)
+    
+    # 6. RETENTION ANALİZ RAPORU
+    st.markdown("### 📊 Retention Analiz Raporu")
+    
+    # Ay 1, 3, 6 retention oranları
+    month_1_retention = avg_retention[1] if 1 in avg_retention.index else 0
+    month_3_retention = avg_retention[3] if 3 in avg_retention.index else 0
+    month_6_retention = avg_retention[6] if 6 in avg_retention.index else 0
+    
+    # Metrikleri göster
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("1. Ay Retention", f"{month_1_retention:.1f}%")
+    with col2:
+        st.metric("3. Ay Retention", f"{month_3_retention:.1f}%")
+    with col3:
+        st.metric("6. Ay Retention", f"{month_6_retention:.1f}%")
+    
+    # En iyi ve en kötü cohortlar
+    avg_retention_by_cohort = cohort_retention.mean(axis=1).sort_values(ascending=False)
+    best_cohort = avg_retention_by_cohort.index[0]
+    worst_cohort = avg_retention_by_cohort.index[-1]
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown(f"""
+        <div style='background: linear-gradient(135deg, #10B981 0%, #059669 100%); padding: 15px; border-radius: 10px; margin-bottom: 1rem;'>
+            <h4 style='color: white; margin: 0 0 10px 0;'>🏆 En İyi Cohort</h4>
+            <p style='color: white; margin: 0; font-size: 14px;'>
+                <strong>{best_cohort}</strong><br>
+                Ortalama Retention: {avg_retention_by_cohort[best_cohort]:.1f}%
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown(f"""
+        <div style='background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); padding: 15px; border-radius: 10px; margin-bottom: 1rem;'>
+            <h4 style='color: white; margin: 0 0 10px 0;'>⚠️ En Düşük Cohort</h4>
+            <p style='color: white; margin: 0; font-size: 14px;'>
+                <strong>{worst_cohort}</strong><br>
+                Ortalama Retention: {avg_retention_by_cohort[worst_cohort]:.1f}%
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Retention drop analizi
+    retention_drops = []
+    for i in range(len(avg_retention) - 1):
+        drop = avg_retention.values[i] - avg_retention.values[i + 1]
+        retention_drops.append((i, i+1, drop))
+    
+    # En büyük düşüş
+    biggest_drop = max(retention_drops, key=lambda x: x[2])
+    
+    st.markdown(f"""
+    <div style='background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); padding: 15px; border-radius: 10px; margin-bottom: 1rem;'>
+        <h4 style='color: white; margin: 0 0 10px 0;'>📉 En Büyük Retention Düşüşü</h4>
+        <p style='color: white; margin: 0; font-size: 14px;'>
+            {biggest_drop[0]}. aydan {biggest_drop[1]}. aya: <strong>-{biggest_drop[2]:.1f}%</strong>
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # 7. STRATEJİK ÖNERİLER
+    st.markdown("### 💡 Stratejik Öneriler")
+    
+    strategies = []
+    
+    if month_1_retention < 60:
+        strategies.append({
+            'title': '⚠️ 1. AY KRİTİK',
+            'items': [
+                'Onboarding sürecini güçlendirin',
+                'İlk 30 gün içinde email/SMS kampanyaları',
+                'İlk alışverişte pozitif deneyim sağlayın'
+            ]
+        })
+    
+    if month_3_retention < 40:
+        strategies.append({
+            'title': '⚠️ 3. AY RİSKLİ',
+            'items': [
+                '60-90 gün arası müşterilere özel kampanyalar',
+                'Cross-sell/upsell fırsatları sunun',
+                'Müşteri memnuniyeti anketi gönderin'
+            ]
+        })
+    
+    if month_6_retention < 25:
+        strategies.append({
+            'title': '⚠️ 6. AY DÜŞÜK',
+            'items': [
+                'Sadakat programı oluşturun',
+                'Re-engagement kampanyaları başlatın',
+                'VIP statüsü ve özel avantajlar sunun'
+            ]
+        })
+    
+    # Genel öneriler her zaman gösterilir
+    strategies.append({
+        'title': '📈 Genel Öneriler',
+        'items': [
+            'En iyi cohort\'ların özelliklerini analiz edin',
+            'Churn riskli müşterileri erken tespit edin',
+            'Aylık retention hedefleri belirleyin',
+            'A/B testleri ile retention stratejilerini optimize edin'
+        ]
+    })
+    
+    for strategy in strategies:
+        with st.expander(strategy['title']):
+            for item in strategy['items']:
+                st.write(f"• {item}")
+    
+    # 8. COHORT LTV (Lifetime Value) TAHMİNİ
+    st.markdown("### 💰 Cohort Lifetime Value (LTV) Tahmini")
+    
+    cohort_ltv = cohort_revenue_pivot.sum(axis=1) / cohort_counts[0]
+    
+    # LTV tablosu
+    ltv_data = []
+    for cohort, ltv in cohort_ltv.items():
+        ltv_data.append({'Cohort': str(cohort), 'LTV (TL)': f"{ltv:,.2f}"})
+    
+    ltv_df = pd.DataFrame(ltv_data)
+    st.dataframe(ltv_df, width='stretch')
+    
+    avg_ltv = cohort_ltv.mean()
+    
+    st.markdown(f"""
+    <div style='background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); padding: 20px; border-radius: 10px; margin: 1rem 0; text-align: center;'>
+        <h3 style='color: white; margin: 0 0 10px 0;'>💰 Genel Ortalama LTV</h3>
+        <h2 style='color: white; margin: 0; font-size: 2rem;'>{avg_ltv:,.2f} TL</h2>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # 9. VERI İNDİRME
+    st.markdown("### 📥 Cohort Analizi Veri İndirme")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        # Retention oranları CSV
+        retention_csv = cohort_retention.to_csv()
+        st.download_button(
+            label="📊 Retention Oranları CSV",
+            data=retention_csv,
+            file_name=f"cohort_retention_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+    
+    with col2:
+        # Müşteri sayıları CSV
+        counts_csv = cohort_counts.to_csv()
+        st.download_button(
+            label="👥 Müşteri Sayıları CSV",
+            data=counts_csv,
+            file_name=f"cohort_counts_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+    
+    with col3:
+        # Gelir analizi CSV
+        revenue_csv = cohort_revenue_pivot.to_csv()
+        st.download_button(
+            label="💰 Gelir Analizi CSV",
+            data=revenue_csv,
+            file_name=f"cohort_revenue_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+    
+    # Analiz özeti
+    st.markdown("### ✅ Cohort Analizi Tamamlandı!")
+    
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("Analiz Edilen Cohort", len(cohort_retention))
+    with col2:
+        st.metric("Takip Süresi (Ay)", len(cohort_retention.columns))
+    with col3:
+        st.metric("Toplam Müşteri", df_cohort['CustomerID'].nunique())
+    with col4:
+        st.metric("Toplam Gelir", f"{df_cohort['OrderValue'].sum():,.0f} TL")
     
     st.markdown("""</div>""", unsafe_allow_html=True)
