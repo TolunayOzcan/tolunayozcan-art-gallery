@@ -1958,45 +1958,43 @@ with menu[5]:  # RFM Analizi sekmesi
         current_date = datetime(2024, 10, 1)
         
         for cid in customer_ids:
-            # Müşteri tipi belirleme
-            customer_type = np.random.choice(['champion', 'loyal', 'at_risk', 'lost', 'new'], 
-                                             p=[0.15, 0.25, 0.20, 0.25, 0.15])
-            
-            if customer_type == 'champion':
-                n_orders = np.random.randint(15, 40)
-                last_order_days = np.random.randint(1, 30)
-                avg_order_value = np.random.uniform(500, 2000)
-            elif customer_type == 'loyal':
-                n_orders = np.random.randint(8, 20)
-                last_order_days = np.random.randint(20, 60)
-                avg_order_value = np.random.uniform(300, 1000)
-            elif customer_type == 'at_risk':
-                n_orders = np.random.randint(5, 15)
-                last_order_days = np.random.randint(90, 180)
-                avg_order_value = np.random.uniform(200, 800)
-            elif customer_type == 'lost':
-                n_orders = np.random.randint(2, 8)
-                last_order_days = np.random.randint(180, 365)
-                avg_order_value = np.random.uniform(100, 500)
-            else:  # new
-                n_orders = np.random.randint(1, 3)
-                last_order_days = np.random.randint(1, 45)
-                avg_order_value = np.random.uniform(150, 600)
-            
-            for _ in range(n_orders):
+        # Müşteri tipi belirleme
+        customer_type = np.random.choice(['şampiyon', 'sadık', 'risk_altında', 'kayıp', 'yeni'], 
+                                         p=[0.15, 0.25, 0.20, 0.25, 0.15])
+        
+        if customer_type == 'şampiyon':
+            n_orders = np.random.randint(15, 40)
+            last_order_days = np.random.randint(1, 30)
+            avg_order_value = np.random.uniform(500, 2000)
+        elif customer_type == 'sadık':
+            n_orders = np.random.randint(8, 20)
+            last_order_days = np.random.randint(20, 60)
+            avg_order_value = np.random.uniform(300, 1000)
+        elif customer_type == 'risk_altında':
+            n_orders = np.random.randint(5, 15)
+            last_order_days = np.random.randint(90, 180)
+            avg_order_value = np.random.uniform(200, 800)
+        elif customer_type == 'kayıp':
+            n_orders = np.random.randint(2, 8)
+            last_order_days = np.random.randint(180, 365)
+            avg_order_value = np.random.uniform(100, 500)
+        else:  # yeni
+            n_orders = np.random.randint(1, 3)
+            last_order_days = np.random.randint(1, 45)
+            avg_order_value = np.random.uniform(150, 600)            for _ in range(n_orders):
                 order_date = current_date - timedelta(days=np.random.randint(last_order_days, last_order_days + 200))
                 order_value = avg_order_value * np.random.uniform(0.7, 1.3)
                 
                 data.append({
-                    'CustomerID': cid,
-                    'OrderDate': order_date,
-                    'OrderValue': round(order_value, 2)
+                    'MusteriID': cid,
+                    'SiparisTarihi': order_date,
+                    'SiparisUcreti': round(order_value, 2)
                 })
         
         df = pd.DataFrame(data)
         
-    st.success(f"✓ Toplam {len(df)} sipariş, {df['CustomerID'].nunique()} benzersiz müşteri")
-    st.success(f"✓ Tarih Aralığı: {df['OrderDate'].min().date()} - {df['OrderDate'].max().date()}")
+    st.success(f"✓ Toplam {len(df)} sipariş, {df['MusteriID'].nunique()} benzersiz müşteri")
+    st.success(f"✓ Tarih Aralığı: {df['SiparisTarihi'].min().date()} - {df['SiparisTarihi'].max().date()}")
     
     # Ham veri önizleme
     st.markdown("### 📋 Ham Veri Önizleme")
@@ -2006,47 +2004,47 @@ with menu[5]:  # RFM Analizi sekmesi
         # 2. RFM METRİKLERİNİ HESAPLAMA
         analysis_date = current_date + timedelta(days=1)
         
-        rfm = df.groupby('CustomerID').agg({
-            'OrderDate': lambda x: (analysis_date - x.max()).days,  # Recency
-            'OrderValue': ['count', 'sum']  # Frequency ve Monetary
+        rfm = df.groupby('MusteriID').agg({
+            'SiparisTarihi': lambda x: (analysis_date - x.max()).days,  # Recency
+            'SiparisUcreti': ['count', 'sum']  # Frequency ve Monetary
         }).reset_index()
         
-        rfm.columns = ['CustomerID', 'Recency', 'Frequency', 'Monetary']
+        rfm.columns = ['MusteriID', 'Yenilik', 'Siklik', 'Parasal']
         
         # 3. RFM SKORLAMASI (1-5 arası)
         # Recency için ters sıralama (düşük recency = yüksek skor)
-        rfm['R_Score'] = pd.qcut(rfm['Recency'], q=5, labels=[5, 4, 3, 2, 1])
+        rfm['Y_Skoru'] = pd.qcut(rfm['Yenilik'], q=5, labels=[5, 4, 3, 2, 1])
         
         # Frequency ve Monetary için normal sıralama
-        rfm['F_Score'] = pd.qcut(rfm['Frequency'].rank(method='first'), q=5, labels=[1, 2, 3, 4, 5])
-        rfm['M_Score'] = pd.qcut(rfm['Monetary'].rank(method='first'), q=5, labels=[1, 2, 3, 4, 5])
+        rfm['S_Skoru'] = pd.qcut(rfm['Siklik'].rank(method='first'), q=5, labels=[1, 2, 3, 4, 5])
+        rfm['P_Skoru'] = pd.qcut(rfm['Parasal'].rank(method='first'), q=5, labels=[1, 2, 3, 4, 5])
         
         # RFM Skoru oluşturma
-        rfm['RFM_Score'] = rfm['R_Score'].astype(str) + rfm['F_Score'].astype(str) + rfm['M_Score'].astype(str)
-        rfm['RFM_Score_Total'] = rfm['R_Score'].astype(int) + rfm['F_Score'].astype(int) + rfm['M_Score'].astype(int)
+        rfm['RFM_Skoru'] = rfm['Y_Skoru'].astype(str) + rfm['S_Skoru'].astype(str) + rfm['P_Skoru'].astype(str)
+        rfm['RFM_Skoru_Toplam'] = rfm['Y_Skoru'].astype(int) + rfm['S_Skoru'].astype(int) + rfm['P_Skoru'].astype(int)
         
         # 4. MÜŞTERİ SEGMENTLERİ OLUŞTURMA
         def rfm_segment(row):
-            r, f, m = int(row['R_Score']), int(row['F_Score']), int(row['M_Score'])
+            r, f, m = int(row['Y_Skoru']), int(row['S_Skoru']), int(row['P_Skoru'])
             
             if r >= 4 and f >= 4 and m >= 4:
-                return 'Champions'
+                return 'Şampiyonlar'
             elif r >= 3 and f >= 3 and m >= 3:
-                return 'Loyal Customers'
+                return 'Sadık Müşteriler'
             elif r >= 4 and f <= 2:
-                return 'New Customers'
+                return 'Yeni Müşteriler'
             elif r >= 3 and f >= 2 and m >= 2:
-                return 'Potential Loyalists'
+                return 'Potansiyel Sadık'
             elif r <= 2 and f >= 3 and m >= 3:
-                return 'At Risk'
+                return 'Risk Altında'
             elif r <= 2 and f >= 4 and m >= 4:
-                return 'Cant Lose Them'
+                return 'Kaybedilmemeli'
             elif r <= 2 and f <= 2:
-                return 'Lost'
+                return 'Kayıp Müşteriler'
             elif r >= 3 and f <= 2 and m <= 2:
-                return 'Promising'
+                return 'Umut Verici'
             else:
-                return 'Need Attention'
+                return 'İlgi Gerekli'
         
         rfm['Segment'] = rfm.apply(rfm_segment, axis=1)
     
@@ -2061,22 +2059,22 @@ with menu[5]:  # RFM Analizi sekmesi
     with col1:
         st.metric("Toplam Müşteri", len(rfm))
     with col2:
-        st.metric("Ortalama Recency", f"{rfm['Recency'].mean():.0f} gün")
+        st.metric("Ortalama Yenilik", f"{rfm['Yenilik'].mean():.0f} gün")
     with col3:
-        st.metric("Ortalama Frequency", f"{rfm['Frequency'].mean():.1f}")
+        st.metric("Ortalama Sıklık", f"{rfm['Siklik'].mean():.1f}")
     with col4:
-        st.metric("Ortalama Monetary", f"{rfm['Monetary'].mean():.0f} TL")
+        st.metric("Ortalama Parasal", f"{rfm['Parasal'].mean():.0f} TL")
     
     # Segmentasyon sonuçları
     st.markdown("### 🎯 Segmentasyon Sonuçları")
     segment_summary = rfm.groupby('Segment').agg({
-        'CustomerID': 'count',
-        'Recency': 'mean',
-        'Frequency': 'mean',
-        'Monetary': 'mean'
+        'MusteriID': 'count',
+        'Yenilik': 'mean',
+        'Siklik': 'mean',
+        'Parasal': 'mean'
     }).round(2)
     
-    segment_summary.columns = ['Müşteri Sayısı', 'Ort. Recency', 'Ort. Frequency', 'Ort. Monetary']
+    segment_summary.columns = ['Müşteri Sayısı', 'Ort. Yenilik', 'Ort. Sıklık', 'Ort. Parasal']
     segment_summary = segment_summary.sort_values('Müşteri Sayısı', ascending=False)
     
     st.dataframe(segment_summary, width='stretch')
@@ -2095,9 +2093,9 @@ with menu[5]:  # RFM Analizi sekmesi
                                          autopct='%1.1f%%', colors=colors, startangle=90)
     ax1.set_title('Müşteri Segment Dağılımı', fontsize=14, fontweight='bold', pad=20)
     
-    # 2. Segment bazında ortalama Monetary
+    # 2. Segment bazında ortalama Parasal
     ax2 = plt.subplot(2, 3, 2)
-    segment_monetary = rfm.groupby('Segment')['Monetary'].mean().sort_values(ascending=True)
+    segment_monetary = rfm.groupby('Segment')['Parasal'].mean().sort_values(ascending=True)
     bars = ax2.barh(segment_monetary.index, segment_monetary.values, color=plt.cm.viridis(np.linspace(0, 1, len(segment_monetary))))
     ax2.set_xlabel('Ortalama Harcama (TL)', fontsize=10)
     ax2.set_title('Segment Bazında Ortalama Müşteri Değeri', fontsize=14, fontweight='bold', pad=20)
@@ -2106,38 +2104,38 @@ with menu[5]:  # RFM Analizi sekmesi
         ax2.text(width, bar.get_y() + bar.get_height()/2, f'{width:,.0f} TL', 
                  ha='left', va='center', fontsize=9, fontweight='bold')
     
-    # 3. RFM Scatter Plot (R vs F)
+    # 3. YSP Scatter Plot (Y vs S)
     ax3 = plt.subplot(2, 3, 3)
-    scatter = ax3.scatter(rfm['Recency'], rfm['Frequency'], 
-                         c=rfm['Monetary'], s=100, alpha=0.6, cmap='YlOrRd', edgecolors='black', linewidth=0.5)
-    ax3.set_xlabel('Recency (Gün)', fontsize=10)
-    ax3.set_ylabel('Frequency (Sipariş Sayısı)', fontsize=10)
-    ax3.set_title('Recency vs Frequency (Renk: Monetary)', fontsize=14, fontweight='bold', pad=20)
+    scatter = ax3.scatter(rfm['Yenilik'], rfm['Siklik'], 
+                         c=rfm['Parasal'], s=100, alpha=0.6, cmap='YlOrRd', edgecolors='black', linewidth=0.5)
+    ax3.set_xlabel('Yenilik (Gün)', fontsize=10)
+    ax3.set_ylabel('Sıklık (Sipariş Sayısı)', fontsize=10)
+    ax3.set_title('Yenilik vs Sıklık (Renk: Parasal)', fontsize=14, fontweight='bold', pad=20)
     plt.colorbar(scatter, ax=ax3, label='Toplam Harcama (TL)')
     
-    # 4. RFM Skor Dağılımı
+    # 4. YSP Skor Dağılımı
     ax4 = plt.subplot(2, 3, 4)
-    rfm['RFM_Score_Total'].hist(bins=13, color='skyblue', edgecolor='black', ax=ax4)
-    ax4.set_xlabel('Toplam RFM Skoru', fontsize=10)
+    rfm['RFM_Skoru_Toplam'].hist(bins=13, color='skyblue', edgecolor='black', ax=ax4)
+    ax4.set_xlabel('Toplam YSP Skoru', fontsize=10)
     ax4.set_ylabel('Müşteri Sayısı', fontsize=10)
-    ax4.set_title('RFM Skor Dağılımı', fontsize=14, fontweight='bold', pad=20)
-    ax4.axvline(rfm['RFM_Score_Total'].mean(), color='red', linestyle='--', linewidth=2, label=f'Ortalama: {rfm["RFM_Score_Total"].mean():.1f}')
+    ax4.set_title('YSP Skor Dağılımı', fontsize=14, fontweight='bold', pad=20)
+    ax4.axvline(rfm['RFM_Skoru_Toplam'].mean(), color='red', linestyle='--', linewidth=2, label=f'Ortalama: {rfm["RFM_Skoru_Toplam"].mean():.1f}')
     ax4.legend()
     
     # 5. Segment bazında müşteri sayısı ve toplam gelir
     ax5 = plt.subplot(2, 3, 5)
     segment_revenue = rfm.groupby('Segment').agg({
-        'CustomerID': 'count',
-        'Monetary': 'sum'
+        'MusteriID': 'count',
+        'Parasal': 'sum'
     }).reset_index()
-    segment_revenue.columns = ['Segment', 'Customer_Count', 'Total_Revenue']
+    segment_revenue.columns = ['Segment', 'Musteri_Sayisi', 'Toplam_Gelir']
     
     x = np.arange(len(segment_revenue))
     width = 0.35
     
     ax5_twin = ax5.twinx()
-    bars1 = ax5.bar(x - width/2, segment_revenue['Customer_Count'], width, label='Müşteri Sayısı', color='steelblue', alpha=0.8)
-    bars2 = ax5_twin.bar(x + width/2, segment_revenue['Total_Revenue'], width, label='Toplam Gelir', color='coral', alpha=0.8)
+    bars1 = ax5.bar(x - width/2, segment_revenue['Musteri_Sayisi'], width, label='Müşteri Sayısı', color='steelblue', alpha=0.8)
+    bars2 = ax5_twin.bar(x + width/2, segment_revenue['Toplam_Gelir'], width, label='Toplam Gelir', color='coral', alpha=0.8)
     
     ax5.set_xlabel('Segment', fontsize=10)
     ax5.set_ylabel('Müşteri Sayısı', fontsize=10, color='steelblue')
@@ -2148,17 +2146,17 @@ with menu[5]:  # RFM Analizi sekmesi
     ax5.tick_params(axis='y', labelcolor='steelblue')
     ax5_twin.tick_params(axis='y', labelcolor='coral')
     
-    # 6. Top 10 Müşteri
+    # 6. En İyi 10 Müşteri
     ax6 = plt.subplot(2, 3, 6)
-    top_customers = rfm.nlargest(10, 'Monetary')[['CustomerID', 'Monetary', 'Segment']]
+    top_customers = rfm.nlargest(10, 'Parasal')[['MusteriID', 'Parasal', 'Segment']]
     bars = ax6.barh(range(len(top_customers)), top_customers['Monetary'].values)
     ax6.set_yticks(range(len(top_customers)))
-    ax6.set_yticklabels([f"{cid}\n({seg})" for cid, seg in zip(top_customers['CustomerID'], top_customers['Segment'])], fontsize=8)
+    ax6.set_yticklabels([f"{cid}\n({seg})" for cid, seg in zip(top_customers['MusteriID'], top_customers['Segment'])], fontsize=8)
     ax6.set_xlabel('Toplam Harcama (TL)', fontsize=10)
-    ax6.set_title('Top 10 En Değerli Müşteri', fontsize=14, fontweight='bold', pad=20)
+    ax6.set_title('En İyi 10 Değerli Müşteri', fontsize=14, fontweight='bold', pad=20)
     ax6.invert_yaxis()
     
-    for i, (bar, val) in enumerate(zip(bars, top_customers['Monetary'].values)):
+    for i, (bar, val) in enumerate(zip(bars, top_customers['Parasal'].values)):
         color = plt.cm.RdYlGn(i / len(top_customers))
         bar.set_color(color)
         ax6.text(val, i, f' {val:,.0f} TL', va='center', fontsize=9, fontweight='bold')
@@ -2172,15 +2170,15 @@ with menu[5]:  # RFM Analizi sekmesi
     st.markdown("### 🎯 Stratejik Öneriler")
     
     strategies = {
-        'Champions': '🏆 VIP programlar, özel indirimler, early access',
-        'Loyal Customers': '💎 Sadakat programları, referans kampanyaları',
-        'At Risk': '⚠️  Geri kazanma kampanyaları, anket, özel teklifler',
-        'Cant Lose Them': '🚨 Acil müdahale, kişiselleştirilmiş teklifler',
-        'Lost': '💔 Win-back kampanyaları, agresif indirimler',
-        'New Customers': '🌟 Onboarding programı, ilk alışveriş teşvikleri',
-        'Potential Loyalists': '📈 Cross-sell, upsell fırsatları',
-        'Promising': '🎯 Hedefli kampanyalar, engagement artırma',
-        'Need Attention': '👀 Re-engagement kampanyaları'
+        'Şampiyonlar': '🏆 VIP programlar, özel indirimler, early access',
+        'Sadık Müşteriler': '💎 Sadakat programları, referans kampanyaları',
+        'Risk Altında': '⚠️  Geri kazanma kampanyaları, anket, özel teklifler',
+        'Kaybedilmemeli': '🚨 Acil müdahale, kişiselleştirilmiş teklifler',
+        'Kayıp Müşteriler': '💔 Win-back kampanyaları, agresif indirimler',
+        'Yeni Müşteriler': '🌟 Onboarding programı, ilk alışveriş teşvikleri',
+        'Potansiyel Sadık': '📈 Cross-sell, upsell fırsatları',
+        'Umut Verici': '🎯 Hedefli kampanyalar, engagement artırma',
+        'İlgi Gerekli': '👀 Re-engagement kampanyaları'
     }
     
     for segment in rfm['Segment'].unique():
@@ -2194,11 +2192,11 @@ with menu[5]:  # RFM Analizi sekmesi
             segment_data = rfm[rfm['Segment'] == segment]
             col1, col2, col3 = st.columns(3)
             with col1:
-                st.metric("Ort. Recency", f"{segment_data['Recency'].mean():.0f} gün")
+                st.metric("Ort. Yenilik", f"{segment_data['Yenilik'].mean():.0f} gün")
             with col2:
-                st.metric("Ort. Frequency", f"{segment_data['Frequency'].mean():.1f}")
+                st.metric("Ort. Sıklık", f"{segment_data['Siklik'].mean():.1f}")
             with col3:
-                st.metric("Ort. Monetary", f"{segment_data['Monetary'].mean():.0f} TL")
+                st.metric("Ort. Parasal", f"{segment_data['Parasal'].mean():.0f} TL")
     
     # 7. EXCEL ÇIKTISI ve CSV İNDİRME
     st.markdown("### 📥 Veri İndirme")
@@ -2234,6 +2232,6 @@ with menu[5]:  # RFM Analizi sekmesi
     with col2:
         st.metric("Oluşturulan Segment", len(rfm['Segment'].unique()))
     with col3:
-        st.metric("Toplam Gelir", f"{rfm['Monetary'].sum():,.0f} TL")
+        st.metric("Toplam Gelir", f"{rfm['Parasal'].sum():,.0f} TL")
     
     st.markdown("""</div>""", unsafe_allow_html=True)
